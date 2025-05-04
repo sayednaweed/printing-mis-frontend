@@ -1,0 +1,168 @@
+export type Role =
+  | { role: 1; name: "super" }
+  | { role: 2; name: "admin" }
+  | { role: 3; name: "user" };
+
+export type StatusType = { active: 1 } | { blocked: 2 };
+
+export type SelectUserPermission = UserPermission & {
+  allSelected: boolean;
+};
+export type Contact = {
+  id: string;
+  value: string;
+  created_at: string;
+};
+export type Email = {
+  id: string;
+  value: string;
+  created_at: string;
+};
+export type Status = {
+  id: number;
+  name: string;
+  created_at: string;
+};
+export type User = {
+  id: string;
+  registration_number: string;
+  full_name: string;
+  username: string;
+  email: string;
+  status: number;
+  grant: boolean;
+  profile: any;
+  role: Role;
+  contact: string;
+  job: string;
+  destination: string;
+  permissions: PortalPermissions;
+  created_at: string;
+  gender: string;
+};
+export type Permission = {
+  name: string;
+};
+export interface SubPermission {
+  id: number;
+  name: string;
+  edit: boolean;
+  view: boolean;
+  delete: boolean;
+  add: boolean;
+  singleRow: boolean;
+}
+
+export type UserPermission = {
+  id: number;
+  edit: boolean;
+  view: boolean;
+  delete: boolean;
+  add: boolean;
+  visible: boolean;
+  permission: string;
+  icon: string;
+  priority: number;
+  sub: Map<number, SubPermission>;
+};
+
+export type PortalPermissions = Record<string, Map<string, UserPermission>>;
+
+export type Notifications = {
+  id: string;
+  message: string;
+  type: string;
+  read_status: number;
+  created_at: string;
+};
+export type Job = {
+  id: string;
+  name: string;
+  created_at: string;
+};
+export type Gender = {
+  id: string;
+  name: string;
+};
+export type NidType = {
+  id: string;
+  name: string;
+};
+// APPLICATION
+
+export type Department = {
+  id: string;
+  name: string;
+  created_at: string;
+};
+
+export type Country = {
+  id: string;
+  name: string;
+};
+export type District = {
+  id: string;
+  name: string;
+};
+export type Province = {
+  id: string;
+  name: string;
+};
+export type Address = {
+  id: string;
+  country: Country;
+  province: Province;
+  district: District;
+  area: string;
+};
+
+export type Audit = {
+  id: string;
+  user_id: string;
+  user: string;
+  action: string;
+  table: string;
+  table_id: string;
+  old_values: any;
+  new_values: any;
+  url: string;
+  ip_address: string;
+  user_agent: string;
+  created_at: string;
+};
+
+///////////////////////////////App
+
+export type CheckList = {
+  id: string;
+  type: string;
+  type_id: number;
+  name: string;
+  acceptable_extensions: string;
+  active: number;
+  file_size: number;
+  acceptable_mimes: string;
+  accept: string;
+  description: string;
+  saved_by: string;
+  created_at: string;
+};
+
+export interface Currency {
+  id: number;
+  name: string;
+}
+export type Employee = {
+  id: string;
+  hr_code: string;
+  first_name: string;
+  last_name: string;
+  father_name: string;
+  picture: string;
+  contact: string;
+  email: string;
+  status: number;
+  gender: string;
+  nationality: string;
+  join_date: string;
+};
