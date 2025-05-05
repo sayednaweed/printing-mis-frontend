@@ -1,231 +1,181 @@
-import AddUserAccount from "./steps/AddUserAccount";
-import AddUserInformation from "./steps/AddUserInformation";
-import AddUserPermission from "./steps/AddUserPermission";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useModelOnRequestHide } from "@/components/custom-ui/model/hook/useModelOnRequestHide";
-import CloseButton from "@/components/custom-ui/button/CloseButton";
-import Stepper from "@/components/custom-ui/stepper/Stepper";
-import CompleteStep from "@/components/custom-ui/stepper/CompleteStep";
-import axiosClient from "@/lib/axois-client";
 import { toast } from "@/components/ui/use-toast";
-import { Dispatch, SetStateAction } from "react";
-import { setServerError } from "@/validation/validation";
-import { User as UserIcon } from "lucide-react";
-import { checkStrength, passwordStrengthScore } from "@/validation/utils";
-import { User } from "@/database/tables";
+import CloseButton from "@/components/custom-ui/button/CloseButton";
+import { useModelOnRequestHide } from "@/components/custom-ui/model/hook/useModelOnRequestHide";
+import axiosClient from "@/lib/axois-client";
+import {
+  UserRound,
+  Briefcase,
+  Mail,
+  Phone,
+  Clock,
+  StickyNote
+} from "lucide-react";
 
-export interface AddUserProps {
-  onComplete: (user: User) => void;
-}
-export default function AddLeave(props: AddUserProps) {
-  const { onComplete } = props;
+export default function AddLeave({ onComplete }: { onComplete: (user: any) => void }) {
   const { t } = useTranslation();
   const { modelOnRequestHide } = useModelOnRequestHide();
-  const beforeStepSuccess = async (
-    userData: any,
-    currentStep: number,
-    setError: Dispatch<SetStateAction<Map<string, string>>>
-  ) => {
-    if (currentStep == 1) {
-      try {
-        let formData = new FormData();
-        formData.append("email", userData?.email);
-        formData.append("contact", userData?.contact);
-        const response = await axiosClient.post(
-          "user/validate/email/contact",
-          formData
-        );
-        if (response.status == 200) {
-          const emailExist = response.data.email_found === true;
-          const contactExist = response.data.contact_found === true;
-          if (emailExist || contactExist) {
-            const errMap = new Map<string, string>();
-            if (emailExist) {
-              errMap.set("email", `${t("email")} ${t("is_registered_before")}`);
-            }
-            if (contactExist) {
-              errMap.set(
-                "contact",
-                `${t("contact")} ${t("is_registered_before")}`
-              );
-            }
-            setError(errMap);
-            return false;
-          }
-        }
-      } catch (error: any) {
-        toast({
-          toastType: "ERROR",
-          title: t("error"),
-          description: error.response.data.message,
-        });
-        console.log(error);
-        return false;
-      }
-    }
-    return true;
+
+  const [formData, setFormData] = useState({
+    full_name: "",
+    role: "",
+    email: "",
+    contact: "",
+    duration: "",
+    reason: "",
+  });
+
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
-  const stepsCompleted = async (
-    userData: any,
-    setError: Dispatch<SetStateAction<Map<string, string>>>
-  ) => {
+
+  const validate = () => {
+    const newErrors: { [key: string]: string } = {};
+    if (!formData.full_name) newErrors.full_name = t("full_name_required");
+    if (!formData.role) newErrors.role = t("role_required");
+    if (!formData.email) newErrors.email = t("email_required");
+    if (!formData.contact) newErrors.contact = t("contact_required");
+    if (!formData.duration) newErrors.duration = t("duration_required");
+    if (!formData.reason) newErrors.reason = t("reason_required");
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = async () => {
+    if (!validate()) return;
+
     try {
-      const response = await axiosClient.post("", {
-        permissions: userData?.permissions,
-        status: userData.status == true,
-        role_id: userData?.role?.id,
-        zone_id: userData?.zone?.id,
-        job_id: userData.job.id,
-        destination_id: userData.department.id,
-        contact: userData.contact,
-        password: userData.password,
-        email: userData.email,
-        username: userData.username,
-        full_name: userData.full_name,
-        gender_id: userData.gender.id,
-        province_id: userData.province.id,
-        zone: userData.zone.name,
-        job: userData.job.name,
-        destination: userData.department.name,
-      });
-      if (response.status == 200) {
-        onComplete(response.data.user);
+      const response = await axiosClient.post("/leave/request", formData);
+      if (response.status === 200) {
         toast({
           toastType: "SUCCESS",
           description: response.data.message,
         });
+        onComplete(response.data.user);
+        modelOnRequestHide();
       }
     } catch (error: any) {
       toast({
         toastType: "ERROR",
         title: t("error"),
-        description: error.response?.data?.message,
+        description: error.response?.data?.message || "Something went wrong",
       });
-      setServerError(error.response.data.errors, setError);
-      console.log(error);
-      return false;
     }
-    return true;
-  };
-  const closeModel = () => {
-    modelOnRequestHide();
   };
 
   return (
-    <div className="pt-4">
-      {/* Header */}
-      <div className="flex px-1 py-1 fixed w-full justify-end">
-        <CloseButton dismissModel={closeModel} />
+    <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[900px] h-[700px] overflow-y-auto bg-white rounded-xl shadow-2xl p-6 md:p-5">
+      <div className="flex justify-end">
+        <CloseButton dismissModel={modelOnRequestHide} />
       </div>
-      {/* Body */}
-      <Stepper
-        isCardActive={true}
-        size="wrap-height"
-        className="bg-transparent dark:!bg-transparent"
-        progressText={{
-          complete: t("complete"),
-          inProgress: t("in_progress"),
-          pending: t("pending"),
-          step: t("step"),
-        }}
-        loadingText={t("store_infor")}
-        backText={t("back")}
-        nextText={t("next")}
-        confirmText={t("confirm")}
-        steps={[
-          {
-            description: t("personal_details"),
-            icon: <UserIcon className="size-[16px]" />,
-          },
-         
-         
-          
-        ]}
-        components={[
-          {
-            component: <AddUserInformation />,
-            validationRules: [
-              { name: "full_name", rules: ["required", "max:45", "min:3"] },
-              { name: "username", rules: ["required", "max:45", "min:3"] },
-              { name: "email", rules: ["required"] },
-              { name: "contact", rules: ["required"] },
-              { name: "department", rules: ["required"] },
-              { name: "job", rules: ["required"] },
-              { name: "province", rules: ["required"] },
-              { name: "gender", rules: ["required"] },
-            ],
-          },
-          {
-            component: <AddUserAccount />,
-            validationRules: [
-              {
-                name: "password",
-                rules: [
-                  (value: any) => {
-                    const strength = checkStrength(value, t);
-                    const score = passwordStrengthScore(strength);
-                    if (score === 4) return true;
-                    return false;
-                  },
-                ],
-              },
-              { name: "user_letter_of_introduction", rules: ["required"] },
-              { name: "role", rules: ["required"] },
-              { name: "zone", rules: ["required"] },
-              // {
-              //   name: "role",
-              //   rules: [
-              //     (value: any) => {
-              //       if (
-              //         user.role.role == RoleEnum.epi_super ||
-              //         user.role.role == RoleEnum.finance_super
-              //       ) {
-              //         return false;
-              //       } else {
-              //         if (value) return false;
-              //         else return true;
-              //       }
-              //     },
-              //   ],
-              // },
-              // {
-              //   name: "zone",
-              //   rules: [
-              //     (value: any) => {
-              //       if (
-              //         user.role.role == RoleEnum.epi_super ||
-              //         user.role.role == RoleEnum.finance_super
-              //       ) {
-              //         return false;
-              //       } else {
-              //         if (value) return false;
-              //         else return true;
-              //       }
-              //     },
-              //   ],
-              // },
-            ],
-          },
-          {
-            component: <AddUserPermission />,
-            validationRules: [],
-          },
-          {
-            component: (
-              <CompleteStep
-                successText={t("congratulation")}
-                closeText={t("close")}
-                againText={t("again")}
-                closeModel={closeModel}
-                description={t("user_acc_crea")}
-              />
-            ),
-            validationRules: [],
-          },
-        ]}
-        beforeStepSuccess={beforeStepSuccess}
-        stepsCompleted={stepsCompleted}
+
+      <h2 className="text-xl font-semibold text-gray-800 flex items-center gap-2 mb-4">
+        <StickyNote className="text-green-500" />
+        {t("Add Leave")}
+      </h2>
+
+      <div className="grid grid-cols-1 gap-3">
+        <InputField
+          icon={<UserRound className="text-green-500" />}
+          name="full_name"
+          placeholder={t("full_name")}
+          value={formData.full_name}
+          onChange={handleChange}
+          error={errors.full_name}
+        />
+        <InputField
+          icon={<Briefcase className="text-green-500" />}
+          name="role"
+          placeholder={t("role")}
+          value={formData.role}
+          onChange={handleChange}
+          error={errors.role}
+        />
+        <InputField
+          icon={<Mail className="text-green-500" />}
+          name="email"
+          placeholder={t("email")}
+          value={formData.email}
+          onChange={handleChange}
+          error={errors.email}
+        />
+        <InputField
+          icon={<Phone className="text-green-500" />}
+          name="contact"
+          placeholder={t("contact")}
+          value={formData.contact}
+          onChange={handleChange}
+          error={errors.contact}
+        />
+        <InputField
+          icon={<Clock className="text-green-500" />}
+          name="duration"
+          placeholder={t("Duration")}
+          value={formData.duration}
+          onChange={handleChange}
+          error={errors.duration}
+        />
+        <div>
+          <div className="flex items-center gap-2 mb-1">
+            <StickyNote className="text-green-500" />
+            <label className="text-gray-600">{t("Reason For Leave")}</label>
+          </div>
+          <textarea
+            name="reason"
+            placeholder={t("Reason For Leave")}
+            value={formData.reason}
+            onChange={handleChange}
+            rows={2}
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          {errors.reason && <p className="text-red-500 text-sm mt-1">{errors.reason}</p>}
+        </div>
+      </div>
+
+      <div className="flex justify-end mt-4">
+        <button
+          onClick={handleSubmit}
+          className="bg-blue-200 hover:bg-blue-300 text-blue-800 font-semibold py-2 px-6 rounded-lg transition duration-200"
+        >
+          {t("submit")}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function InputField({
+  icon,
+  name,
+  placeholder,
+  value,
+  onChange,
+  error,
+}: {
+  icon: React.ReactNode;
+  name: string;
+  placeholder: string;
+  value: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  error?: string;
+}) {
+  return (
+    <div>
+      <div className="flex items-center gap-2 mb-1">
+        {icon}
+        <label className="text-gray-600">{placeholder}</label>
+      </div>
+      <input
+        name={name}
+        placeholder={placeholder}
+        value={value}
+        onChange={onChange}
+        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
       />
+      {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
     </div>
   );
 }
