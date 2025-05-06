@@ -193,13 +193,13 @@ export type EmployeeModel = {
 };
 export type PositionAssignmentModel = {
   id: string;
-  hire_type: { id: string; name: string };
+  hire_type: string;
   salary: string;
-  shift: { id: string; name: string };
-  position: { id: string; name: string };
-  position_change_type: { id: string; name: string };
+  shift: string;
+  position: string;
+  position_change_type: string;
   overtime_rate: string;
-  currency: { id: string; name: string };
-  department: { id: string; name: string };
+  currency: string;
+  department: string;
   hire_date: string;
 };

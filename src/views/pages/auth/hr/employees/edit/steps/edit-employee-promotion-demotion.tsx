@@ -38,7 +38,7 @@ export default function EditEmployeePromotionDemotion(
   const initialize = async () => {
     try {
       // 2. Send data
-      const response = await axiosClient.get("epi/person/issued/cards/" + id);
+      const response = await axiosClient.get("employee/assigments/" + id);
       if (response.status == 200) {
         setPositionAssignments(response.data.data);
       }
@@ -73,10 +73,19 @@ export default function EditEmployeePromotionDemotion(
             <TableHeader className="rtl:text-3xl-rtl ltr:text-xl-ltr bg-primary/5">
               <TableRow className="hover:bg-transparent border-none">
                 <TableHead className="text-start">{t("#")}</TableHead>
-                <TableHead className="text-start">{t("visit_date")}</TableHead>
+                <TableHead className="text-start">{t("hire_type")}</TableHead>
+                <TableHead className="text-start">{t("salary")}</TableHead>
+                <TableHead className="text-start">{t("shift")}</TableHead>
+                <TableHead className="text-start">{t("position")}</TableHead>
                 <TableHead className="text-start">
-                  {t("destina_country")}
+                  {t("position_change_type")}
                 </TableHead>
+                <TableHead className="text-start">
+                  {t("overtime_rate")}
+                </TableHead>
+                <TableHead className="text-start">{t("currency")}</TableHead>
+                <TableHead className="text-start">{t("department")}</TableHead>
+                <TableHead className="text-start">{t("hire_date")}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody className="rtl:text-xl-rtl ltr:text-2xl-ltr">
@@ -84,13 +93,34 @@ export default function EditEmployeePromotionDemotion(
                 (item: PositionAssignmentModel, index: number) => (
                   <TableRow key={index}>
                     <TableCell className="text-start truncate">
-                      {index + 1}
+                      {item.id}
                     </TableCell>
                     <TableCell className="text-start truncate">
-                      {toLocaleDate(new Date(item.visited_date), state)}
+                      {item.hire_type}
                     </TableCell>
-                    <TableCell className=" text-start truncate">
-                      {item.destination_country}
+                    <TableCell className="text-start truncate">
+                      {item.salary}
+                    </TableCell>
+                    <TableCell className="text-start truncate">
+                      {item.shift}
+                    </TableCell>
+                    <TableCell className="text-start truncate">
+                      {item.position}
+                    </TableCell>
+                    <TableCell className="text-start truncate">
+                      {item.position_change_type}
+                    </TableCell>
+                    <TableCell className="text-start truncate">
+                      {item.overtime_rate}
+                    </TableCell>
+                    <TableCell className="text-start truncate">
+                      {item.currency}
+                    </TableCell>
+                    <TableCell className="text-start truncate">
+                      {item.department}
+                    </TableCell>
+                    <TableCell className="text-start truncate">
+                      {toLocaleDate(new Date(item.hire_date), state)}
                     </TableCell>
                   </TableRow>
                 )
