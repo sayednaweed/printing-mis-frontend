@@ -11,16 +11,16 @@ import { toast } from "@/components/ui/use-toast";
 import { useTranslation } from "react-i18next";
 import axiosClient from "@/lib/axois-client";
 import NastranSpinner from "@/components/custom-ui/spinner/NastranSpinner";
-import { UserInformation } from "@/lib/types";
 import CachedImage from "@/components/custom-ui/image/CachedImage";
 import { validateFile } from "@/lib/utils";
 import { useAuthStore } from "@/stores/permission/auth-permssion-store";
+import { EmployeeModel } from "@/database/tables";
 
 export interface EmployeesEditHeaderProps {
   id: string | undefined;
-  userData: UserInformation | undefined;
+  userData: EmployeeModel | undefined;
   failed: boolean;
-  setUserData: Dispatch<SetStateAction<UserInformation | undefined>>;
+  setUserData: Dispatch<SetStateAction<EmployeeModel | undefined>>;
 }
 
 export default function EmployeesEditHeader(props: EmployeesEditHeaderProps) {
@@ -77,7 +77,7 @@ export default function EmployeesEditHeader(props: EmployeesEditHeaderProps) {
           // Change logged in user data
           setUserData({
             ...userData,
-            profile: response.data.profile,
+            picture: response.data.profile,
           });
           toast({
             toastType: "SUCCESS",
@@ -103,7 +103,7 @@ export default function EmployeesEditHeader(props: EmployeesEditHeaderProps) {
     }
   };
   const deleteProfilePicture = async () => {
-    if (userData?.profile == "") {
+    if (userData?.picture == "") {
       toast({
         toastType: "ERROR",
         title: t("error"),
@@ -123,7 +123,7 @@ export default function EmployeesEditHeader(props: EmployeesEditHeaderProps) {
         // Change logged in user data
         setUserData({
           ...userData,
-          profile: undefined,
+          picture: undefined,
         });
         toast({
           toastType: "SUCCESS",
@@ -145,7 +145,7 @@ export default function EmployeesEditHeader(props: EmployeesEditHeaderProps) {
   return (
     <div className="self-center text-center">
       <CachedImage
-        src={userData?.profile}
+        src={userData?.picture}
         alt="Avatar"
         shimmerClassName="size-[86px] !mt-6 mx-auto shadow-lg border border-primary/30 rounded-full"
         className="size-[86px] !mt-6 object-center object-cover mx-auto shadow-lg border border-primary/50 rounded-full"
@@ -190,13 +190,13 @@ export default function EmployeesEditHeader(props: EmployeesEditHeaderProps) {
       )}
 
       <h1 className="text-primary font-semibold rtl:text-2xl-rtl ltr:text-4xl-ltr">
-        {userData?.username}
+        {userData?.first_name + " " + userData?.last_name}
       </h1>
       <h1
         dir="ltr"
         className="text-primary rtl:text-md-rtl ltr:text-xl-ltr font-bold"
       >
-        {userData?.registration_number}
+        {userData?.hr_code}
       </h1>
       <h1 className="leading-6 rtl:text-sm-rtl ltr:text-2xl-ltr">
         {userData?.email}

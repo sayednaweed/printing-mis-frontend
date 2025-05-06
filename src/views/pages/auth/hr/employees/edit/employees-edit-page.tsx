@@ -1,15 +1,12 @@
 import { useNavigate, useParams } from "react-router";
 import { useTranslation } from "react-i18next";
 import EditUserInformation from "./steps/edit-user-information";
-import { EditUserPassword } from "./steps/edit-user-password";
 import axiosClient from "@/lib/axois-client";
 import { useEffect, useMemo, useState } from "react";
-import { UserInformation } from "@/lib/types";
 import { toast } from "@/components/ui/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Database, KeyRound, ShieldBan } from "lucide-react";
-import EditUserPermissions from "./steps/edit-user-permissions";
-import { UserPermission } from "@/database/tables";
+import { EmployeeModel, UserPermission } from "@/database/tables";
 import { PermissionEnum, PortalEnum } from "@/lib/constants";
 import {
   Breadcrumb,
@@ -20,6 +17,7 @@ import {
 import Shimmer from "@/components/custom-ui/shimmer/Shimmer";
 import { useAuthStore } from "@/stores/permission/auth-permssion-store";
 import EmployeesEditHeader from "./employees-edit-header";
+import EditEmployeeInformation from "./steps/edit-employee-information";
 
 export default function EmployeesEditPage() {
   const { user } = useAuthStore();
@@ -30,14 +28,12 @@ export default function EmployeesEditPage() {
   let { id } = useParams();
   const direction = i18n.dir();
   const [failed, setFailed] = useState(false);
-  const [userData, setUserData] = useState<UserInformation | undefined>();
+  const [userData, setUserData] = useState<EmployeeModel | undefined>();
   const loadInformation = async () => {
     try {
-      const response = await axiosClient.get(
-        `${user.role.name.startsWith("finance") ? "finance" : "epi"}/user/${id}`
-      );
+      const response = await axiosClient.get(`employee/${id}`);
       if (response.status == 200) {
-        const user = response.data.user as UserInformation;
+        const user = response.data.employee as EmployeeModel;
         setUserData(user);
         if (failed) setFailed(false);
       }
@@ -57,13 +53,13 @@ export default function EmployeesEditPage() {
 
   const selectedTabStyle = `rtl:text-xl-rtl ltr:text-lg-ltr relative w-[95%] bg-card-foreground/5 justify-start mx-auto ltr:py-2 rtl:py-[5px] data-[state=active]:bg-tertiary font-semibold data-[state=active]:text-primary-foreground gap-x-3`;
   const per: UserPermission = user?.permissions[PortalEnum.hr].get(
-    PermissionEnum.users.name
+    PermissionEnum.employees.name
   ) as UserPermission;
 
   const tableList = useMemo(() => {
     if (!userData) return null;
     return Array.from(per.sub).map(([key, _subPermission], index: number) => {
-      return key == PermissionEnum.users.sub.user_information ? (
+      return key == PermissionEnum.employees.sub.personal_information ? (
         <TabsTrigger
           key={index}
           className={`${selectedTabStyle}`}
@@ -72,27 +68,18 @@ export default function EmployeesEditPage() {
           <Database className="size-[18px]" />
           {t("account_information")}
         </TabsTrigger>
-      ) : key == PermissionEnum.users.sub.user_password ? (
+      ) : key == PermissionEnum.employees.sub.promotion_demotion ? (
         <TabsTrigger
           key={index}
           className={`${selectedTabStyle}`}
           value={key.toString()}
         >
           <KeyRound className="size-[18px]" />
-          {t("update_account_password")}
-        </TabsTrigger>
-      ) : key == PermissionEnum.users.sub.user_permission ? (
-        <TabsTrigger
-          key={index}
-          className={`${selectedTabStyle}`}
-          value={key.toString()}
-        >
-          <ShieldBan className="size-[18px]" />
-          {t("update_account_permissions")}
+          {t("promotion_demotion")}
         </TabsTrigger>
       ) : undefined;
     });
-  }, [userData]);
+  }, []);
   return (
     <div className="flex flex-col gap-y-3 px-3 pt-2 overflow-x-auto pb-12">
       <Breadcrumb>
@@ -101,7 +88,7 @@ export default function EmployeesEditPage() {
         <BreadcrumbItem onClick={handleGoBack}>{t("users")}</BreadcrumbItem>
         <BreadcrumbSeparator />
         <BreadcrumbItem onClick={handleGoBack}>
-          {userData?.username}
+          {userData?.first_name + " " + userData?.last_name}
         </BreadcrumbItem>
       </Breadcrumb>
       {/* Cards */}
@@ -132,37 +119,11 @@ export default function EmployeesEditPage() {
             </>
           )}
         </TabsList>
-
-        <TabsContent
-          className="flex-1 m-0"
-          value={PermissionEnum.users.sub.user_information.toString()}
-        >
-          <EditUserInformation
-            id={id}
-            failed={failed}
-            userData={userData}
-            setUserData={setUserData}
-            refreshPage={loadInformation}
-            permissions={per}
-          />
-        </TabsContent>
-        <TabsContent
-          className="flex-1 m-0"
-          value={PermissionEnum.users.sub.user_password.toString()}
-        >
-          <EditUserPassword
-            id={id}
-            userData={userData}
-            failed={failed}
-            refreshPage={loadInformation}
-            permissions={per}
-          />
-        </TabsContent>
         <TabsContent
           className="flex-1 m-0"
           value={PermissionEnum.users.sub.user_permission.toString()}
         >
-          <EditUserPermissions permissions={per} />
+          <EditEmployeeInformation permissions={per} />
         </TabsContent>
       </Tabs>
     </div>

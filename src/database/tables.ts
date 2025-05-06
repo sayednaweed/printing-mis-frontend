@@ -1,3 +1,5 @@
+import { FileType } from "@/lib/types";
+
 export type Role =
   | { role: 1; name: "super" }
   | { role: 2; name: "admin" }
@@ -158,11 +160,35 @@ export type Employee = {
   first_name: string;
   last_name: string;
   father_name: string;
-  picture: string;
+  picture: any;
   contact: string;
   email: string;
   is_current_employee: number;
   gender: string;
   nationality: string;
   hire_date: string;
+};
+export type EmployeeModel = {
+  id: string;
+  hr_code: string;
+  date_of_birth: string;
+  picture: any;
+  contact: string;
+  email: string;
+  permanent_province: { id: string; name: string };
+  permanent_district: { id: string; name: string };
+  permanent_area: string;
+  current_province: { id: string; name: string };
+  current_district: { id: string; name: string };
+  hire_type: { id: string; name: string };
+  shift: { id: string; name: string };
+  current_area: string;
+  nationality: { id: string; name: string };
+  gender: { id: string; name: string };
+  marital_status: { id: string; name: string };
+  is_current_employee: number;
+  first_name: string;
+  last_name: string;
+  father_name: string;
+  attachment: FileType | undefined;
 };

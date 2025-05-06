@@ -54,7 +54,7 @@ export function EmployeesTable() {
     sort: sort == null ? "created_at" : sort,
     order: order == null ? "desc" : order,
     search: {
-      column: searchColumn == null ? "username" : searchColumn,
+      column: searchColumn == null ? "hr_code" : searchColumn,
       value: searchValue == null ? "" : searchValue,
     },
     date:
@@ -136,7 +136,7 @@ export function EmployeesTable() {
   ) => {
     if (!count) {
       const countSore = await getComponentCache(
-        CACHE.USER_TABLE_PAGINATION_COUNT
+        CACHE.EMPLOYEE_TABLE_PAGINATION_COUNT
       );
       count = countSore?.value ? countSore.value : 10;
     }
@@ -339,17 +339,15 @@ export function EmployeesTable() {
                     onClick: () => {},
                   },
                   {
-                    name: "username",
-                    translate: t("username"),
+                    name: "contact",
+                    translate: t("contact"),
                     onClick: () => {},
                   },
                   {
-                    name: "destination",
-                    translate: t("department"),
+                    name: "is_current_employee",
+                    translate: t("status"),
                     onClick: () => {},
                   },
-                  { name: "status", translate: t("status"), onClick: () => {} },
-                  { name: "job", translate: t("job"), onClick: () => {} },
                 ],
                 order: [
                   {
@@ -365,24 +363,23 @@ export function EmployeesTable() {
                 ],
                 search: [
                   {
-                    name: "registration_number",
-                    translate: t("registration_number"),
+                    name: "first_name",
+                    translate: t("first_name"),
                     onClick: () => {},
                   },
                   {
-                    name: "username",
-                    translate: t("username"),
-                    onClick: () => {},
-                  },
-                  { name: "email", translate: t("email"), onClick: () => {} },
-                  {
-                    name: "contact",
-                    translate: t("contact"),
+                    name: "last_name",
+                    translate: t("last_name"),
                     onClick: () => {},
                   },
                   {
-                    name: "zone",
-                    translate: t("zone"),
+                    name: "hr_code",
+                    translate: t("hr_code"),
+                    onClick: () => {},
+                  },
+                  {
+                    name: "father_name",
+                    translate: t("father_name"),
                     onClick: () => {},
                   },
                 ],
@@ -397,7 +394,7 @@ export function EmployeesTable() {
           </NastranModel>
         </div>
         <CustomSelect
-          paginationKey={CACHE.USER_TABLE_PAGINATION_COUNT}
+          paginationKey={CACHE.EMPLOYEE_TABLE_PAGINATION_COUNT}
           options={[
             { value: "10", label: "10" },
             { value: "20", label: "20" },
@@ -406,7 +403,7 @@ export function EmployeesTable() {
           className="w-fit sm:self-baseline"
           updateCache={updateComponentCache}
           getCache={async () =>
-            await getComponentCache(CACHE.USER_TABLE_PAGINATION_COUNT)
+            await getComponentCache(CACHE.EMPLOYEE_TABLE_PAGINATION_COUNT)
           }
           placeholder={`${t("select")}...`}
           emptyPlaceholder={t("no_options_found")}

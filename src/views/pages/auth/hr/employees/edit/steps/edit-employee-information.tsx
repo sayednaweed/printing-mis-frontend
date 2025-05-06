@@ -18,24 +18,25 @@ import NastranSpinner from "@/components/custom-ui/spinner/NastranSpinner";
 import axiosClient from "@/lib/axois-client";
 import { setServerError, validate } from "@/validation/validation";
 import { toLocaleDate } from "@/lib/utils";
-import { UserInformation } from "@/lib/types";
 import ButtonSpinner from "@/components/custom-ui/spinner/ButtonSpinner";
 import { useGlobalState } from "@/context/GlobalStateContext";
 import FakeCombobox from "@/components/custom-ui/combobox/FakeCombobox";
-import { UserPermission } from "@/database/tables";
+import { EmployeeModel, UserPermission } from "@/database/tables";
 import { PermissionEnum } from "@/lib/constants";
 import { useScrollToElement } from "@/hook/use-scroll-to-element";
-export interface EditUserInformationProps {
+export interface EditEmployeeInformationProps {
   id: string | undefined;
   failed: boolean;
-  userData: UserInformation | undefined;
-  setUserData: Dispatch<SetStateAction<UserInformation | undefined>>;
+  userData: EmployeeModel | undefined;
+  setUserData: Dispatch<SetStateAction<EmployeeModel | undefined>>;
   refreshPage: () => Promise<void>;
   permissions: UserPermission;
 }
-export default function EditUserInformation(props: EditUserInformationProps) {
+export default function EditEmployeeInformation(
+  props: EditEmployeeInformationProps
+) {
   const { id, failed, userData, setUserData, refreshPage, permissions } = props;
-  const [tempUserData, setTempUserData] = useState<UserInformation | undefined>(
+  const [tempUserData, setTempUserData] = useState<EmployeeModel | undefined>(
     userData
   );
   const [state] = useGlobalState();
@@ -118,7 +119,6 @@ export default function EditUserInformation(props: EditUserInformationProps) {
     formData.append("status", `${tempUserData.status == true}`);
     formData.append("province_id", tempUserData.province.id);
     formData.append("gender_id", tempUserData.gender.id);
-    formData.append("zone_id", tempUserData.zone.id);
     try {
       const response = await axiosClient.post("url", formData);
       if (response.status == 200) {
