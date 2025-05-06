@@ -29,7 +29,6 @@ export default function EmployeesEditHeader(props: EmployeesEditHeaderProps) {
   const { t } = useTranslation();
   const [loading, setLoading] = useState<boolean>(false);
 
-  console.log(userData, "Naweed");
   const authData = useMemo(() => {
     const isFinance = user.role.name.startsWith("finance");
 

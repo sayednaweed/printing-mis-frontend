@@ -185,13 +185,13 @@ export type EmployeeModel = {
   nationality: { id: string; name: string };
   gender: { id: string; name: string };
   marital_status: { id: string; name: string };
-  is_current_employee: number;
+  is_current_employee: boolean;
   first_name: string;
   last_name: string;
   father_name: string;
   attachment: FileType | undefined;
 };
-export type PositionAssignmentModel = {
+export type PositionAssignment = {
   id: string;
   hire_type: string;
   salary: string;

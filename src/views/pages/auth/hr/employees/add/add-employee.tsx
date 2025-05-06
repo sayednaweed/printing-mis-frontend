@@ -98,7 +98,7 @@ export default function AddEmployee(props: AddEmployeeProps) {
           userData?.hire_date && userData?.hire_date?.toDate()?.toISOString(),
         currency_id: userData?.currency?.id,
         salary: userData?.salary,
-        shift_id: userData?.shift?.id,
+        shift_id: userData?.work_shift?.id,
         has_attachment: userData?.attachment ? true : false,
       });
       if (response.status == 200) {
@@ -189,12 +189,15 @@ export default function AddEmployee(props: AddEmployeeProps) {
               { name: "hire_date", rules: ["required"] },
               { name: "currency", rules: ["required"] },
               { name: "salary", rules: ["required"] },
-              { name: "shift", rules: ["required"] },
+              { name: "work_shift", rules: ["required"] },
               {
                 name: "start_date",
                 rules: [
                   (userData: any) => {
                     if (userData?.hire_type?.id == HireTypeEnum.permanent) {
+                      return false;
+                    }
+                    if (userData?.start_date) {
                       return false;
                     }
                     return true;
@@ -206,6 +209,9 @@ export default function AddEmployee(props: AddEmployeeProps) {
                 rules: [
                   (userData: any) => {
                     if (userData?.hire_type?.id == HireTypeEnum.permanent) {
+                      return false;
+                    }
+                    if (userData?.end_date) {
                       return false;
                     }
                     return true;

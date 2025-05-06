@@ -226,7 +226,7 @@
   "hire_date": "Hire date",
   "currencies": "Currencies",
   "salary": "Salary",
-  "shift": "Shift",
+  "work_shift": "Work shift",
   "enter_f_name": "Enter first name",
   "enter_l_name": "Enter last name",
   "enter_fa_name": "Enter father name",
@@ -241,5 +241,8 @@
   "overtime_rate": "Overtime rate / Per hour",
   "rate": "Rate",
   "position": "Position",
-  "promotion_demotion": "Promotion & Demotion"
+  "promotion_demotion": "Promotion & Demotion",
+  "is_current_employee": "Is current employee",
+  "is_current_employee_des": "You can set is employee currently working or left.",
+  "promote_or_demote": "Promote Or Demote"
 }

@@ -16,15 +16,23 @@ import { useTranslation } from "react-i18next";
 import NastranSpinner from "@/components/custom-ui/spinner/NastranSpinner";
 import axiosClient from "@/lib/axois-client";
 import { setServerError, validate } from "@/validation/validation";
-import { isString } from "@/lib/utils";
+import { getConfiguration, isString, validateFile } from "@/lib/utils";
 import ButtonSpinner from "@/components/custom-ui/spinner/ButtonSpinner";
 import { EmployeeModel, UserPermission } from "@/database/tables";
-import { CountryEnum, PermissionEnum } from "@/lib/constants";
+import {
+  ChecklistEnum,
+  ChecklistTypeEnum,
+  CountryEnum,
+  PermissionEnum,
+} from "@/lib/constants";
 import { useScrollToElement } from "@/hook/use-scroll-to-element";
 import BorderContainer from "@/components/custom-ui/container/BorderContainer";
 import CustomTextarea from "@/components/custom-ui/input/CustomTextarea";
 import CustomDatePicker from "@/components/custom-ui/DatePicker/CustomDatePicker";
 import { DateObject } from "react-multi-date-picker";
+import CustomCheckbox from "@/components/custom-ui/checkbox/CustomCheckbox";
+import CheckListChooser from "@/components/custom-ui/chooser/CheckListChooser";
+import { FileType } from "@/lib/types";
 export interface EditEmployeeInformationProps {
   id: string | undefined;
   failed: boolean;
@@ -44,7 +52,6 @@ export default function EditEmployeeInformation(
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Map<string, string>>(new Map());
   useScrollToElement(error);
-
   useEffect(() => {
     setTempUserData(userData);
   }, [userData]);
@@ -59,6 +66,7 @@ export default function EditEmployeeInformation(
       setLoading(false);
       return;
     }
+
     setLoading(true);
     // 1. Validate form
     const passed = await validate(
@@ -136,38 +144,29 @@ export default function EditEmployeeInformation(
       return;
     }
     // 2. Store
-    const formData = new FormData();
-    formData.append("id", id);
-    formData.append(
-      "full_name",
-      isString(tempUserData.date_of_birth)
-        ? tempUserData.date_of_birth
-        : tempUserData.date_of_birth?.toDate()?.toISOString()
-    );
-    formData.append("contact", tempUserData.contact);
-    formData.append("email", tempUserData.email);
-    formData.append(
-      "permanent_province_id",
-      tempUserData?.permanent_province?.id
-    );
-    formData.append(
-      "permanent_district_id",
-      tempUserData?.permanent_district?.id
-    );
-    formData.append("permanent_area", tempUserData?.permanent_area);
-    formData.append("current_province_id", tempUserData?.current_province?.id);
-    formData.append("current_district_id", tempUserData?.current_district?.id);
-    formData.append("current_area", tempUserData?.current_area);
-    formData.append("gender", tempUserData?.gender?.id);
-    formData.append("marital_status", tempUserData?.marital_status?.id);
-    formData.append("first_name", tempUserData?.first_name);
-    formData.append("last_name", tempUserData?.last_name);
-    formData.append("father_name", tempUserData?.father_name);
     try {
-      const response = await axiosClient.post(
-        "employee/update/information",
-        formData
-      );
+      const response = await axiosClient.post("employee/update/information", {
+        id: id,
+        date_of_birth: isString(tempUserData.date_of_birth)
+          ? tempUserData.date_of_birth
+          : tempUserData.date_of_birth?.toDate()?.toISOString(),
+        contact: tempUserData.contact,
+        email: tempUserData.email,
+        permanent_province_id: tempUserData?.permanent_province?.id,
+        permanent_district_id: tempUserData?.permanent_district?.id,
+        permanent_area: tempUserData?.permanent_area,
+        current_province_id: tempUserData?.current_province?.id,
+        current_district_id: tempUserData?.current_district?.id,
+        current_area: tempUserData?.current_area,
+        gender_id: tempUserData?.gender?.id,
+        marital_status_id: tempUserData?.marital_status?.id,
+        first_name: tempUserData?.first_name,
+        last_name: tempUserData?.last_name,
+        father_name: tempUserData?.father_name,
+        nationality_id: tempUserData?.nationality?.id,
+        is_current_employee: tempUserData?.is_current_employee,
+        has_attachment: userData?.attachment ? true : false,
+      });
       if (response.status == 200) {
         // Update user state
         setUserData(tempUserData);
@@ -191,7 +190,7 @@ export default function EditEmployeeInformation(
   };
 
   const hasEdit = permissions.sub.get(
-    PermissionEnum.users.sub.user_information
+    PermissionEnum.employees.sub.personal_information
   )?.edit;
   return (
     <Card>
@@ -203,7 +202,7 @@ export default function EditEmployeeInformation(
           {t("update_user_acc_info")}
         </CardDescription>
       </CardHeader>
-      <CardContent className="flex flex-col gap-x-4 gap-y-6 w-full lg:w-[70%] 2xl:w-1/2">
+      <CardContent className="flex flex-col gap-x-4 gap-y-6 w-full lg:w-[70%] 2xl:w-1/2 pb-16">
         {failed ? (
           <h1 className="rtl:text-2xl-rtl">{t("u_are_not_authzed!")}</h1>
         ) : tempUserData === undefined ? (
@@ -470,6 +469,69 @@ export default function EditEmployeeInformation(
                 />
               )}
             </BorderContainer>
+            <CustomCheckbox
+              checked={tempUserData["is_current_employee"]}
+              onCheckedChange={(value: boolean) =>
+                setTempUserData({ ...tempUserData, is_current_employee: value })
+              }
+              parentClassName="rounded-md py-[12px] gap-x-1 bg-card border px-[10px]"
+              text={t("is_current_employee")}
+              description={t("is_current_employee_des")}
+              required={true}
+              requiredHint={`* ${t("required")}`}
+              errorMessage={error.get("is_current_employee")}
+            />
+            <CheckListChooser
+              className="mt-6 pt-4"
+              number={undefined}
+              hasEdit={true}
+              url={`${import.meta.env.VITE_API_BASE_URL}/api/v1/file/upload`}
+              headers={{
+                Authorization: "Bearer " + getConfiguration()?.token,
+              }}
+              name={t("attachment")}
+              defaultFile={tempUserData.attachment as FileType}
+              uploadParam={{
+                checklist_id: ChecklistEnum.employee_attachment,
+                task_type: ChecklistTypeEnum.employee,
+                unique_identifier: id,
+              }}
+              accept={"application/pdf,image/jpeg,image/png,image/jpg"}
+              onComplete={async (record: any) => {
+                for (const element of record) {
+                  const checklist = element[element.length - 1];
+                  setTempUserData({
+                    ...tempUserData,
+                    attachment: checklist,
+                  });
+                }
+              }}
+              onFailed={async (failed: boolean, response: any) => {
+                if (failed) {
+                  if (response) {
+                    toast({
+                      toastType: "ERROR",
+                      description: response.data.message,
+                    });
+                    setTempUserData({
+                      ...tempUserData,
+                      attachment: undefined,
+                    });
+                  }
+                }
+              }}
+              onStart={async (_file: File) => {}}
+              validateBeforeUpload={function (file: File): boolean {
+                const maxFileSize = 3 * 1024 * 1024; // 3MB
+                const resultFile = validateFile(
+                  file,
+                  Math.round(maxFileSize),
+                  ["application/pdf", "image/jpeg", "image/png", "image/jpg"],
+                  t
+                );
+                return resultFile ? true : false;
+              }}
+            />
           </>
         )}
       </CardContent>

@@ -15,8 +15,9 @@ import {
 } from "@/components/custom-ui/Breadcrumb/Breadcrumb";
 import Shimmer from "@/components/custom-ui/shimmer/Shimmer";
 import { useAuthStore } from "@/stores/permission/auth-permssion-store";
-import EmployeesEditHeader from "./employees-edit-header";
 import EditEmployeeInformation from "./steps/edit-employee-information";
+import EmployeesEditHeader from "./employees-edit-header";
+import EditEmployeePromotionDemotion from "./steps/edit-employee-promotion-demotion";
 
 export default function EmployeesEditPage() {
   const { user } = useAuthStore();
@@ -55,32 +56,53 @@ export default function EmployeesEditPage() {
     PermissionEnum.employees.name
   ) as UserPermission;
 
-  const tableList = useMemo(() => {
-    if (!userData) return null;
-    return Array.from(per.sub).map(([key, _subPermission], index: number) => {
-      return key == PermissionEnum.employees.sub.personal_information ? (
-        <TabsTrigger
-          key={index}
-          className={`${selectedTabStyle}`}
-          value={key.toString()}
-        >
-          <Database className="size-[18px]" />
-          {t("account_information")}
-        </TabsTrigger>
-      ) : key == PermissionEnum.employees.sub.promotion_demotion ? (
-        <TabsTrigger
-          key={index}
-          className={`${selectedTabStyle}`}
-          value={key.toString()}
-        >
-          <KeyRound className="size-[18px]" />
-          {t("promotion_demotion")}
-        </TabsTrigger>
-      ) : undefined;
-    });
-  }, []);
+  const tabList = useMemo(() => {
+    if (!userData)
+      return (
+        <>
+          <Shimmer className="shadow-none mx-auto size-[86px] mt-6 rounded-full" />
+          <Shimmer className="h-[32px] shadow-none !mt-2 !mb-4 w-1/2 mx-auto rounded-sm" />
+          <Shimmer className="h-24 shadow-none w-[80%] mx-auto rounded-sm" />
+          <Shimmer className="h-[32px] shadow-none w-full rounded-sm" />
+          <Shimmer className="h-[32px] shadow-none w-full rounded-sm" />
+          <Shimmer className="h-[32px] shadow-none w-full rounded-sm" />
+        </>
+      );
+    return (
+      <>
+        <EmployeesEditHeader
+          id={id}
+          failed={failed}
+          userData={userData}
+          setUserData={setUserData}
+        />
+        {Array.from(per.sub).map(([key, _subPermission], index: number) => {
+          return key == PermissionEnum.employees.sub.personal_information ? (
+            <TabsTrigger
+              key={index}
+              className={`${selectedTabStyle}`}
+              value={key.toString()}
+            >
+              <Database className="size-[18px]" />
+              {t("account_information")}
+            </TabsTrigger>
+          ) : key == PermissionEnum.employees.sub.promotion_demotion ? (
+            <TabsTrigger
+              key={index}
+              className={`${selectedTabStyle}`}
+              value={key.toString()}
+            >
+              <KeyRound className="size-[18px]" />
+              {t("promotion_demotion")}
+            </TabsTrigger>
+          ) : undefined;
+        })}
+      </>
+    );
+  }, [userData]);
+
   return (
-    <div className="flex flex-col gap-y-3 px-3 pt-2 overflow-x-auto pb-12">
+    <div className="flex flex-col gap-y-3 px-3 pt-2 pb-12">
       <Breadcrumb>
         <BreadcrumbHome onClick={handleGoHome} />
         <BreadcrumbSeparator />
@@ -97,26 +119,7 @@ export default function EmployeesEditPage() {
         className="flex flex-col sm:flex-row gap-x-3 gap-y-2 sm:gap-y-0"
       >
         <TabsList className="sm:min-h-[550px] h-fit pb-8 min-w-[300px] md:w-[300px] gap-y-4 items-start justify-start flex flex-col bg-card border">
-          {tableList ? (
-            <>
-              <EmployeesEditHeader
-                id={id}
-                failed={failed}
-                userData={userData}
-                setUserData={setUserData}
-              />
-              {tableList}
-            </>
-          ) : (
-            <>
-              <Shimmer className="shadow-none mx-auto size-[86px] mt-6 rounded-full" />
-              <Shimmer className="h-[32px] shadow-none !mt-2 !mb-4 w-1/2 mx-auto rounded-sm" />
-              <Shimmer className="h-24 shadow-none w-[80%] mx-auto rounded-sm" />
-              <Shimmer className="h-[32px] shadow-none w-full rounded-sm" />
-              <Shimmer className="h-[32px] shadow-none w-full rounded-sm" />
-              <Shimmer className="h-[32px] shadow-none w-full rounded-sm" />
-            </>
-          )}
+          {tabList}
         </TabsList>
         <TabsContent
           className="flex-1 m-0"
@@ -124,12 +127,18 @@ export default function EmployeesEditPage() {
         >
           <EditEmployeeInformation
             permissions={per}
-            id={undefined}
+            id={id}
             failed={failed}
             userData={userData}
             setUserData={setUserData}
             refreshPage={loadInformation}
           />
+        </TabsContent>
+        <TabsContent
+          className="flex-1 m-0 overflow-x-auto"
+          value={PermissionEnum.employees.sub.promotion_demotion.toString()}
+        >
+          <EditEmployeePromotionDemotion id={id} />
         </TabsContent>
       </Tabs>
     </div>

@@ -226,7 +226,7 @@
   "hire_date": "تاریخ استخدام",
   "currencies": "ارز",
   "salary": "معاش",
-  "shift": "شیفت کاری",
+  "work_shift": "شیفت کاری",
   "enter_f_name": "نام را وارد کنید",
   "enter_l_name": "نام خانوادگی را وارد کنید",
   "enter_fa_name": "نام پدر را وارد کنید",
@@ -241,5 +241,8 @@
   "overtime_rate": "میزان اضافه کاری / در هر ساعت",
   "rate": "میزان",
   "position": "مقام",
-  "promotion_demotion": "ارتقا و تنزل"
+  "promotion_demotion": "ارتقا و تنزل",
+  "is_current_employee": "کارمند فعلی است",
+  "is_current_employee_des": "می‌توانید تعیین کنید که کارمند در حال حاضر مشغول به کار است یا خیر.",
+  "promote_or_demote": "ارتقا یا تنزل رتبه"
 }

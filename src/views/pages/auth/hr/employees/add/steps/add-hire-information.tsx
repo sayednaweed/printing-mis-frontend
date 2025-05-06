@@ -25,6 +25,7 @@ export default function AddHireInformation() {
     const { name, value } = e.target;
     setUserData({ ...userData, [name]: value });
   };
+  console.log(userData);
 
   const hireTypeDuration = useMemo(() => {
     if (
@@ -176,12 +177,12 @@ export default function AddHireInformation() {
         required={true}
         requiredHint={`* ${t("required")}`}
         onSelect={(selection: any) =>
-          setUserData({ ...userData, ["shift"]: selection })
+          setUserData({ ...userData, ["work_shift"]: selection })
         }
-        lable={t("shift")}
-        selectedItem={userData["shift"]?.name}
+        lable={t("work_shift")}
+        selectedItem={userData["work_shift"]?.name}
         placeHolder={t("select_a")}
-        errorMessage={error.get("shift")}
+        errorMessage={error.get("work_shift")}
         apiUrl={"shifts"}
         mode="single"
         cacheData={false}
