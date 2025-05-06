@@ -84,7 +84,7 @@ export default function EmployeesEditPage() {
       <Breadcrumb>
         <BreadcrumbHome onClick={handleGoHome} />
         <BreadcrumbSeparator />
-        <BreadcrumbItem onClick={handleGoBack}>{t("users")}</BreadcrumbItem>
+        <BreadcrumbItem onClick={handleGoBack}>{t("employees")}</BreadcrumbItem>
         <BreadcrumbSeparator />
         <BreadcrumbItem onClick={handleGoBack}>
           {userData?.first_name + " " + userData?.last_name}
@@ -120,7 +120,7 @@ export default function EmployeesEditPage() {
         </TabsList>
         <TabsContent
           className="flex-1 m-0"
-          value={PermissionEnum.users.sub.user_permission.toString()}
+          value={PermissionEnum.employees.sub.personal_information.toString()}
         >
           <EditEmployeeInformation
             permissions={per}
