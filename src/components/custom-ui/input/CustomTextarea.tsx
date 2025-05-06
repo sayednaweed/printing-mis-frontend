@@ -23,12 +23,9 @@ const CustomTextarea = React.forwardRef<
     ...rest
   } = props;
   return (
-    <div>
+    <div className={cn(``, parantClassName)}>
       <div
-        className={cn(
-          `relative ${required || lable ? "mt-[20px]" : "mt-2"}`,
-          parantClassName
-        )}
+        className={cn(`relative ${required || lable ? "mt-[20px]" : "mt-2"}`)}
       >
         {required && (
           <span className="text-red-600 rtl:text-[13px] ltr:text-[11px] ltr:right-[10px] rtl:left-[10px] -top-[17px] absolute font-semibold">

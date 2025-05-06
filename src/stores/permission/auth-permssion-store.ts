@@ -68,12 +68,16 @@ export const useAuthStore = create<AuthState>((set) => ({
             type: "user",
           });
         }
-
+        const keys = Object.keys(user.permissions);
+        let selectedPortal = 2;
+        if (keys.length > 0) {
+          selectedPortal = parseInt(keys[0]);
+        }
         set({
           user,
           authenticated: true,
           loading: false,
-          portal: 2,
+          portal: selectedPortal == 1 ? 1 : selectedPortal == 3 ? 3 : 2,
         });
       }
       return response;
@@ -127,12 +131,16 @@ export const useAuthStore = create<AuthState>((set) => ({
         if (user) {
           user.permissions = returnPermissionsMap(response.data?.permissions);
         }
-
+        const keys = Object.keys(user.permissions);
+        let selectedPortal = 2;
+        if (keys.length > 0) {
+          selectedPortal = parseInt(keys[0]);
+        }
         set({
           user,
           authenticated: true,
           loading: false,
-          portal: 2,
+          portal: selectedPortal == 1 ? 1 : selectedPortal == 3 ? 3 : 2,
         });
       }
     } catch (err) {

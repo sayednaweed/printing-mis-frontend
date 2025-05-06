@@ -211,12 +211,6 @@ export function EmployeesTable() {
       <TableCell>
         <Shimmer className="h-[24px] w-full rounded-sm" />
       </TableCell>
-      <TableCell>
-        <Shimmer className="h-[24px] w-full rounded-sm" />
-      </TableCell>
-      <TableCell>
-        <Shimmer className="h-[24px] w-full rounded-sm" />
-      </TableCell>
     </TableRow>
   );
   const per: UserPermission = user?.permissions[PortalEnum.hr].get(
@@ -235,10 +229,11 @@ export function EmployeesTable() {
         {hasAdd && (
           <NastranModel
             size="lg"
+            className="overflow-x-hidden"
             isDismissable={false}
             button={
-              <PrimaryButton className="rtl:text-lg-rtl font-semibold ltr:text-md-ltr">
-                {t("register")}
+              <PrimaryButton className="rtl:text-lg-rtl font-semibold ltr:text-md-ltr ">
+                {t("register_employ")}
               </PrimaryButton>
             }
             showDialog={async () => true}
@@ -429,14 +424,14 @@ export function EmployeesTable() {
       <Table className="bg-card rounded-md my-[2px] py-8">
         <TableHeader className="rtl:text-3xl-rtl ltr:text-xl-ltr">
           <TableRow className="hover:bg-transparent">
-            <TableHead className="text-start px-1">{t("hr_code")}</TableHead>
             <TableHead className="text-center px-1 w-[60px]">
               {t("profile")}
             </TableHead>
+            <TableHead className="text-start px-1">{t("hr_code")}</TableHead>
             <TableHead className="text-start">{t("name")}</TableHead>
             <TableHead className="text-start">{t("father_name")}</TableHead>
             <TableHead className="text-start">{t("contact")}</TableHead>
-            <TableHead className="text-start">{t("join_date")}</TableHead>
+            <TableHead className="text-start">{t("hire_date")}</TableHead>
             <TableHead className="text-start w-[60px]">{t("status")}</TableHead>
           </TableRow>
         </TableHeader>
@@ -455,9 +450,6 @@ export function EmployeesTable() {
                 onRemove={async () => {}}
                 onRead={watchOnClick}
               >
-                <TableCell className="rtl:text-md-rtl truncate px-1 py-0">
-                  {item.hr_code}
-                </TableCell>
                 <TableCell className="px-1 py-0">
                   <CachedImage
                     src={item?.picture}
@@ -469,23 +461,20 @@ export function EmployeesTable() {
                   />
                 </TableCell>
                 <TableCell className="rtl:text-md-rtl truncate px-1 py-0">
+                  {item.hr_code}
+                </TableCell>
+                <TableCell className="rtl:text-md-rtl truncate px-1 py-0">
                   {`${item.first_name} ${item.last_name}`}
                 </TableCell>
                 <TableCell>{item?.father_name}</TableCell>
                 <TableCell
                   dir="ltr"
-                  className="truncate rtl:text-sm-rtl rtl:text-end"
-                >
-                  {item.email}
-                </TableCell>
-                <TableCell
-                  dir="ltr"
                   className="rtl:text-end rtl:text-sm-rtl truncate"
                 >
-                  {item?.contact == "null" ? "" : item?.contact}
+                  {item?.contact}
                 </TableCell>
                 <TableCell className="truncate">
-                  {toLocaleDate(new Date(item.join_date), state)}
+                  {toLocaleDate(new Date(item.hire_date), state)}
                 </TableCell>
                 <TableCell>
                   {item?.status == 1 ? (

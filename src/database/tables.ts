@@ -164,5 +164,5 @@ export type Employee = {
   status: number;
   gender: string;
   nationality: string;
-  join_date: string;
+  hire_date: string;
 };

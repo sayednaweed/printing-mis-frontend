@@ -9,6 +9,18 @@ export const PortalEnum = {
   inventory: 2,
   expense: 3,
 };
+export const ChecklistTypeEnum = {
+  employee: 1,
+};
+export const ChecklistEnum = {
+  employee_attachment: 1,
+};
+export const HireTypeEnum = {
+  contractual: 1,
+  permanent: 2,
+  temporary: 3,
+  internship: 4,
+};
 export const PermissionEnum = {
   dashboard: { name: "dashboard", sub: {} },
   employees: {

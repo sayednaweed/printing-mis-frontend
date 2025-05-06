@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useMemo } from "react";
 import { StepperContext } from "@/components/custom-ui/stepper/StepperContext";
 import { useTranslation } from "react-i18next";
 import APICombobox from "@/components/custom-ui/combobox/APICombobox";
@@ -10,6 +10,11 @@ import { getConfiguration, validateFile } from "@/lib/utils";
 import { toast } from "@/components/ui/use-toast";
 import CheckListChooser from "@/components/custom-ui/chooser/CheckListChooser";
 import { FileType } from "@/lib/types";
+import {
+  ChecklistEnum,
+  ChecklistTypeEnum,
+  HireTypeEnum,
+} from "@/lib/constants";
 
 export default function AddHireInformation() {
   const { userData, setUserData, error } = useContext(StepperContext);
@@ -21,23 +26,75 @@ export default function AddHireInformation() {
     setUserData({ ...userData, [name]: value });
   };
 
+  const hireTypeDuration = useMemo(() => {
+    if (
+      userData?.hire_type &&
+      userData?.hire_type.id != HireTypeEnum.permanent
+    ) {
+      return (
+        <>
+          <CustomDatePicker
+            placeholder={t("select_a_date")}
+            lable={t("start_date")}
+            requiredHint={`* ${t("required")}`}
+            required={true}
+            value={userData.start_date}
+            dateOnComplete={(date: DateObject) => {
+              setUserData({ ...userData, start_date: date });
+            }}
+            className="py-3 w-full"
+            errorMessage={error.get("start_date")}
+          />
+          <CustomDatePicker
+            placeholder={t("select_a_date")}
+            lable={t("end_date")}
+            requiredHint={`* ${t("required")}`}
+            required={true}
+            value={userData.end_date}
+            dateOnComplete={(date: DateObject) => {
+              setUserData({ ...userData, end_date: date });
+            }}
+            className="py-3 w-full"
+            errorMessage={error.get("end_date")}
+          />
+        </>
+      );
+    }
+    return undefined;
+  }, [userData.hire_type]);
   return (
-    <div className="flex flex-col mt-10 gap-y-3 w-full lg:w-[60%] 2xl:w-1/3">
+    <div className="flex flex-col lg:grid lg:grid-cols-2 xl:grid-cols-3 gap-x-4 xl:gap-x-12 lg:items-baseline mt-4 gap-y-3 w-full lg:w-full">
       <APICombobox
         placeholderText={t("search_item")}
         errorText={t("no_item")}
         required={true}
         requiredHint={`* ${t("required")}`}
         onSelect={(selection: any) =>
-          setUserData({ ...userData, ["position_type"]: selection })
+          setUserData({ ...userData, ["hire_type"]: selection })
         }
-        lable={t("position_type")}
-        selectedItem={userData["position_type"]?.name}
+        lable={t("hire_type")}
+        selectedItem={userData["hire_type"]?.name}
         placeHolder={t("select_a")}
-        errorMessage={error.get("position_type")}
-        apiUrl={"position-types"}
+        errorMessage={error.get("hire_type")}
+        apiUrl={"hire-types"}
         mode="single"
+        cacheData={false}
       />
+      <CustomInput
+        size_="sm"
+        dir="ltr"
+        className="rtl:text-end"
+        lable={t("overtime_rate")}
+        placeholder={t("rate")}
+        defaultValue={userData["overtime_rate"]}
+        type="number"
+        name="overtime_rate"
+        required={true}
+        requiredHint={`* ${t("required")}`}
+        errorMessage={error.get("overtime_rate")}
+        onChange={handleChange}
+      />
+      {hireTypeDuration}
       <APICombobox
         placeholderText={t("search_item")}
         errorText={t("no_item")}
@@ -50,8 +107,9 @@ export default function AddHireInformation() {
         selectedItem={userData["department"]?.name}
         placeHolder={t("select_a")}
         errorMessage={error.get("department")}
-        apiUrl={"destinations"}
+        apiUrl={"departments"}
         mode="single"
+        cacheData={false}
       />
       <APICombobox
         placeholderText={t("search_item")}
@@ -59,14 +117,15 @@ export default function AddHireInformation() {
         required={true}
         requiredHint={`* ${t("required")}`}
         onSelect={(selection: any) =>
-          setUserData({ ...userData, ["job"]: selection })
+          setUserData({ ...userData, ["position"]: selection })
         }
-        lable={t("job")}
-        selectedItem={userData["job"]?.name}
+        lable={t("position")}
+        selectedItem={userData["position"]?.name}
         placeHolder={t("select_a")}
-        errorMessage={error.get("job")}
-        apiUrl={"jobs"}
+        errorMessage={error.get("position")}
+        apiUrl={"positions"}
         mode="single"
+        cacheData={false}
       />
 
       <CustomDatePicker
@@ -95,6 +154,7 @@ export default function AddHireInformation() {
         errorMessage={error.get("currency")}
         apiUrl={"currencies"}
         mode="single"
+        cacheData={false}
       />
       <CustomInput
         size_="sm"
@@ -124,9 +184,11 @@ export default function AddHireInformation() {
         errorMessage={error.get("shift")}
         apiUrl={"shifts"}
         mode="single"
+        cacheData={false}
       />
 
       <CheckListChooser
+        className="mt-6 pt-4"
         number={undefined}
         hasEdit={true}
         url={`${
@@ -138,8 +200,8 @@ export default function AddHireInformation() {
         name={t("attachment")}
         defaultFile={userData.attachment as FileType}
         uploadParam={{
-          checklist_id: 1,
-          task_type: 1,
+          checklist_id: ChecklistEnum.employee_attachment,
+          task_type: ChecklistTypeEnum.employee,
         }}
         accept={"application/pdf,image/jpeg,image/png,image/jpg"}
         onComplete={async (record: any) => {

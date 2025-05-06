@@ -48,8 +48,8 @@ export const validate = async (
     for (let index = 0; index < item.rules.length; index++) {
       const rule: ValidationRule = item.rules[index];
       if (isValidationFunction(rule)) {
-        const passed = rule(value);
-        if (!passed)
+        const failed = rule(vData);
+        if (failed)
           errMap.set(item.name, `${t(item.name)} ${t("is_required")}`);
         break;
       } else if (rule == "required") {
@@ -61,34 +61,6 @@ export const validate = async (
         }
       } else if (isString(rule)) {
         const parts = rule.split(":");
-        if ("requiredIf" == parts[0]) {
-          const field: string = parts[1];
-          const validateValue: boolean = parts[2] == "true";
-          const fieldValue: boolean = vData[field];
-          // 1. If value is object return hence has a value
-          if (validateValue) {
-            if (fieldValue) {
-              const result = validateFieldType(errMap, value, item);
-              if (result == "break") {
-                break;
-              } else if (result == "return") {
-                return;
-              }
-            }
-          } else {
-            if (!fieldValue) {
-              const result = validateFieldType(errMap, value, item);
-              if (result == "break") {
-                break;
-              } else if (result == "return") {
-                return;
-              }
-            }
-          }
-          return;
-        }
-
-        //
         const length: number = parseInt(parts[1]);
         if ("max" == parts[0]) {
           if (value.length > length) {
