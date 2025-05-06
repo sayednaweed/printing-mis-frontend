@@ -9,6 +9,18 @@ export const PortalEnum = {
   inventory: 2,
   expense: 3,
 };
+export const ChecklistTypeEnum = {
+  employee: 1,
+};
+export const ChecklistEnum = {
+  employee_attachment: 1,
+};
+export const HireTypeEnum = {
+  contractual: 1,
+  permanent: 2,
+  temporary: 3,
+  internship: 4,
+};
 export const PermissionEnum = {
   dashboard: { name: "dashboard", sub: {} },
   employees: {
@@ -132,7 +144,7 @@ export const CALENDAR_FORMAT = {
 export const CACHE = {
   VACCINE_CERTIFICATE_TABLE_PAGINATION_COUNT: "VACCINE_CERTIFICATE_TABLE",
   USER_TABLE_PAGINATION_COUNT: "USER_TABLE",
+  EMPLOYEE_TABLE_PAGINATION_COUNT: "EMPLOYEE_TABLE",
   AUDIT_TABLE_PAGINATION_COUNT: "AUDIT_TABLE",
-  USER_ACTIVITY_TABLE_PAGINATION_COUNT: "USER_ACTIVITY_TABLE",
   SYSTEM_CALENDAR: "SYSTEM_CALENDAR",
 };

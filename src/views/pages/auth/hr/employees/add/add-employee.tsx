@@ -8,10 +8,10 @@ import { toast } from "@/components/ui/use-toast";
 import { Dispatch, SetStateAction } from "react";
 import { setServerError } from "@/validation/validation";
 import { Check, Database, User as UserIcon } from "lucide-react";
-import { checkStrength, passwordStrengthScore } from "@/validation/utils";
 import { Employee } from "@/database/tables";
 import AddEmployeeInformation from "./steps/add-employee-information";
 import AddHireInformation from "./steps/add-hire-information";
+import { HireTypeEnum } from "@/lib/constants";
 
 export interface AddEmployeeProps {
   onComplete: (employee: Employee) => void;
@@ -69,11 +69,13 @@ export default function AddEmployee(props: AddEmployeeProps) {
     setError: Dispatch<SetStateAction<Map<string, string>>>
   ) => {
     try {
-      const response = await axiosClient.post("", {
+      const response = await axiosClient.post("employee/store", {
         first_name: userData?.first_name,
         last_name: userData?.last_name,
         father_name: userData?.father_name,
-        date_of_birth: userData?.date_of_birth?.toDate()?.toISOString(),
+        date_of_birth:
+          userData?.date_of_birth &&
+          userData?.date_of_birth?.toDate()?.toISOString(),
         contact: userData?.contact,
         gender_id: userData?.gender?.id,
         marital_status_id: userData?.marital_status?.id,
@@ -84,16 +86,23 @@ export default function AddEmployee(props: AddEmployeeProps) {
         current_district_id: userData?.current_district?.id,
         permanent_area: userData?.permanent_area,
         current_area: userData?.current_area,
-        position_type_id: userData?.position_type?.id,
+        hire_type_id: userData?.hire_type?.id,
+        overtime_rate: userData?.overtime_rate,
+        start_date:
+          userData?.start_date && userData?.start_date?.toDate()?.toISOString(),
+        end_date:
+          userData?.start_date && userData?.end_date?.toDate()?.toISOString(),
         department_id: userData?.department?.id,
-        job_d: userData?.job?.id,
-        hire_date: userData?.hire_date?.toDate()?.toISOString(),
-        currency_id: userData?.currencies?.id,
+        position_id: userData?.position?.id,
+        hire_date:
+          userData?.hire_date && userData?.hire_date?.toDate()?.toISOString(),
+        currency_id: userData?.currency?.id,
         salary: userData?.salary,
-        shift_id: userData?.shift?.id,
+        shift_id: userData?.work_shift?.id,
+        has_attachment: userData?.attachment ? true : false,
       });
       if (response.status == 200) {
-        onComplete(response.data.user);
+        onComplete(response.data.employee);
         toast({
           toastType: "SUCCESS",
           description: response.data.message,
@@ -159,39 +168,56 @@ export default function AddEmployee(props: AddEmployeeProps) {
               { name: "father_name", rules: ["required", "max:45", "min:3"] },
               { name: "date_of_birth", rules: ["required"] },
               { name: "contact", rules: ["required"] },
-              { name: "department", rules: ["required"] },
               { name: "gender", rules: ["required"] },
               { name: "marital_status", rules: ["required"] },
               { name: "nationality", rules: ["required"] },
               { name: "permanent_province", rules: ["required"] },
               { name: "permanent_district", rules: ["required"] },
-              { name: "permanent_area", rules: ["required"] },
               { name: "current_province", rules: ["required"] },
               { name: "current_district", rules: ["required"] },
+              { name: "permanent_area", rules: ["required"] },
               { name: "current_area", rules: ["required"] },
             ],
           },
           {
             component: <AddHireInformation />,
             validationRules: [
+              { name: "hire_type", rules: ["required"] },
+              { name: "overtime_rate", rules: ["required"] },
+              { name: "department", rules: ["required"] },
+              { name: "position", rules: ["required"] },
+              { name: "hire_date", rules: ["required"] },
+              { name: "currency", rules: ["required"] },
+              { name: "salary", rules: ["required"] },
+              { name: "work_shift", rules: ["required"] },
               {
-                name: "password",
+                name: "start_date",
                 rules: [
-                  (value: any) => {
-                    const strength = checkStrength(value, t);
-                    const score = passwordStrengthScore(strength);
-                    if (score === 4) return true;
-                    return false;
+                  (userData: any) => {
+                    if (userData?.hire_type?.id == HireTypeEnum.permanent) {
+                      return false;
+                    }
+                    if (userData?.start_date) {
+                      return false;
+                    }
+                    return true;
                   },
                 ],
               },
-              { name: "position_type", rules: ["required"] },
-              { name: "department", rules: ["required"] },
-              { name: "job", rules: ["required"] },
-              { name: "hire_date", rules: ["required"] },
-              { name: "currencies", rules: ["required"] },
-              { name: "salary", rules: ["required"] },
-              { name: "shift", rules: ["required"] },
+              {
+                name: "end_date",
+                rules: [
+                  (userData: any) => {
+                    if (userData?.hire_type?.id == HireTypeEnum.permanent) {
+                      return false;
+                    }
+                    if (userData?.end_date) {
+                      return false;
+                    }
+                    return true;
+                  },
+                ],
+              },
             ],
           },
           {
