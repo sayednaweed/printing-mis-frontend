@@ -8,7 +8,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { toast } from "@/components/ui/use-toast";
-import { useGlobalState } from "@/context/GlobalStateContext";
 import { Employee, UserPermission } from "@/database/tables";
 import { CACHE, PermissionEnum, PortalEnum } from "@/lib/constants";
 import { useEffect, useRef, useState } from "react";
@@ -18,7 +17,7 @@ import axiosClient from "@/lib/axois-client";
 
 import TableRowIcon from "@/components/custom-ui/table/TableRowIcon";
 import Pagination from "@/components/custom-ui/table/Pagination";
-import { setDateToURL, toLocaleDate } from "@/lib/utils";
+import { setDateToURL } from "@/lib/utils";
 import NastranModel from "@/components/custom-ui/model/NastranModel";
 import PrimaryButton from "@/components/custom-ui/button/PrimaryButton";
 import { ListFilter, Search } from "lucide-react";
@@ -173,7 +172,6 @@ export function EmployeesTable() {
   });
   const [loading, setLoading] = useState(false);
   const { t } = useTranslation();
-  const [state] = useGlobalState();
 
   const addItem = (employee: Employee) => {
     setEmployees((prevState) => ({
@@ -190,9 +188,6 @@ export function EmployeesTable() {
 
   const skeleton = (
     <TableRow>
-      <TableCell>
-        <Shimmer className="h-[24px] w-full rounded-sm" />
-      </TableCell>
       <TableCell>
         <Shimmer className="h-[24px] w-full rounded-sm" />
       </TableCell>
@@ -431,7 +426,6 @@ export function EmployeesTable() {
             <TableHead className="text-start">{t("name")}</TableHead>
             <TableHead className="text-start">{t("father_name")}</TableHead>
             <TableHead className="text-start">{t("contact")}</TableHead>
-            <TableHead className="text-start">{t("hire_date")}</TableHead>
             <TableHead className="text-start w-[60px]">{t("status")}</TableHead>
           </TableRow>
         </TableHeader>
@@ -473,11 +467,8 @@ export function EmployeesTable() {
                 >
                   {item?.contact}
                 </TableCell>
-                <TableCell className="truncate">
-                  {toLocaleDate(new Date(item.hire_date), state)}
-                </TableCell>
                 <TableCell>
-                  {item?.status == 1 ? (
+                  {item?.is_current_employee == 1 ? (
                     <h1 className="truncate text-center rtl:text-md-rtl ltr:text-lg-ltr bg-green-500 px-1 py-[2px] shadow-md text-primary-foreground font-bold rounded-sm">
                       {t("active")}
                     </h1>

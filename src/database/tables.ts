@@ -161,7 +161,7 @@ export type Employee = {
   picture: string;
   contact: string;
   email: string;
-  status: number;
+  is_current_employee: number;
   gender: string;
   nationality: string;
   hire_date: string;
