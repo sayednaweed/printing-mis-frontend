@@ -1,8 +1,7 @@
 import APICombobox from "@/components/custom-ui/combobox/APICombobox";
 import CustomInput from "@/components/custom-ui/input/CustomInput";
-import { CalendarDays, Mail, Phone, RefreshCcw, UserRound } from "lucide-react";
+import { Mail, Phone, RefreshCcw, UserRound } from "lucide-react";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
-import CustomCheckbox from "@/components/custom-ui/checkbox/CustomCheckbox";
 import { toast } from "@/components/ui/use-toast";
 import PrimaryButton from "@/components/custom-ui/button/PrimaryButton";
 import {
@@ -17,13 +16,15 @@ import { useTranslation } from "react-i18next";
 import NastranSpinner from "@/components/custom-ui/spinner/NastranSpinner";
 import axiosClient from "@/lib/axois-client";
 import { setServerError, validate } from "@/validation/validation";
-import { toLocaleDate } from "@/lib/utils";
+import { isString } from "@/lib/utils";
 import ButtonSpinner from "@/components/custom-ui/spinner/ButtonSpinner";
-import { useGlobalState } from "@/context/GlobalStateContext";
-import FakeCombobox from "@/components/custom-ui/combobox/FakeCombobox";
 import { EmployeeModel, UserPermission } from "@/database/tables";
-import { PermissionEnum } from "@/lib/constants";
+import { CountryEnum, PermissionEnum } from "@/lib/constants";
 import { useScrollToElement } from "@/hook/use-scroll-to-element";
+import BorderContainer from "@/components/custom-ui/container/BorderContainer";
+import CustomTextarea from "@/components/custom-ui/input/CustomTextarea";
+import CustomDatePicker from "@/components/custom-ui/DatePicker/CustomDatePicker";
+import { DateObject } from "react-multi-date-picker";
 export interface EditEmployeeInformationProps {
   id: string | undefined;
   failed: boolean;
@@ -39,7 +40,6 @@ export default function EditEmployeeInformation(
   const [tempUserData, setTempUserData] = useState<EmployeeModel | undefined>(
     userData
   );
-  const [state] = useGlobalState();
   const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Map<string, string>>(new Map());
@@ -64,40 +64,68 @@ export default function EditEmployeeInformation(
     const passed = await validate(
       [
         {
-          name: "full_name",
-          rules: ["required", "max:45", "min:3"],
+          name: "id",
+          rules: ["required"],
         },
         {
-          name: "username",
-          rules: ["required", "max:45", "min:3"],
+          name: "date_of_birth",
+          rules: ["required"],
+        },
+        {
+          name: "contact",
+          rules: ["required"],
         },
         {
           name: "email",
-          rules: ["required", "max:45", "min:3"],
-        },
-        {
-          name: "destination",
           rules: ["required"],
         },
         {
-          name: "job",
+          name: "permanent_province",
           rules: ["required"],
         },
         {
-          name: "status",
+          name: "permanent_district",
           rules: ["required"],
         },
         {
-          name: "zone",
+          name: "permanent_area",
           rules: ["required"],
         },
         {
-          name: "province",
+          name: "current_province",
+          rules: ["required"],
+        },
+        {
+          name: "current_district",
+          rules: ["required"],
+        },
+        {
+          name: "current_area",
+          rules: ["required"],
+        },
+        {
+          name: "nationality",
           rules: ["required"],
         },
         {
           name: "gender",
           rules: ["required"],
+        },
+        {
+          name: "marital_status",
+          rules: ["required"],
+        },
+        {
+          name: "first_name",
+          rules: ["required", "max:45", "min:3"],
+        },
+        {
+          name: "last_name",
+          rules: ["required", "max:45", "min:3"],
+        },
+        {
+          name: "father_name",
+          rules: ["required", "max:45", "min:3"],
         },
       ],
       tempUserData,
@@ -110,17 +138,36 @@ export default function EditEmployeeInformation(
     // 2. Store
     const formData = new FormData();
     formData.append("id", id);
-    formData.append("full_name", tempUserData.full_name);
-    formData.append("username", tempUserData.username);
+    formData.append(
+      "full_name",
+      isString(tempUserData.date_of_birth)
+        ? tempUserData.date_of_birth
+        : tempUserData.date_of_birth?.toDate()?.toISOString()
+    );
     formData.append("contact", tempUserData.contact);
     formData.append("email", tempUserData.email);
-    formData.append("destination_id", tempUserData.destination.id);
-    formData.append("job_id", tempUserData.job.id);
-    formData.append("status", `${tempUserData.status == true}`);
-    formData.append("province_id", tempUserData.province.id);
-    formData.append("gender_id", tempUserData.gender.id);
+    formData.append(
+      "permanent_province_id",
+      tempUserData?.permanent_province?.id
+    );
+    formData.append(
+      "permanent_district_id",
+      tempUserData?.permanent_district?.id
+    );
+    formData.append("permanent_area", tempUserData?.permanent_area);
+    formData.append("current_province_id", tempUserData?.current_province?.id);
+    formData.append("current_district_id", tempUserData?.current_district?.id);
+    formData.append("current_area", tempUserData?.current_area);
+    formData.append("gender", tempUserData?.gender?.id);
+    formData.append("marital_status", tempUserData?.marital_status?.id);
+    formData.append("first_name", tempUserData?.first_name);
+    formData.append("last_name", tempUserData?.last_name);
+    formData.append("father_name", tempUserData?.father_name);
     try {
-      const response = await axiosClient.post("url", formData);
+      const response = await axiosClient.post(
+        "employee/update/information",
+        formData
+      );
       if (response.status == 200) {
         // Update user state
         setUserData(tempUserData);
@@ -165,14 +212,29 @@ export default function EditEmployeeInformation(
           <>
             <CustomInput
               required={true}
-              lable={t("full_name")}
+              lable={t("first_name")}
               requiredHint={`* ${t("required")}`}
               size_="sm"
-              name="full_name"
-              defaultValue={tempUserData.full_name}
-              placeholder={t("enter_your_name")}
+              name="first_name"
+              defaultValue={tempUserData["first_name"]}
+              placeholder={t("enter_f_name")}
               type="text"
-              errorMessage={error.get("full_name")}
+              errorMessage={error.get("first_name")}
+              onBlur={handleChange}
+              startContent={
+                <UserRound className="text-tertiary size-[18px] pointer-events-none" />
+              }
+            />
+            <CustomInput
+              required={true}
+              lable={t("last_name")}
+              requiredHint={`* ${t("required")}`}
+              size_="sm"
+              name="last_name"
+              defaultValue={tempUserData["last_name"]}
+              placeholder={t("enter_l_name")}
+              type="text"
+              errorMessage={error.get("last_name")}
               onBlur={handleChange}
               startContent={
                 <UserRound className="text-tertiary size-[18px] pointer-events-none" />
@@ -182,15 +244,44 @@ export default function EditEmployeeInformation(
               required={true}
               requiredHint={`* ${t("required")}`}
               size_="sm"
-              lable={t("username")}
-              name="username"
-              defaultValue={tempUserData["username"]}
-              placeholder={t("enter_user_name")}
+              lable={t("father_name")}
+              name="father_name"
+              defaultValue={tempUserData["father_name"]}
+              placeholder={t("enter_fa_name")}
               type="text"
-              errorMessage={error.get("username")}
+              errorMessage={error.get("father_name")}
               onBlur={handleChange}
               startContent={
                 <UserRound className="text-tertiary size-[18px] pointer-events-none" />
+              }
+            />
+            <CustomDatePicker
+              placeholder={t("select_a_date")}
+              lable={t("date_of_birth")}
+              requiredHint={`* ${t("required")}`}
+              required={true}
+              value={tempUserData.date_of_birth}
+              dateOnComplete={(date: DateObject) => {
+                setTempUserData({ ...tempUserData, date_of_birth: date });
+              }}
+              className="py-3 w-full"
+              errorMessage={error.get("date_of_birth")}
+            />
+            <CustomInput
+              size_="sm"
+              dir="ltr"
+              className="rtl:text-end"
+              lable={t("contact")}
+              placeholder={t("enter_ur_pho_num")}
+              defaultValue={tempUserData["contact"]}
+              type="text"
+              name="contact"
+              required={true}
+              requiredHint={`* ${t("required")}`}
+              errorMessage={error.get("contact")}
+              onChange={handleChange}
+              startContent={
+                <Phone className="text-tertiary size-[18px] pointer-events-none" />
               }
             />
             <CustomInput
@@ -198,146 +289,187 @@ export default function EditEmployeeInformation(
               name="email"
               required={true}
               lable={t("email")}
-              requiredHint={`* ${t("required")}`}
               defaultValue={tempUserData["email"]}
               placeholder={t("enter_your_email")}
               type="email"
               errorMessage={error.get("email")}
               onChange={handleChange}
+              dir="ltr"
+              className="rtl:text-right"
               startContent={
                 <Mail className="text-tertiary size-[18px] pointer-events-none" />
               }
             />
-            <CustomInput
-              dir="ltr"
-              className="rtl:text-end"
-              size_="sm"
-              lable={t("contact")}
-              placeholder={t("enter_ur_pho_num")}
-              defaultValue={tempUserData["contact"]}
-              type="text"
-              name="contact"
-              errorMessage={error.get("contact")}
-              onChange={handleChange}
-              startContent={
-                <Phone className="text-tertiary size-[18px] pointer-events-none" />
-              }
-            />
             <APICombobox
               placeholderText={t("search_item")}
               errorText={t("no_item")}
               required={true}
               requiredHint={`* ${t("required")}`}
               onSelect={(selection: any) =>
-                setUserData({ ...tempUserData, zone: selection })
-              }
-              lable={t("zone")}
-              selectedItem={tempUserData?.zone?.name}
-              placeHolder={t("select_a")}
-              errorMessage={error.get("zone")}
-              apiUrl={"zones"}
-              cacheData={false}
-              mode="single"
-            />
-            <APICombobox
-              placeholderText={t("search_item")}
-              errorText={t("no_item")}
-              required={true}
-              requiredHint={`* ${t("required")}`}
-              onSelect={(selection: any) =>
-                setUserData({ ...tempUserData, province: selection })
-              }
-              lable={t("province")}
-              selectedItem={userData?.province?.name}
-              placeHolder={t("select_a")}
-              errorMessage={error.get("province")}
-              apiUrl={"provinces/" + 1}
-              mode="single"
-            />
-
-            <APICombobox
-              placeholderText={t("search_item")}
-              errorText={t("no_item")}
-              onSelect={(selection: any) =>
-                setTempUserData({ ...tempUserData, ["destination"]: selection })
-              }
-              lable={t("destination")}
-              required={true}
-              requiredHint={`* ${t("required")}`}
-              selectedItem={tempUserData?.destination?.name}
-              placeHolder={t("select_destination")}
-              errorMessage={error.get("destination")}
-              apiUrl={"destinations"}
-              mode="single"
-            />
-
-            <APICombobox
-              placeholderText={t("search_item")}
-              errorText={t("no_item")}
-              required={true}
-              requiredHint={`* ${t("required")}`}
-              onSelect={(selection: any) =>
-                setTempUserData({ ...tempUserData, ["job"]: selection })
-              }
-              lable={t("job")}
-              selectedItem={tempUserData["job"]?.name}
-              placeHolder={t("select_a")}
-              errorMessage={error.get("job")}
-              apiUrl={"jobs"}
-              mode="single"
-            />
-            <APICombobox
-              placeholderText={t("search_item")}
-              errorText={t("no_item")}
-              onSelect={(selection: any) =>
-                setTempUserData({ ...tempUserData, ["role"]: selection })
-              }
-              required={true}
-              lable={t("role")}
-              requiredHint={`* ${t("required")}`}
-              selectedItem={tempUserData["role"]?.name}
-              placeHolder={t("select_a_role")}
-              errorMessage={error.get("role")}
-              apiUrl={"roles"}
-              translate={true}
-              cacheData={false}
-              mode="single"
-              readonly={true}
-            />
-            <APICombobox
-              placeholderText={t("search_item")}
-              errorText={t("no_item")}
-              required={true}
-              requiredHint={`* ${t("required")}`}
-              onSelect={(selection: any) =>
-                setUserData({ ...tempUserData, ["gender"]: selection })
+                setTempUserData({ ...tempUserData, ["gender"]: selection })
               }
               lable={t("gender")}
-              selectedItem={tempUserData?.gender?.name}
+              selectedItem={tempUserData["gender"]?.name}
               placeHolder={t("select_a")}
               errorMessage={error.get("gender")}
               apiUrl={"genders"}
               mode="single"
             />
-            <FakeCombobox
-              icon={
-                <CalendarDays className="size-[16px] text-tertiary absolute top-1/2 transform -translate-y-1/2 ltr:right-4 rtl:left-4" />
-              }
-              title={t("join_date")}
-              selected={toLocaleDate(new Date(tempUserData.created_at), state)}
-            />
-            <CustomCheckbox
-              checked={tempUserData["status"]}
-              onCheckedChange={(value: boolean) =>
-                setTempUserData({ ...tempUserData, status: value })
-              }
-              parentClassName="rounded-md py-[12px] gap-x-1 bg-card border px-[10px]"
-              text={t("status")}
-              description={t("set_acco_act_or_dec")}
+            <APICombobox
+              placeholderText={t("search_item")}
+              errorText={t("no_item")}
               required={true}
               requiredHint={`* ${t("required")}`}
-              errorMessage={error.get("status")}
+              onSelect={(selection: any) =>
+                setTempUserData({
+                  ...tempUserData,
+                  ["marital_status"]: selection,
+                })
+              }
+              lable={t("marital_status")}
+              selectedItem={tempUserData["marital_status"]?.name}
+              placeHolder={t("select_a")}
+              errorMessage={error.get("marital_status")}
+              apiUrl={"marital-statuses"}
+              mode="single"
             />
+            <APICombobox
+              placeholderText={t("search_item")}
+              errorText={t("no_item")}
+              required={true}
+              requiredHint={`* ${t("required")}`}
+              onSelect={(selection: any) =>
+                setTempUserData({ ...tempUserData, ["nationality"]: selection })
+              }
+              lable={t("nationality")}
+              selectedItem={tempUserData["nationality"]?.name}
+              placeHolder={t("select_a")}
+              errorMessage={error.get("nationality")}
+              apiUrl={"nationalities"}
+              mode="single"
+            />
+            <BorderContainer
+              title={t("permanent_address")}
+              required={true}
+              parentClassName="mt-3"
+              className="flex flex-col items-start gap-y-3"
+            >
+              <APICombobox
+                placeholderText={t("search_item")}
+                errorText={t("no_item")}
+                onSelect={(selection: any) =>
+                  setTempUserData({
+                    ...tempUserData,
+                    ["permanent_province"]: selection,
+                  })
+                }
+                lable={t("province")}
+                required={true}
+                requiredHint={`* ${t("required")}`}
+                selectedItem={tempUserData["permanent_province"]?.name}
+                placeHolder={t("select_a")}
+                errorMessage={error.get("permanent_province")}
+                apiUrl={"provinces/" + CountryEnum.afghanistan}
+                mode="single"
+              />
+              {tempUserData.permanent_province && (
+                <APICombobox
+                  placeholderText={t("search_item")}
+                  errorText={t("no_item")}
+                  onSelect={(selection: any) =>
+                    setTempUserData({
+                      ...tempUserData,
+                      ["permanent_district"]: selection,
+                    })
+                  }
+                  lable={t("permanent_district")}
+                  required={true}
+                  requiredHint={`* ${t("required")}`}
+                  selectedItem={tempUserData["permanent_district"]?.name}
+                  placeHolder={t("select_a")}
+                  errorMessage={error.get("permanent_district")}
+                  apiUrl={"districts/" + tempUserData?.permanent_province?.id}
+                  mode="single"
+                  key={tempUserData?.permanent_province?.id}
+                />
+              )}
+
+              {tempUserData.permanent_district && (
+                <CustomTextarea
+                  required={true}
+                  requiredHint={`* ${t("required")}`}
+                  lable={t("permanent_area")}
+                  name="permanent_area"
+                  defaultValue={tempUserData["permanent_area"]}
+                  placeholder={t("detail")}
+                  errorMessage={error.get("permanent_area")}
+                  onBlur={handleChange}
+                  parantClassName=" min-w-full"
+                  rows={5}
+                />
+              )}
+            </BorderContainer>
+            <BorderContainer
+              title={t("currently_address")}
+              required={true}
+              parentClassName="mt-3"
+              className="flex flex-col items-center gap-y-3"
+            >
+              <APICombobox
+                placeholderText={t("search_item")}
+                errorText={t("no_item")}
+                onSelect={(selection: any) =>
+                  setTempUserData({
+                    ...tempUserData,
+                    ["current_province"]: selection,
+                  })
+                }
+                lable={t("province")}
+                required={true}
+                requiredHint={`* ${t("required")}`}
+                selectedItem={tempUserData["current_province"]?.name}
+                placeHolder={t("select_a")}
+                errorMessage={error.get("current_province")}
+                apiUrl={"provinces/" + CountryEnum.afghanistan}
+                mode="single"
+              />
+              {tempUserData.current_province && (
+                <APICombobox
+                  placeholderText={t("search_item")}
+                  errorText={t("no_item")}
+                  onSelect={(selection: any) =>
+                    setTempUserData({
+                      ...tempUserData,
+                      ["current_district"]: selection,
+                    })
+                  }
+                  lable={t("current_district")}
+                  required={true}
+                  requiredHint={`* ${t("required")}`}
+                  selectedItem={tempUserData["current_district"]?.name}
+                  placeHolder={t("select_a")}
+                  errorMessage={error.get("current_district")}
+                  apiUrl={"districts/" + tempUserData?.current_province?.id}
+                  mode="single"
+                  key={tempUserData?.current_province?.id}
+                />
+              )}
+
+              {tempUserData.current_district && (
+                <CustomTextarea
+                  required={true}
+                  requiredHint={`* ${t("required")}`}
+                  lable={t("current_area")}
+                  name="current_area"
+                  defaultValue={tempUserData["current_area"]}
+                  placeholder={t("detail")}
+                  errorMessage={error.get("current_area")}
+                  onBlur={handleChange}
+                  parantClassName=" min-w-full"
+                  rows={5}
+                />
+              )}
+            </BorderContainer>
           </>
         )}
       </CardContent>

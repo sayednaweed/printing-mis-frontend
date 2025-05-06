@@ -216,7 +216,7 @@ export function EmployeesTable() {
 
   const watchOnClick = async (user: Employee) => {
     const userId = user.id;
-    navigate(`/users/${userId}`);
+    navigate(`/employees/${userId}`);
   };
   return (
     <>

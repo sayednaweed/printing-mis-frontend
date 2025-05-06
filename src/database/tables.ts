@@ -1,4 +1,5 @@
 import { FileType } from "@/lib/types";
+import { DateObject } from "react-multi-date-picker";
 
 export type Role =
   | { role: 1; name: "super" }
@@ -171,7 +172,7 @@ export type Employee = {
 export type EmployeeModel = {
   id: string;
   hr_code: string;
-  date_of_birth: string;
+  date_of_birth: string | DateObject;
   picture: any;
   contact: string;
   email: string;
@@ -180,8 +181,6 @@ export type EmployeeModel = {
   permanent_area: string;
   current_province: { id: string; name: string };
   current_district: { id: string; name: string };
-  hire_type: { id: string; name: string };
-  shift: { id: string; name: string };
   current_area: string;
   nationality: { id: string; name: string };
   gender: { id: string; name: string };
@@ -191,4 +190,16 @@ export type EmployeeModel = {
   last_name: string;
   father_name: string;
   attachment: FileType | undefined;
+};
+export type PositionAssignmentModel = {
+  id: string;
+  hire_type: { id: string; name: string };
+  salary: string;
+  shift: { id: string; name: string };
+  position: { id: string; name: string };
+  position_change_type: { id: string; name: string };
+  overtime_rate: string;
+  currency: { id: string; name: string };
+  department: { id: string; name: string };
+  hire_date: string;
 };

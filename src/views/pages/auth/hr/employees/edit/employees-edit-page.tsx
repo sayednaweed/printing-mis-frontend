@@ -1,11 +1,10 @@
 import { useNavigate, useParams } from "react-router";
 import { useTranslation } from "react-i18next";
-import EditUserInformation from "./steps/edit-user-information";
 import axiosClient from "@/lib/axois-client";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "@/components/ui/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Database, KeyRound, ShieldBan } from "lucide-react";
+import { Database, KeyRound } from "lucide-react";
 import { EmployeeModel, UserPermission } from "@/database/tables";
 import { PermissionEnum, PortalEnum } from "@/lib/constants";
 import {
@@ -123,7 +122,14 @@ export default function EmployeesEditPage() {
           className="flex-1 m-0"
           value={PermissionEnum.users.sub.user_permission.toString()}
         >
-          <EditEmployeeInformation permissions={per} />
+          <EditEmployeeInformation
+            permissions={per}
+            id={undefined}
+            failed={failed}
+            userData={userData}
+            setUserData={setUserData}
+            refreshPage={loadInformation}
+          />
         </TabsContent>
       </Tabs>
     </div>
