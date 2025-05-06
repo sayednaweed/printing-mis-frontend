@@ -34,7 +34,8 @@ const TableRowIcon = React.forwardRef<HTMLTableRowElement, TableRowIconProps>(
         {children}
         <td>
           {showAction && (
-            <div className="w-[110px] bg-primary py-1 rounded-full flex absolute top-1/2 transform -translate-y-1/2 ltr:right-2 rtl:left-2 justify-center gap-x-2">
+            <div className="w-[110px] bg-primary py-1 rounded-full flex absolute top-1/2 transform -translate-y-1/2 ltr:right-2 
+            rtl:left-2 justify-center gap-x-2">
               {read && !edit && (
                 <div
                   onClick={async () => {
