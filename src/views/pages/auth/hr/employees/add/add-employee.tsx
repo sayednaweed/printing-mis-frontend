@@ -100,6 +100,7 @@ export default function AddEmployee(props: AddEmployeeProps) {
         salary: userData?.salary,
         shift_id: userData?.work_shift?.id,
         has_attachment: userData?.attachment ? true : false,
+        family_mem_contact: userData?.family_mem_contact,
       });
       if (response.status == 200) {
         onComplete(response.data.employee);
@@ -163,20 +164,21 @@ export default function AddEmployee(props: AddEmployeeProps) {
           {
             component: <AddEmployeeInformation />,
             validationRules: [
-              { name: "first_name", rules: ["required", "max:45", "min:3"] },
-              { name: "last_name", rules: ["required", "max:45", "min:3"] },
-              { name: "father_name", rules: ["required", "max:45", "min:3"] },
-              { name: "date_of_birth", rules: ["required"] },
-              { name: "contact", rules: ["required"] },
-              { name: "gender", rules: ["required"] },
-              { name: "marital_status", rules: ["required"] },
-              { name: "nationality", rules: ["required"] },
-              { name: "permanent_province", rules: ["required"] },
-              { name: "permanent_district", rules: ["required"] },
-              { name: "current_province", rules: ["required"] },
-              { name: "current_district", rules: ["required"] },
-              { name: "permanent_area", rules: ["required"] },
-              { name: "current_area", rules: ["required"] },
+              // { name: "first_name", rules: ["required", "max:45", "min:3"] },
+              // { name: "last_name", rules: ["required", "max:45", "min:3"] },
+              // { name: "father_name", rules: ["required", "max:45", "min:3"] },
+              // { name: "date_of_birth", rules: ["required"] },
+              // { name: "contact", rules: ["required"] },
+              // { name: "family_mem_contact", rules: ["required"] },
+              // { name: "gender", rules: ["required"] },
+              // { name: "marital_status", rules: ["required"] },
+              // { name: "nationality", rules: ["required"] },
+              // { name: "permanent_province", rules: ["required"] },
+              // { name: "permanent_district", rules: ["required"] },
+              // { name: "current_province", rules: ["required"] },
+              // { name: "current_district", rules: ["required"] },
+              // { name: "permanent_area", rules: ["required"] },
+              // { name: "current_area", rules: ["required"] },
             ],
           },
           {

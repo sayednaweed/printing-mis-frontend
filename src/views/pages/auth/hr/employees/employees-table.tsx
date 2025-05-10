@@ -436,7 +436,7 @@ export function EmployeesTable() {
                 remove={false}
                 edit={false}
                 onEdit={async () => {}}
-                key={item.email}
+                key={item.id}
                 item={item}
                 onRemove={async () => {}}
                 onRead={watchOnClick}

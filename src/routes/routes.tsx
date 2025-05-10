@@ -5,9 +5,7 @@ import { User } from "@/database/tables";
 import ProtectedRoute from "@/routes/protected-route";
 import GuestLayout from "@/views/layout/guest-layout";
 import AuthLayout from "@/views/layout/auth-layout";
-import UserEditPage from "@/views/pages/auth/hr/users/edit/user-edit-page";
 import UsersProfilePage from "@/views/pages/auth/profile/users/users-profile-page";
-import UserPage from "@/views/pages/auth/hr/users/user-page";
 import ConfigurationsPage from "@/views/pages/auth/configurations/configurations-page";
 import SettingsPage from "@/views/pages/auth/setting/settings-page";
 import ReportPage from "@/views/pages/auth/report/report-page";
@@ -31,6 +29,8 @@ import { PortalEnum } from "@/lib/constants";
 import EmployeesPage from "@/views/pages/auth/hr/employees/employees-page";
 import EmployeesEditPage from "@/views/pages/auth/hr/employees/edit/employees-edit-page";
 import Unauthorized from "@/views/pages/error/unauthorized";
+import UserPage from "@/views/pages/auth/hr/users/user-page";
+import UserEditPage from "@/views/pages/auth/hr/users/edit/user-edit-page";
 
 export const getHrRouter = (user: User, authenticated: boolean) => {
   let permissions = user.permissions[PortalEnum.hr];

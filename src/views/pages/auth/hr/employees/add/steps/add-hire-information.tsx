@@ -25,7 +25,6 @@ export default function AddHireInformation() {
     const { name, value } = e.target;
     setUserData({ ...userData, [name]: value });
   };
-  console.log(userData);
 
   const hireTypeDuration = useMemo(() => {
     if (
@@ -65,6 +64,22 @@ export default function AddHireInformation() {
   }, [userData.hire_type]);
   return (
     <div className="flex flex-col lg:grid lg:grid-cols-2 xl:grid-cols-3 gap-x-4 xl:gap-x-12 lg:items-baseline mt-4 gap-y-3 w-full lg:w-full">
+      <APICombobox
+        placeholderText={t("search_item")}
+        errorText={t("no_item")}
+        required={true}
+        requiredHint={`* ${t("required")}`}
+        onSelect={(selection: any) =>
+          setUserData({ ...userData, ["identity_card"]: selection })
+        }
+        lable={t("identity_card")}
+        selectedItem={userData["identity_card"]?.name}
+        placeHolder={t("select_a")}
+        errorMessage={error.get("identity_card")}
+        apiUrl={"nid/types"}
+        mode="single"
+        cacheData={false}
+      />
       <APICombobox
         placeholderText={t("search_item")}
         errorText={t("no_item")}

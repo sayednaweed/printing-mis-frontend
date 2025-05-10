@@ -14,6 +14,7 @@ import { toast } from "@/components/ui/use-toast";
 import { PositionAssignment } from "@/database/tables";
 import axiosClient from "@/lib/axois-client";
 import { HireTypeEnum } from "@/lib/constants";
+import { ValidateItem } from "@/validation/types";
 import { validate } from "@/validation/validation";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -43,6 +44,60 @@ export default function AssignPositionDailog(props: AssignPositionDailogprops) {
 
       setLoading(true);
       // 1. Validate form
+      const valid: ValidateItem[] = [
+        {
+          name: "hire_type",
+          rules: ["required"],
+        },
+        {
+          name: "overtime_rate",
+          rules: ["required"],
+        },
+        {
+          name: "department",
+          rules: ["required"],
+        },
+        {
+          name: "position",
+          rules: ["required"],
+        },
+        {
+          name: "hire_date",
+          rules: ["required"],
+        },
+        {
+          name: "currency",
+          rules: ["required"],
+        },
+        {
+          name: "salary",
+          rules: ["required"],
+        },
+        {
+          name: "work_shift",
+          rules: ["required"],
+        },
+        {
+          name: "type",
+          rules: ["required"],
+        },
+      ];
+
+      if (position?.hire_type?.id != HireTypeEnum.permanent) {
+        if (position?.start_date) {
+          valid.push({
+            name: "start_date",
+            rules: ["required"],
+          });
+        }
+        if (position?.end_date) {
+          valid.push({
+            name: "end_date",
+            rules: ["required"],
+          });
+        }
+      }
+
       const passed = await validate(
         [
           {
@@ -85,6 +140,10 @@ export default function AssignPositionDailog(props: AssignPositionDailogprops) {
             name: "work_shift",
             rules: ["required"],
           },
+          {
+            name: "type",
+            rules: ["required"],
+          },
         ],
         position,
         setError
@@ -108,7 +167,7 @@ export default function AssignPositionDailog(props: AssignPositionDailogprops) {
         hire_date: position?.hire_date?.toDate()?.toISOString(),
         currency_id: position?.currency?.id,
         salary: position?.salary,
-        shift_id: position?.shift?.id,
+        shift_id: position?.work_shift?.id,
         position_change_type_id: position?.type?.id,
       });
       if (response.status === 200) {

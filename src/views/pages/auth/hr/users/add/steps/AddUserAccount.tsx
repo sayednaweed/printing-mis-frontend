@@ -6,13 +6,11 @@ import { useTranslation } from "react-i18next";
 import APICombobox from "@/components/custom-ui/combobox/APICombobox";
 import PasswordInput from "@/components/custom-ui/input/PasswordInput";
 import { generatePassword } from "@/validation/utils";
-import { useScrollToElement } from "@/hook/use-scroll-to-element";
 
 export default function AddUserAccount() {
   const { userData, setUserData, error } = useContext(StepperContext);
   const [isVisible, setIsVisible] = useState(false);
   const { t } = useTranslation();
-  useScrollToElement(error);
 
   const handleChange = (e: any) => {
     const { name, value } = e.target;
@@ -78,27 +76,10 @@ export default function AddUserAccount() {
         apiUrl={"roles"}
         translate={true}
         mode="single"
-        cacheData={false}
-      />
-      <APICombobox
-        placeholderText={t("search_item")}
-        errorText={t("no_item")}
-        required={true}
-        requiredHint={`* ${t("required")}`}
-        onSelect={(selection: any) =>
-          setUserData({ ...userData, ["zone"]: selection })
-        }
-        lable={t("zone")}
-        selectedItem={userData["zone"]?.name}
-        placeHolder={t("select_a")}
-        errorMessage={error.get("zone")}
-        apiUrl={"zones"}
-        cacheData={false}
-        mode="single"
       />
 
       <CustomCheckbox
-        checked={userData["status"] == true}
+        checked={userData["status"]}
         onCheckedChange={(value: boolean) =>
           setUserData({ ...userData, status: value })
         }
@@ -108,6 +89,16 @@ export default function AddUserAccount() {
         required={true}
         requiredHint={`* ${t("required")}`}
         errorMessage={error.get("status")}
+      />
+      <CustomCheckbox
+        checked={userData["grant"] || false}
+        onCheckedChange={(value: boolean) =>
+          setUserData({ ...userData, grant: value })
+        }
+        parentClassName="rounded-md py-[12px] gap-x-1 bg-card border px-[10px]"
+        text={t("grant")}
+        description={t("allows_user_grant")}
+        errorMessage={error.get("grant")}
       />
     </div>
   );

@@ -1,5 +1,5 @@
 import CustomInput from "@/components/custom-ui/input/CustomInput";
-import { RefreshCcw } from "lucide-react";
+import { Eye, EyeOff, RefreshCcw } from "lucide-react";
 import { useState } from "react";
 import { toast } from "@/components/ui/use-toast";
 import PrimaryButton from "@/components/custom-ui/button/PrimaryButton";
@@ -14,12 +14,13 @@ import {
 import { useTranslation } from "react-i18next";
 import { UserInformation, UserPassword } from "@/lib/types";
 import axiosClient from "@/lib/axois-client";
-import { PermissionEnum } from "@/lib/constants";
+import { PermissionEnum, RoleEnum } from "@/lib/constants";
 import { setServerError, validate } from "@/validation/validation";
 import NastranSpinner from "@/components/custom-ui/spinner/NastranSpinner";
 import ButtonSpinner from "@/components/custom-ui/spinner/ButtonSpinner";
 import { UserPermission } from "@/database/tables";
 import { ValidateItem } from "@/validation/types";
+import { useAuthStore } from "@/stores/permission/auth-permssion-store";
 export interface EditUserPasswordProps {
   id: string | undefined;
   refreshPage: () => Promise<void>;
@@ -30,15 +31,16 @@ export interface EditUserPasswordProps {
 
 export function EditUserPassword(props: EditUserPasswordProps) {
   const { id, userData, failed, refreshPage, permissions } = props;
+  const { user, logoutUser } = useAuthStore();
+
   const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
-  // const [isVisible, setIsVisible] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
 
   const [passwordData, setPasswordData] = useState<UserPassword>({
     new_password: "",
     confirm_password: "",
     old_password: "",
-    letter_of_pass_change: undefined,
   });
   const [error, setError] = useState<Map<string, string>>(new Map());
 
@@ -59,17 +61,13 @@ export function EditUserPassword(props: EditUserPasswordProps) {
           name: "confirm_password",
           rules: ["required", "min:8", "max:45"],
         },
-        {
-          name: "letter_of_pass_change",
-          rules: ["required"],
-        },
       ];
-      // if (user.role.role != RoleEnum.super) {
-      //   rules.push({
-      //     name: "old_password",
-      //     rules: ["required", "min:8", "max:45"],
-      //   });
-      // }
+      if (user.role.role != RoleEnum.super) {
+        rules.push({
+          name: "old_password",
+          rules: ["required", "min:8", "max:45"],
+        });
+      }
       const passed = await validate(rules, passwordData, setError);
       if (!passed) {
         setLoading(false);
@@ -78,17 +76,27 @@ export function EditUserPassword(props: EditUserPasswordProps) {
       const formData = new FormData();
       formData.append("id", id);
       formData.append("new_password", passwordData.new_password);
-      // if (user.role.role != RoleEnum.super)
-      //   formData.append("old_password", passwordData.old_password);
+      if (user.role.role != RoleEnum.super)
+        formData.append("old_password", passwordData.old_password);
       formData.append("confirm_password", passwordData.confirm_password);
       try {
-        const response = await axiosClient.post("", formData);
+        const response = await axiosClient.post(
+          "user/accpunt/change-password",
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
         if (response.status == 200) {
           toast({
             toastType: "SUCCESS",
             title: t("success"),
             description: t(response.data.message),
           });
+          // If user changed his password he must login again
+          if (user?.id == id) await logoutUser();
         }
       } catch (error: any) {
         toast({
@@ -107,7 +115,6 @@ export function EditUserPassword(props: EditUserPasswordProps) {
   const hasEdit = permissions.sub.get(
     PermissionEnum.users.sub.user_information
   )?.edit;
-
   return (
     <Card>
       <CardHeader className="space-y-0">
@@ -118,13 +125,40 @@ export function EditUserPassword(props: EditUserPasswordProps) {
           {t("update_pass_descrip")}
         </CardDescription>
       </CardHeader>
-      <CardContent className="grid gap-4 w-full lg:w-[70%] 2xl:w-1/2">
+      <CardContent>
         {failed ? (
           <h1>{t("u_are_not_authzed!")}</h1>
         ) : !userData ? (
           <NastranSpinner />
         ) : (
-          <>
+          <div className="grid gap-4 w-full sm:w-[70%] md:w-1/2">
+            {user.role.role != RoleEnum.super && (
+              <CustomInput
+                size_="sm"
+                name="old_password"
+                lable={t("old_password")}
+                required={true}
+                requiredHint={`* ${t("required")}`}
+                defaultValue={passwordData["old_password"]}
+                onChange={handleChange}
+                placeholder={t("enter_password")}
+                errorMessage={error.get("old_password")}
+                startContent={
+                  <button
+                    className="focus:outline-none"
+                    type="button"
+                    onClick={() => setIsVisible(!isVisible)}
+                  >
+                    {isVisible ? (
+                      <Eye className="size-[20px] text-primary-icon pointer-events-none" />
+                    ) : (
+                      <EyeOff className="size-[20px] text-primary-icon pointer-events-none" />
+                    )}
+                  </button>
+                }
+                type={isVisible ? "text" : "password"}
+              />
+            )}
             <CustomInput
               size_="sm"
               name="new_password"
@@ -149,7 +183,7 @@ export function EditUserPassword(props: EditUserPasswordProps) {
               errorMessage={error.get("confirm_password")}
               type={"password"}
             />
-          </>
+          </div>
         )}
       </CardContent>
       <CardFooter>
