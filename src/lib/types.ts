@@ -2,6 +2,7 @@ import {
   Attendance,
   Audit,
   Employee,
+  EmployeeReport,
   SelectUserPermission,
   SubPermission,
   User,
@@ -157,8 +158,9 @@ export interface EmployeePaginationData {
   currentPage: number;
   totalItems: number;
 }
-export interface AttendancePaginationData {
-  data: Attendance[];
+
+export interface EmployeeReportPaginationData {
+  data: EmployeeReport[];
   lastPage: number;
   perPage: number;
   currentPage: number;
