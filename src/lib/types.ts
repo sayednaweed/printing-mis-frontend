@@ -1,4 +1,5 @@
 import {
+  Attendance,
   Audit,
   Employee,
   EmployeeReport,
@@ -34,7 +35,7 @@ export interface UserInformation {
     selected: boolean;
   };
   contact: string;
-  destination: {
+  department: {
     id: string;
     name: string;
     selected: boolean;
@@ -60,7 +61,6 @@ export interface UserPassword {
   old_password: string;
   new_password: string;
   confirm_password: string;
-  letter_of_pass_change: FileType | undefined;
 }
 export type Order = "desc" | "asc";
 export type UserSort =
@@ -158,6 +158,7 @@ export interface EmployeePaginationData {
   currentPage: number;
   totalItems: number;
 }
+
 export interface EmployeeReportPaginationData {
   data: EmployeeReport[];
   lastPage: number;

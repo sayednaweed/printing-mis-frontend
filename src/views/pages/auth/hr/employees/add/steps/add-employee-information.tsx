@@ -98,6 +98,23 @@ export default function AddEmployeeInformation() {
       />
       <CustomInput
         size_="sm"
+        dir="ltr"
+        className="rtl:text-end"
+        lable={t("family_mem_contact")}
+        placeholder={t("enter_ur_pho_num")}
+        defaultValue={userData["family_mem_contact"]}
+        type="text"
+        name="family_mem_contact"
+        required={true}
+        requiredHint={`* ${t("required")}`}
+        errorMessage={error.get("family_mem_contact")}
+        onChange={handleChange}
+        startContent={
+          <Phone className="text-tertiary size-[18px] pointer-events-none" />
+        }
+      />
+      <CustomInput
+        size_="sm"
         name="email"
         required={true}
         lable={t("email")}

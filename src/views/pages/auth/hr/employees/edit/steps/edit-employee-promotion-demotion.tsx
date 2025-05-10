@@ -104,7 +104,9 @@ export default function EditEmployeePromotionDemotion(
                   <TableHead className="text-start">{t("#")}</TableHead>
                   <TableHead className="text-start">{t("hire_type")}</TableHead>
                   <TableHead className="text-start">{t("salary")}</TableHead>
-                  <TableHead className="text-start">{t("shift")}</TableHead>
+                  <TableHead className="text-start">
+                    {t("work_shift")}
+                  </TableHead>
                   <TableHead className="text-start">{t("position")}</TableHead>
                   <TableHead className="text-start">
                     {t("position_change_type")}
@@ -139,7 +141,9 @@ export default function EditEmployeePromotionDemotion(
                         {item.position}
                       </TableCell>
                       <TableCell className="text-start truncate">
-                        {item.position_change_type}
+                        {item.position_change_type != null
+                          ? item.position_change_type
+                          : t("hired")}
                       </TableCell>
                       <TableCell className="text-start truncate">
                         {item.overtime_rate}

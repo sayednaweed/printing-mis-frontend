@@ -32,11 +32,12 @@ export default function EditUserPermissions(props: EditUserPermissionsProps) {
   const [failed, setFailed] = useState(false);
   const [userData, setUserData] = useState<IUserPermission[]>([]);
   const [saving, setSaving] = useState(false);
+
   const loadPermissions = async () => {
     try {
       if (loading) return;
       setLoading(true);
-      const response = await axiosClient.get(`/${id}`);
+      const response = await axiosClient.get(`user-permissions/${id}`);
       if (response.status == 200) {
         setUserData(response.data);
       }
@@ -61,7 +62,7 @@ export default function EditUserPermissions(props: EditUserPermissionsProps) {
       if (saving) return;
       setSaving(true);
       const response = await axiosClient.post(
-        "",
+        `edit/user-permissions`,
         {
           permissions: userData,
           user_id: id,
@@ -122,14 +123,7 @@ export default function EditUserPermissions(props: EditUserPermissionsProps) {
     singleRow: (value: boolean, permission: string) => {
       const updatedUserData = userData.map((perm) =>
         perm.permission === permission
-          ? {
-              ...perm,
-              add: value,
-              edit: value,
-              delete: value,
-              view: value,
-              singleRow: value,
-            }
+          ? { ...perm, add: value, edit: value, delete: value, view: value }
           : perm
       );
       setUserData(updatedUserData);
@@ -200,14 +194,7 @@ export default function EditUserPermissions(props: EditUserPermissionsProps) {
           // Update the sub array with the updated SubPermission
           const updatedSub = perm.sub.map((sub) =>
             sub.id === subId
-              ? {
-                  ...sub,
-                  add: value,
-                  edit: value,
-                  delete: value,
-                  view: value,
-                  singleRow: value,
-                }
+              ? { ...sub, add: value, edit: value, delete: value, view: value }
               : sub
           );
           return { ...perm, sub: updatedSub }; // Return the updated permission object
@@ -221,7 +208,6 @@ export default function EditUserPermissions(props: EditUserPermissionsProps) {
   const hasEdit = permissions.sub.get(
     PermissionEnum.users.sub.user_information
   )?.edit;
-
   return (
     <Card>
       <CardHeader className="space-y-0">

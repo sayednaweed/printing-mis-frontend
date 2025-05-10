@@ -21,6 +21,18 @@ export const HireTypeEnum = {
   temporary: 3,
   internship: 4,
 };
+export const EmployeeStatusEnum = {
+  active: 1,
+  former: 2,
+};
+export const RoleEnum = {
+  super: 1,
+};
+export const NidTypeEnum = {
+  passport: 1,
+  id_card: 2,
+  paper_id_card: 3,
+};
 export const PermissionEnum = {
   dashboard: { name: "dashboard", sub: {} },
   employees: {
@@ -146,6 +158,7 @@ export const CACHE = {
   USER_TABLE_PAGINATION_COUNT: "USER_TABLE",
   EMPLOYEE_TABLE_PAGINATION_COUNT: "EMPLOYEE_TABLE",
   EMPLOYEEREPORT_TABLE_PAGINATION_COUNT: "EMPLOYEEREPORT_TABLE",
+  ATTENDANCE_TABLE_PAGINATION_COUNT: "ATTENDANCE_TABLE",
   AUDIT_TABLE_PAGINATION_COUNT: "AUDIT_TABLE",
   SYSTEM_CALENDAR: "SYSTEM_CALENDAR",
 };

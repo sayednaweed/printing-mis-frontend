@@ -244,5 +244,10 @@
   "promotion_demotion": "ارتقا و تنزل",
   "is_current_employee": "کارمند فعلی است",
   "is_current_employee_des": "می‌توانید تعیین کنید که کارمند در حال حاضر مشغول به کار است یا خیر.",
-  "promote_or_demote": "ارتقا یا تنزل رتبه"
+  "promote_or_demote": "ارتقا یا تنزل رتبه",
+  "hired": "استخدام شده",
+  "lock": "قفل",
+  "position_change_type": "نوع تغییر",
+  "family_mem_contact": "تماس اعضای خانواده",
+  "identity_card": "کارت هویت"
 }

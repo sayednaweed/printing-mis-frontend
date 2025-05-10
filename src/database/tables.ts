@@ -203,6 +203,7 @@ export type PositionAssignment = {
   department: string;
   hire_date: string;
 };
+
 export type EmployeeReport={
   emp_id:string;
   emp_name:string;
@@ -213,3 +214,22 @@ export type EmployeeReport={
   status:string;
 
 }
+
+export type Attendance = {
+  id: string;
+  hr_code: string;
+  picture: string;
+  employee_name: string;
+  check_in_time: string;
+  check_out_time: string;
+  status: number;
+  description: string;
+};
+export type TakeAttendance = {
+  hr_code: string;
+  picture: string;
+  employee_name: string;
+  attendance_status: number;
+  description: string;
+};
+
