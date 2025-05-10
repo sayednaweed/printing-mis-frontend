@@ -203,3 +203,13 @@ export type PositionAssignment = {
   department: string;
   hire_date: string;
 };
+export type EmployeeReport={
+  emp_id:string;
+  emp_name:string;
+  department:string;
+  position:string;
+  email:string;
+  hire_date:string;
+  status:string;
+
+}
