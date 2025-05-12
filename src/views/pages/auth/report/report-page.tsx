@@ -76,7 +76,7 @@ const Report = forwardRef<HTMLDivElement, any>((_props, ref) => {
       setCompany(company);
     }
   }, []);
-  const _initialize = async () => {
+  const initialize = async () => {
     try {
       const response = await axiosClient.post("report/reports", {
         filters: {
