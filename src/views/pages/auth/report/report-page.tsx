@@ -1,7 +1,7 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Briefcase, MapPinHouse } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import AttendanceReport from "./tabs/attendance";
+import AttendanceReport from "./tabs/Attendance";
 import { UserPermission } from "@/database/tables";
 import { PermissionEnum, PortalEnum } from "@/lib/constants";
 import {
@@ -12,6 +12,7 @@ import {
 } from "@/components/custom-ui/Breadcrumb/Breadcrumb";
 import { useAuthStore } from "@/stores/permission/auth-permssion-store";
 import SalaryReport from "./tabs/Salary";
+import ReportTemplate from "./tabs/general_report_template";
 
 export default function ReportPage() {
   const { t, i18n } = useTranslation();
@@ -49,6 +50,16 @@ export default function ReportPage() {
           <MapPinHouse className="size-[16px] ltr:mr-1 rtl:ml-1" />
           {t("salary")}
         </TabsTrigger>
+      ) : key ==
+        PermissionEnum.configurations.sub.hr_configuration_leave_type ? (
+        <TabsTrigger
+          key={index}
+          value={key.toString()}
+          className="gap-x-1 bg-card shadow rtl:text-2xl-rtl ltr:text-xl-ltr data-[state=active]:bg-primary data-[state=active]:text-tertiary"
+        >
+          <MapPinHouse className="size-[16px] ltr:mr-1 rtl:ml-1" />
+          {t("reportTemplate")}
+        </TabsTrigger>
       ) : undefined;
     }
   );
@@ -78,6 +89,12 @@ export default function ReportPage() {
           className="w-full px-2 "
         >
           <SalaryReport />
+        </TabsContent>
+        <TabsContent
+          value={PermissionEnum.configurations.sub.hr_configuration_leave_type.toString()}
+          className="w-full px-2 "
+        >
+          <ReportTemplate />
         </TabsContent>
       </Tabs>
     </>
