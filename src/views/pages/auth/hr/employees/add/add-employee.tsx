@@ -11,7 +11,7 @@ import { Check, Database, User as UserIcon } from "lucide-react";
 import { Employee } from "@/database/tables";
 import AddEmployeeInformation from "./steps/add-employee-information";
 import AddHireInformation from "./steps/add-hire-information";
-import { HireTypeEnum } from "@/lib/constants";
+import { HireTypeEnum, NidTypeEnum } from "@/lib/constants";
 
 export interface AddEmployeeProps {
   onComplete: (employee: Employee) => void;
@@ -101,6 +101,12 @@ export default function AddEmployee(props: AddEmployeeProps) {
         shift_id: userData?.work_shift?.id,
         has_attachment: userData?.attachment ? true : false,
         family_mem_contact: userData?.family_mem_contact,
+        nid_type_id: userData?.identity_card?.id,
+        register_no: userData?.register_no,
+        register: userData?.register,
+        volume: userData?.volume,
+        page: userData?.page,
+        education_level_id: userData?.education_level?.id,
       });
       if (response.status == 200) {
         onComplete(response.data.employee);
@@ -164,21 +170,21 @@ export default function AddEmployee(props: AddEmployeeProps) {
           {
             component: <AddEmployeeInformation />,
             validationRules: [
-              // { name: "first_name", rules: ["required", "max:45", "min:3"] },
-              // { name: "last_name", rules: ["required", "max:45", "min:3"] },
-              // { name: "father_name", rules: ["required", "max:45", "min:3"] },
-              // { name: "date_of_birth", rules: ["required"] },
-              // { name: "contact", rules: ["required"] },
-              // { name: "family_mem_contact", rules: ["required"] },
-              // { name: "gender", rules: ["required"] },
-              // { name: "marital_status", rules: ["required"] },
-              // { name: "nationality", rules: ["required"] },
-              // { name: "permanent_province", rules: ["required"] },
-              // { name: "permanent_district", rules: ["required"] },
-              // { name: "current_province", rules: ["required"] },
-              // { name: "current_district", rules: ["required"] },
-              // { name: "permanent_area", rules: ["required"] },
-              // { name: "current_area", rules: ["required"] },
+              { name: "first_name", rules: ["required", "max:45", "min:3"] },
+              { name: "last_name", rules: ["required", "max:45", "min:3"] },
+              { name: "father_name", rules: ["required", "max:45", "min:3"] },
+              { name: "date_of_birth", rules: ["required"] },
+              { name: "contact", rules: ["required"] },
+              { name: "family_mem_contact", rules: ["required"] },
+              { name: "gender", rules: ["required"] },
+              { name: "marital_status", rules: ["required"] },
+              { name: "nationality", rules: ["required"] },
+              { name: "permanent_province", rules: ["required"] },
+              { name: "permanent_district", rules: ["required"] },
+              { name: "current_province", rules: ["required"] },
+              { name: "current_district", rules: ["required"] },
+              { name: "permanent_area", rules: ["required"] },
+              { name: "current_area", rules: ["required"] },
             ],
           },
           {
@@ -192,17 +198,76 @@ export default function AddEmployee(props: AddEmployeeProps) {
               { name: "currency", rules: ["required"] },
               { name: "salary", rules: ["required"] },
               { name: "work_shift", rules: ["required"] },
+              { name: "identity_card", rules: ["required"] },
+              { name: "register_no", rules: ["required"] },
+              { name: "education_level", rules: ["required"] },
+              {
+                name: "register",
+                rules: [
+                  (userData: any) => {
+                    if (
+                      userData?.identity_card?.id == NidTypeEnum.paper_id_card
+                    ) {
+                      if (userData?.register) {
+                        return false;
+                      } else {
+                        return true;
+                      }
+                    } else {
+                      return false;
+                    }
+                  },
+                ],
+              },
+              {
+                name: "volume",
+                rules: [
+                  (userData: any) => {
+                    if (
+                      userData?.identity_card?.id == NidTypeEnum.paper_id_card
+                    ) {
+                      if (userData?.volume) {
+                        return false;
+                      } else {
+                        return true;
+                      }
+                    } else {
+                      return false;
+                    }
+                  },
+                ],
+              },
+              {
+                name: "page",
+                rules: [
+                  (userData: any) => {
+                    if (
+                      userData?.identity_card?.id == NidTypeEnum.paper_id_card
+                    ) {
+                      if (userData?.page) {
+                        return false;
+                      } else {
+                        return true;
+                      }
+                    } else {
+                      return false;
+                    }
+                  },
+                ],
+              },
               {
                 name: "start_date",
                 rules: [
                   (userData: any) => {
                     if (userData?.hire_type?.id == HireTypeEnum.permanent) {
+                      if (userData?.start_date) {
+                        return false;
+                      } else {
+                        return true;
+                      }
+                    } else {
                       return false;
                     }
-                    if (userData?.start_date) {
-                      return false;
-                    }
-                    return true;
                   },
                 ],
               },
@@ -211,12 +276,14 @@ export default function AddEmployee(props: AddEmployeeProps) {
                 rules: [
                   (userData: any) => {
                     if (userData?.hire_type?.id == HireTypeEnum.permanent) {
+                      if (userData?.end_date) {
+                        return false;
+                      } else {
+                        return true;
+                      }
+                    } else {
                       return false;
                     }
-                    if (userData?.end_date) {
-                      return false;
-                    }
-                    return true;
                   },
                 ],
               },

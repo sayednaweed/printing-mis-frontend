@@ -7,7 +7,7 @@ export default function Shimmer(props: ShimmerProps) {
   return (
     <div
       className={cn(
-        `relative shadow-md h-[200px] w-[250px] rounded-lg overflow-hidden bg-primary/10`,
+        `relative shadow-md h-[200px] w-[250px] rounded-lg overflow-hidden bg-primary/5`,
         className
       )}
     >

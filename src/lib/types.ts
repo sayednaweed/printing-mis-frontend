@@ -165,3 +165,4 @@ export interface AttendancePaginationData {
   totalItems: number;
 }
 export type ActivitySearch = "user" | "type";
+export type AttendanceGroupReport = "setDate";

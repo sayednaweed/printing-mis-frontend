@@ -18,7 +18,7 @@ import CustomInput from "@/components/custom-ui/input/CustomInput";
 import { Search } from "lucide-react";
 import Shimmer from "@/components/custom-ui/shimmer/Shimmer";
 import TableRowIcon from "@/components/custom-ui/table/TableRowIcon";
-import { Department, UserPermission } from "@/database/tables";
+import { SimpleItem, UserPermission } from "@/database/tables";
 import { PermissionEnum } from "@/lib/constants";
 import DepartmentDialog from "./department-dialog";
 interface DepartmentTabProps {
@@ -37,8 +37,8 @@ export default function DepartmentTab(props: DepartmentTabProps) {
     department: undefined,
   });
   const [departments, setDepartments] = useState<{
-    unFilterList: Department[];
-    filterList: Department[];
+    unFilterList: SimpleItem[];
+    filterList: SimpleItem[];
   }>({
     unFilterList: [],
     filterList: [],
@@ -50,7 +50,7 @@ export default function DepartmentTab(props: DepartmentTabProps) {
 
       // 2. Send data
       const response = await axiosClient.get(`departments`);
-      const fetch = response.data as Department[];
+      const fetch = response.data as SimpleItem[];
       setDepartments({
         unFilterList: fetch,
         filterList: fetch,
@@ -71,7 +71,7 @@ export default function DepartmentTab(props: DepartmentTabProps) {
   const searchOnChange = (e: any) => {
     const { value } = e.target;
     // 1. Filter
-    const filtered = departments.unFilterList.filter((item: Department) =>
+    const filtered = departments.unFilterList.filter((item: SimpleItem) =>
       item.name.toLowerCase().includes(value.toLowerCase())
     );
     setDepartments({
@@ -79,13 +79,13 @@ export default function DepartmentTab(props: DepartmentTabProps) {
       filterList: filtered,
     });
   };
-  const add = (department: Department) => {
+  const add = (department: SimpleItem) => {
     setDepartments((prev) => ({
       unFilterList: [department, ...prev.unFilterList],
       filterList: [department, ...prev.filterList],
     }));
   };
-  const update = (department: Department) => {
+  const update = (department: SimpleItem) => {
     setDepartments((prevState) => {
       const updatedUnFiltered = prevState.unFilterList.map((item) =>
         item.id === department.id ? { ...item, name: department.name } : item
@@ -180,12 +180,12 @@ export default function DepartmentTab(props: DepartmentTabProps) {
             </TableRow>
           ) : (
             departments.filterList.map(
-              (department: Department, index: number) => (
+              (department: SimpleItem, index: number) => (
                 <TableRowIcon
                   read={hasView}
                   remove={false}
                   edit={hasEdit}
-                  onEdit={async (department: Department) => {
+                  onEdit={async (department: SimpleItem) => {
                     setSelected({
                       visible: true,
                       department: department,

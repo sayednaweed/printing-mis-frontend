@@ -78,7 +78,7 @@ export type Notifications = {
   read_status: number;
   created_at: string;
 };
-export type Job = {
+export type SimpleItem = {
   id: string;
   name: string;
   created_at: string;
@@ -92,12 +92,6 @@ export type NidType = {
   name: string;
 };
 // APPLICATION
-
-export type Department = {
-  id: string;
-  name: string;
-  created_at: string;
-};
 
 export type Country = {
   id: string;
