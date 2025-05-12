@@ -54,7 +54,7 @@ export function EmployeesTable() {
     sort: sort == null ? "created_at" : sort,
     order: order == null ? "desc" : order,
     search: {
-      column: searchColumn == null ? "hr_code" : searchColumn,
+      column: searchColumn == null ? "emp_id" : searchColumn,
       value: searchValue == null ? "" : searchValue,
     },
     date:
@@ -83,7 +83,7 @@ export function EmployeesTable() {
         endDate: endDate,
       };
       // 2. Send data
-      const response = await axiosClient.get("employees", {
+      const response = await axiosClient.get("employeeReport", {
         params: {
           page: page,
           per_page: count,

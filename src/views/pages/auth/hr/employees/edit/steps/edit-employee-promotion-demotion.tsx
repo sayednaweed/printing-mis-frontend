@@ -79,10 +79,10 @@ export default function EditEmployeePromotionDemotion(
     <Card>
       <CardHeader className="space-y-0">
         <CardTitle className="rtl:text-3xl-rtl ltr:text-2xl-ltr">
-          {t("account_information")}
+          {t("promotion_demotion")}
         </CardTitle>
         <CardDescription className="rtl:text-xl-rtl ltr:text-lg-ltr">
-          {t("update_user_acc_info")}
+          {t("update_promotion")}
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
