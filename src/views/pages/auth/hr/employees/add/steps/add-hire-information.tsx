@@ -27,6 +27,7 @@ export default function AddHireInformation() {
     setUserData({ ...userData, [name]: value });
   };
 
+  console.log(error);
   const hireTypeDuration = useMemo(() => {
     if (
       userData?.hire_type &&

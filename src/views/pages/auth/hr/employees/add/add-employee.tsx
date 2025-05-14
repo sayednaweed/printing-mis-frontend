@@ -259,7 +259,7 @@ export default function AddEmployee(props: AddEmployeeProps) {
                 name: "start_date",
                 rules: [
                   (userData: any) => {
-                    if (userData?.hire_type?.id == HireTypeEnum.permanent) {
+                    if (userData?.hire_type?.id != HireTypeEnum.permanent) {
                       if (userData?.start_date) {
                         return false;
                       } else {
@@ -275,7 +275,7 @@ export default function AddEmployee(props: AddEmployeeProps) {
                 name: "end_date",
                 rules: [
                   (userData: any) => {
-                    if (userData?.hire_type?.id == HireTypeEnum.permanent) {
+                    if (userData?.hire_type?.id != HireTypeEnum.permanent) {
                       if (userData?.end_date) {
                         return false;
                       } else {

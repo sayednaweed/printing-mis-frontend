@@ -158,7 +158,8 @@ export type Employee = {
   picture: any;
   contact: string;
   email: string;
-  is_current_employee: number;
+  status: number;
+  status_name: string;
   gender: string;
   nationality: string;
   hire_date: string;
@@ -198,16 +199,15 @@ export type PositionAssignment = {
   hire_date: string;
 };
 
-export type EmployeeReport={
-  emp_id:string;
-  emp_name:string;
-  department:string;
-  position:string;
-  email:string;
-  hire_date:string;
-  status:string;
-
-}
+export type EmployeeReport = {
+  emp_id: string;
+  emp_name: string;
+  department: string;
+  position: string;
+  email: string;
+  hire_date: string;
+  status: string;
+};
 
 export type Attendance = {
   id: string;
@@ -226,4 +226,3 @@ export type TakeAttendance = {
   attendance_status: number;
   description: string;
 };
-
