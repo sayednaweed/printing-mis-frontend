@@ -170,3 +170,17 @@ export const ReportSelectionEnum = {
   individual: 1,
   all: 2,
 };
+export const ReportTypeSelectionEnum = {
+  salary: 1,
+  attendance: 2,
+};
+
+export const attendanceReportType = {
+  individual: 1,
+  general: 2,
+};
+
+export const ReportTypeSalary = {
+  individual: 1,
+  general: 2,
+};

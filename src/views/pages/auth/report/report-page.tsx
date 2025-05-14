@@ -2,7 +2,6 @@ import { forwardRef, useEffect, useMemo, useRef, useState } from "react";
 import { X } from "lucide-react";
 import axiosClient from "@/lib/axois-client";
 import { toast } from "@/components/ui/use-toast";
-import NastranSpinner from "@/components/custom-ui/spinner/NastranSpinner";
 import { useReactToPrint } from "react-to-print";
 
 import PrimaryButton from "@/components/custom-ui/button/PrimaryButton";
@@ -11,8 +10,21 @@ import { useTranslation } from "react-i18next";
 import { DateObject } from "react-multi-date-picker";
 import { AttendanceGroupReport } from "@/lib/types";
 import APICombobox from "@/components/custom-ui/combobox/APICombobox";
-import { ReportSelectionEnum } from "@/lib/constants";
+import {
+  attendanceReportType,
+  ReportSelectionEnum,
+  ReportTypeSalary,
+  ReportTypeSelectionEnum,
+} from "@/lib/constants";
 import CustomInput from "@/components/custom-ui/input/CustomInput";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 export default function ReportPage() {
   const componentRef = useRef(null);
@@ -35,8 +47,12 @@ export default function ReportPage() {
     </div>
   );
 }
+
+type ReportType = "attendance" | "salary";
+
 const Report = forwardRef<HTMLDivElement, any>((_props, ref) => {
   const [fetching, setFetching] = useState(false);
+  const [reportType, setReportType] = useState<ReportType>("attendance");
   const [hover, setHover] = useState(false);
   const { t, i18n } = useTranslation();
   const direction = i18n.dir();
@@ -49,7 +65,9 @@ const Report = forwardRef<HTMLDivElement, any>((_props, ref) => {
     selection: { id: number; name: string } | undefined;
     attendance_status: { id: number; name: string } | undefined;
     employee_status: { id: number; name: string } | undefined;
+    hr_code: { id: Number; hr_code: string } | undefined;
     department: { id: number; name: string } | undefined;
+    report_type: { id: number; name: string } | undefined;
   }>({
     fromDate: new DateObject(new Date()),
     toDate: new DateObject(new Date()),
@@ -57,6 +75,8 @@ const Report = forwardRef<HTMLDivElement, any>((_props, ref) => {
     attendance_status: undefined,
     employee_status: undefined,
     department: undefined,
+    hr_code: undefined,
+    report_type: undefined,
   });
   const [reports, setReports] = useState<{
     items: {
@@ -160,9 +180,299 @@ const Report = forwardRef<HTMLDivElement, any>((_props, ref) => {
     }
     return undefined;
   }, [filters.selection?.id]);
+
+  const attendance_individual = useMemo(() => {
+    if (filters.selection?.id == attendanceReportType.individual) {
+      return (
+        <>
+          <Table className="bg-white dark:bg-zinc-900 rounded-lg shadow-sm border border-gray-200 dark:border-zinc-700 mt-5">
+            <TableHeader className="bg-gray-50 dark:bg-zinc-800 text-gray-700 dark:text-gray-200 text-[15px] tracking-wide">
+              <TableRow className="border-b dark:border-zinc-700">
+                <TableHead className="text-center py-3 px-2 w-[100px] font-medium">
+                  {t("date")}
+                </TableHead>
+                <TableHead className="text-center py-3 px-2 w-[100px] font-medium">
+                  {t("name")}
+                </TableHead>
+                <TableHead className="text-center py-3 px-2 w-[100px] font-medium">
+                  {t("position")}
+                </TableHead>
+                <TableHead className="text-center py-3 px-2 w-[100px] font-medium">
+                  {t("Department")}
+                </TableHead>
+                <TableHead className="text-left py-3 px-4 font-medium">
+                  {t("check_in")}
+                </TableHead>
+                <TableHead className="text-left py-3 px-4 font-medium">
+                  {t("check_out")}
+                </TableHead>
+                <TableHead className="text-left py-3 px-4 font-medium">
+                  {t("total_time")}
+                </TableHead>
+                <TableHead className="text-left py-3 px-4 font-medium">
+                  {t("total_over_time")}
+                </TableHead>
+                <TableHead className="text-left py-3 px-4 font-medium">
+                  {t("leave")}
+                </TableHead>
+                <TableHead className="text-center py-3 px-2 w-[80px] font-medium">
+                  {t("absent")}
+                </TableHead>
+              </TableRow>
+            </TableHeader>
+
+            <TableBody className="text-gray-800 dark:text-gray-300 text-[14.5px]">
+              {/* Example row for demonstration */}
+              <TableRow className="hover:bg-gray-100 dark:hover:bg-zinc-800 transition-colors duration-200 ease-in-out border-b dark:border-zinc-700">
+                <TableCell className="text-center py-2 px-2">
+                  5/14/2025
+                </TableCell>
+                <TableCell className="text-center py-2 px-2">Fardin</TableCell>
+                <TableCell className="text-center py-2 px-2">
+                  Software Developer
+                </TableCell>
+                <TableCell className="text-center py-2 px-2">
+                  Information Technology
+                </TableCell>
+                <TableCell className="text-center py-2 px-2">08:00</TableCell>
+                <TableCell className="text-center py-2 px-2">04:00</TableCell>
+                <TableCell className="text-center py-2 px-2">8h</TableCell>
+                <TableCell className="text-center py-2 px-2">0h</TableCell>
+                <TableCell className="text-center py-2 px-2">No</TableCell>
+                <TableCell className="text-center py-2 px-2">No</TableCell>
+              </TableRow>
+              <TableRow className="hover:bg-gray-100 dark:hover:bg-zinc-800 transition-colors duration-200 ease-in-out border-b dark:border-zinc-700"></TableRow>
+            </TableBody>
+          </Table>
+        </>
+      );
+    }
+    return undefined;
+  }, [filters.selection?.id]);
+
+  const attendance_general = useMemo(() => {
+    if (filters.selection?.id == attendanceReportType.general) {
+      return (
+        <>
+          <Table className="bg-white dark:bg-zinc-900 rounded-lg shadow-sm border border-gray-200 dark:border-zinc-700 mt-5">
+            <TableHeader className="bg-gray-50 dark:bg-zinc-800 text-gray-700 dark:text-gray-200 text-[15px] tracking-wide">
+              <TableRow className="border-b dark:border-zinc-700">
+                <TableHead className="text-center py-3 px-2 w-[100px] font-medium">
+                  {t("date")}
+                </TableHead>
+                <TableHead className="text-center py-3 px-2 w-[100px] font-medium">
+                  {t("name")}
+                </TableHead>
+                <TableHead className="text-center py-3 px-2 w-[100px] font-medium">
+                  {t("position")}
+                </TableHead>
+                <TableHead className="text-center py-3 px-2 w-[100px] font-medium">
+                  {t("Department")}
+                </TableHead>
+                <TableHead className="text-left py-3 px-4 font-medium">
+                  {t("check_in")}
+                </TableHead>
+                <TableHead className="text-left py-3 px-4 font-medium">
+                  {t("check_out")}
+                </TableHead>
+                <TableHead className="text-left py-3 px-4 font-medium">
+                  {t("total_time")}
+                </TableHead>
+                <TableHead className="text-left py-3 px-4 font-medium">
+                  {t("total_over_time")}
+                </TableHead>
+                <TableHead className="text-left py-3 px-4 font-medium">
+                  {t("leave")}
+                </TableHead>
+                <TableHead className="text-center py-3 px-2 w-[80px] font-medium">
+                  {t("absent")}
+                </TableHead>
+              </TableRow>
+            </TableHeader>
+
+            <TableBody className="text-gray-800 dark:text-gray-300 text-[14.5px]">
+              {/* Example row for demonstration */}
+              <TableRow className="hover:bg-gray-100 dark:hover:bg-zinc-800 transition-colors duration-200 ease-in-out border-b dark:border-zinc-700">
+                <TableCell className="text-center py-2 px-2">
+                  5/14/2025
+                </TableCell>
+                <TableCell className="text-center py-2 px-2">Fardin</TableCell>
+                <TableCell className="text-center py-2 px-2">
+                  Software Developer
+                </TableCell>
+                <TableCell className="text-center py-2 px-2">
+                  Information Technology
+                </TableCell>
+                <TableCell className="text-center py-2 px-2">08:00</TableCell>
+                <TableCell className="text-center py-2 px-2">04:00</TableCell>
+                <TableCell className="text-center py-2 px-2">8h</TableCell>
+                <TableCell className="text-center py-2 px-2">0h</TableCell>
+                <TableCell className="text-center py-2 px-2">No</TableCell>
+                <TableCell className="text-center py-2 px-2">No</TableCell>
+              </TableRow>
+              <TableRow className="hover:bg-gray-100 dark:hover:bg-zinc-800 transition-colors duration-200 ease-in-out border-b dark:border-zinc-700"></TableRow>
+            </TableBody>
+          </Table>
+        </>
+      );
+    }
+    return undefined;
+  }, [filters.selection?.id]);
+
+  const salary_single_report = useMemo(() => {
+    if (filters.selection?.id == ReportTypeSelectionEnum.salary) {
+      return (
+        <>
+          <Table className="bg-white dark:bg-zinc-900 rounded-lg shadow-sm border border-gray-200 dark:border-zinc-700 mt-5">
+            <TableHeader className="bg-gray-50 dark:bg-zinc-800 text-gray-700 dark:text-gray-200 text-[15px] tracking-wide">
+              <TableRow className="border-b dark:border-zinc-700">
+                <TableHead className="text-center py-3 px-2 w-[100px] font-medium">
+                  {t("Month")}
+                </TableHead>
+                <TableHead className="text-center py-3 px-2 w-[100px] font-medium">
+                  {t("name")}
+                </TableHead>
+                <TableHead className="text-center py-3 px-2 w-[100px] font-medium">
+                  {t("position")}
+                </TableHead>
+                <TableHead className="text-center py-3 px-2 w-[100px] font-medium">
+                  {t("Department")}
+                </TableHead>
+                <TableHead className="text-left py-3 px-4 font-medium">
+                  {t("month")}
+                </TableHead>
+                <TableHead className="text-left py-3 px-4 font-medium">
+                  {t("salary_amount")}
+                </TableHead>
+                <TableHead className="text-left py-3 px-4 font-medium">
+                  {t("over_time")}
+                </TableHead>
+                <TableHead className="text-left py-3 px-4 font-medium">
+                  {t("total")}
+                </TableHead>
+              </TableRow>
+            </TableHeader>
+
+            <TableBody className="text-gray-800 dark:text-gray-300 text-[14.5px]">
+              {/* Example row for demonstration */}
+              <TableRow className="hover:bg-gray-100 dark:hover:bg-zinc-800 transition-colors duration-200 ease-in-out border-b dark:border-zinc-700">
+                <TableCell className="text-center py-2 px-2">
+                  5/14/2025
+                </TableCell>
+                <TableCell className="text-center py-2 px-2">Fardin</TableCell>
+                <TableCell className="text-center py-2 px-2">
+                  Software Developer
+                </TableCell>
+                <TableCell className="text-center py-2 px-2">
+                  Information Technology
+                </TableCell>
+                <TableCell className="text-center py-2 px-2">08:00</TableCell>
+                <TableCell className="text-center py-2 px-2">04:00</TableCell>
+                <TableCell className="text-center py-2 px-2">8h</TableCell>
+                <TableCell className="text-center py-2 px-2">0h</TableCell>
+                <TableCell className="text-center py-2 px-2">No</TableCell>
+                <TableCell className="text-center py-2 px-2">No</TableCell>
+              </TableRow>
+              <TableRow className="hover:bg-gray-100 dark:hover:bg-zinc-800 transition-colors duration-200 ease-in-out border-b dark:border-zinc-700"></TableRow>
+            </TableBody>
+          </Table>
+        </>
+      );
+    }
+    return undefined;
+  }, [filters.selection?.id]);
+
+  const salary_general_report = useMemo(() => {
+    if (filters.selection?.id == ReportTypeSalary.general) {
+      return (
+        <>
+          <Table className="bg-white dark:bg-zinc-900 rounded-lg shadow-sm border border-gray-200 dark:border-zinc-700 mt-5">
+            <TableHeader className="bg-gray-50 dark:bg-zinc-800 text-gray-700 dark:text-gray-200 text-[15px] tracking-wide">
+              <TableRow className="border-b dark:border-zinc-700">
+                <TableHead className="text-center py-3 px-2 w-[100px] font-medium">
+                  {t("hr_code")}
+                </TableHead>
+                <TableHead className="text-center py-3 px-2 w-[100px] font-medium">
+                  {t("name")}
+                </TableHead>
+                <TableHead className="text-center py-3 px-2 w-[100px] font-medium">
+                  {t("position")}
+                </TableHead>
+                <TableHead className="text-center py-3 px-2 w-[100px] font-medium">
+                  {t("Department")}
+                </TableHead>
+                <TableHead className="text-left py-3 px-4 font-medium">
+                  {t("date_range")}
+                </TableHead>
+                <TableHead className="text-left py-3 px-4 font-medium">
+                  {t("salary_amount")}
+                </TableHead>
+                <TableHead className="text-left py-3 px-4 font-medium">
+                  {t("over_time")}
+                </TableHead>
+                <TableHead className="text-left py-3 px-4 font-medium">
+                  {t("total")}
+                </TableHead>
+              </TableRow>
+            </TableHeader>
+
+            <TableBody className="text-gray-800 dark:text-gray-300 text-[14.5px]">
+              {/* Example row for demonstration */}
+              <TableRow className="hover:bg-gray-100 dark:hover:bg-zinc-800 transition-colors duration-200 ease-in-out border-b dark:border-zinc-700">
+                <TableCell className="text-center py-2 px-2">
+                  5/14/2025
+                </TableCell>
+                <TableCell className="text-center py-2 px-2">Fardin</TableCell>
+                <TableCell className="text-center py-2 px-2">
+                  Software Developer
+                </TableCell>
+                <TableCell className="text-center py-2 px-2">
+                  Information Technology
+                </TableCell>
+                <TableCell className="text-center py-2 px-2">08:00</TableCell>
+                <TableCell className="text-center py-2 px-2">04:00</TableCell>
+                <TableCell className="text-center py-2 px-2">8h</TableCell>
+                <TableCell className="text-center py-2 px-2">0h</TableCell>
+                <TableCell className="text-center py-2 px-2">No</TableCell>
+                <TableCell className="text-center py-2 px-2">No</TableCell>
+              </TableRow>
+              <TableRow className="hover:bg-gray-100 dark:hover:bg-zinc-800 transition-colors duration-200 ease-in-out border-b dark:border-zinc-700"></TableRow>
+            </TableBody>
+          </Table>
+        </>
+      );
+    }
+    return undefined;
+  }, [filters.selection?.id]);
+
+  const hr_code = useMemo(() => {
+    if (filters.selection?.id == ReportSelectionEnum.individual) {
+      return (
+        <>
+          <h1 className="font-bold text-[16px]">{`${t("hr_code")}:`}</h1>
+          <APICombobox
+            placeholderText={t("search_item")}
+            errorText={t("no_item")}
+            onSelect={(selection: any) =>
+              setFilters({ ...filters, hr_code: selection })
+            }
+            selectedItem={filters["hr_code"]?.hr_code}
+            placeHolder={t("select_a")}
+            apiUrl={"hr_code"}
+            mode="single"
+            className=" border-none hover:shadow-none m-0 p-1  w-fit hover:bg-black/5 transition-all 
+            duration-300 ease-in-out"
+            cacheData={false}
+            showIcon={false}
+          />
+        </>
+      );
+    }
+    return undefined;
+  }, [filters.selection?.id]);
   return (
     <div
-      className="border w-[210mm] h-[297mm] text-black bg-white shadow-md"
+      className="border h-[210mm] w-[297mm] aspect-[16/9] text-black bg-white shadow-md"
       ref={ref}
       dir={direction}
     >
@@ -225,7 +535,22 @@ const Report = forwardRef<HTMLDivElement, any>((_props, ref) => {
           </h1>
         </section>
 
-        <div className=" grid grid-cols-[auto_auto] items-center px-8 mt-4">
+        <div className=" grid grid-cols-[auto_auto] items-center px-8 mt-4 ">
+          <h1 className="font-bold text-[16px]">{`${t("report_type")}:`}</h1>
+          <APICombobox
+            placeholderText={t("search_item")}
+            errorText={t("no_item")}
+            onSelect={(selection: any) =>
+              setFilters({ ...filters, employee_status: selection })
+            }
+            selectedItem={filters["employee_status"]?.name}
+            placeHolder={t("select_a")}
+            apiUrl={"hr/report/types"}
+            mode="single"
+            className=" border-none hover:shadow-none m-0 p-1 w-fit hover:bg-black/5 transition-all duration-300 ease-in-out"
+            cacheData={false}
+            showIcon={false}
+          />
           <h1 className=" font-bold text-[16px] w-fit">{t("selection")}:</h1>
           <APICombobox
             placeholderText={t("search_item")}
@@ -241,6 +566,7 @@ const Report = forwardRef<HTMLDivElement, any>((_props, ref) => {
             cacheData={false}
             showIcon={false}
           />
+          {hr_code}
           {deparment}
           <h1 className="font-bold text-[16px]">{`${t(
             "attendance_status"
@@ -303,7 +629,7 @@ const Report = forwardRef<HTMLDivElement, any>((_props, ref) => {
         </div>
       </section>
 
-      <table className="w-full relative min-h-[300px] text-sm text-left rtl:text-right text-gray-500">
+      {/* <table className="w-full relative min-h-[300px] text-sm text-left rtl:text-right text-gray-500">
         <thead className="text-xs text-gray-700 uppercase bg-gray-100">
           <tr>
             <th scope="col" className="px-6 py-3">
@@ -344,7 +670,11 @@ const Report = forwardRef<HTMLDivElement, any>((_props, ref) => {
             <td className="px-8 py-3">{reports?.totalQty}</td>
           </tr>
         </tfoot>
-      </table>
+      </table> */}
+      {attendance_general}
+      {attendance_individual}
+      {salary_general_report}
+      {salary_single_report}
     </div>
   );
 });
