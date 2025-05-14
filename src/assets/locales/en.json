@@ -249,5 +249,15 @@
   "lock": "Lock",
   "position_change_type": "Change type",
   "family_mem_contact": "Family members contact",
-  "identity_card": "Identity card"
+  "identity_card": "Identity card",
+  "enter": "Enter",
+  "register": "Register",
+  "volume": "Volume",
+  "register_no": "Register No",
+  "education_level": "Education level",
+  "attendance_status": "Attendance status",
+  "employee_status": "Employee status",
+  "selection": "Selection",
+  "from_date": "From date",
+  "to_date": "To date"
 }

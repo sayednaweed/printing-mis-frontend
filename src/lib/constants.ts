@@ -21,10 +21,6 @@ export const HireTypeEnum = {
   temporary: 3,
   internship: 4,
 };
-export const EmployeeStatusEnum = {
-  active: 1,
-  former: 2,
-};
 export const RoleEnum = {
   super: 1,
 };
@@ -95,9 +91,17 @@ export const PermissionEnum = {
   },
 };
 export const StatusEnum = {
-  blocked: 1,
+  active: 1,
+  on_leave: 2,
+  resigned: 3,
+  terminated: 4,
+  absconded: 5,
+  deceased: 6,
 };
-
+export const UserStatusEnum = {
+  active: 1,
+  block: 2,
+};
 export const CountryEnum = {
   afghanistan: 2,
 };
@@ -161,4 +165,8 @@ export const CACHE = {
   ATTENDANCE_TABLE_PAGINATION_COUNT: "ATTENDANCE_TABLE",
   AUDIT_TABLE_PAGINATION_COUNT: "AUDIT_TABLE",
   SYSTEM_CALENDAR: "SYSTEM_CALENDAR",
+};
+export const ReportSelectionEnum = {
+  individual: 1,
+  all: 2,
 };

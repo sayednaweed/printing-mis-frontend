@@ -249,5 +249,15 @@
   "lock": "قفل",
   "position_change_type": "نوع تغییر",
   "family_mem_contact": "تماس اعضای خانواده",
-  "identity_card": "کارت هویت"
+  "identity_card": "کارت هویت",
+  "enter": "وارد کنید",
+  "register": "ثبت",
+  "volume": "جلد",
+  "register_no": "شماره ثبت",
+  "education_level": "سطح تحصیلات",
+  "attendance_status": "حالت حاضری",
+  "employee_status": "حالت کارمند",
+  "selection": "انتخاب",
+  "from_date": "از تاریخ",
+  "to_date": "تا به تاریخ"
 }

@@ -28,7 +28,6 @@ import WarehousesPage from "@/views/pages/auth/inventory/warehouses/warehouses-p
 import { PortalEnum } from "@/lib/constants";
 import EmployeesPage from "@/views/pages/auth/hr/employees/employees-page";
 import EmployeesEditPage from "@/views/pages/auth/hr/employees/edit/employees-edit-page";
-import Unauthorized from "@/views/pages/error/unauthorized";
 import UserPage from "@/views/pages/auth/hr/users/user-page";
 import UserEditPage from "@/views/pages/auth/hr/users/edit/user-edit-page";
 
@@ -175,9 +174,8 @@ export const getHrRouter = (user: User, authenticated: boolean) => {
               />
             }
           />
+          <Route path="*" element={<HrDashboardPage />} />
         </Route>
-        {/* Catch-all Route for Errors */}
-        <Route path="*" element={<Unauthorized />} />
       </Routes>
     </BrowserRouter>
   );
@@ -292,9 +290,9 @@ export const getInventoryRouter = (user: User, authenticated: boolean) => {
               />
             }
           />
+          <Route path="*" element={<InventoryDashboardPage />} />
         </Route>
         {/* Catch-all Route for Errors */}
-        <Route path="*" element={<Unauthorized />} />
       </Routes>
     </BrowserRouter>
   );
@@ -355,8 +353,8 @@ export const getExpenseRouter = (user: User, authenticated: boolean) => {
               />
             }
           />
+          <Route path="*" element={<ExpenseDashboardPage />} />
         </Route>
-        <Route path="*" element={<Unauthorized />} />
       </Routes>
     </BrowserRouter>
   );

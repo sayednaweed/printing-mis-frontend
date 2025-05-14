@@ -4,7 +4,7 @@ import CustomDatePicker from "@/components/custom-ui/DatePicker/CustomDatePicker
 import { DateObject } from "react-multi-date-picker";
 import { useReactToPrint } from "react-to-print";
 import { Checkbox } from "@/components/ui/checkbox";
-import BarChartNine from "./BarChartNine";
+
 import { Button } from "@/components/ui/button";
 import { t } from "i18next";
 import { useState, useRef } from "react";
@@ -243,9 +243,7 @@ export default function AttendanceReport() {
             <strong>{t("Reporter Name")}:</strong> {formData?.endDate}
           </p>
 
-          <div className="mt-5">
-            <BarChartNine />
-          </div>
+          <div className="mt-5"></div>
 
           {/* Add more detailed report content here as needed */}
 

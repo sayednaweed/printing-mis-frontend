@@ -6,7 +6,7 @@ import {
   returnPermissionsMap,
   setToken,
 } from "@/lib/utils";
-import { StatusEnum } from "@/lib/constants";
+import { UserStatusEnum } from "@/lib/constants";
 import axiosClient from "@/lib/axois-client";
 
 const initUser: User = {
@@ -14,7 +14,7 @@ const initUser: User = {
   full_name: "",
   username: "",
   email: "",
-  status: StatusEnum.blocked,
+  status: UserStatusEnum.block,
   grant: false,
   profile: "",
   role: { role: 3, name: "user" },
