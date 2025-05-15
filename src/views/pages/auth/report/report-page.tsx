@@ -182,7 +182,10 @@ const Report = forwardRef<HTMLDivElement, any>((_props, ref) => {
   }, [filters.selection?.id]);
 
   const attendance_individual = useMemo(() => {
-    if (filters.selection?.id == attendanceReportType.individual) {
+    if (
+      filters.selection?.id === attendanceReportType.individual &&
+      filters.selection?.id === ReportTypeSelectionEnum.attendance
+    ) {
       return (
         <>
           <Table className="bg-white dark:bg-zinc-900 rounded-lg shadow-sm border border-gray-200 dark:border-zinc-700 mt-5">
@@ -251,7 +254,10 @@ const Report = forwardRef<HTMLDivElement, any>((_props, ref) => {
   }, [filters.selection?.id]);
 
   const attendance_general = useMemo(() => {
-    if (filters.selection?.id == attendanceReportType.general) {
+    if (
+      filters.selection?.id === attendanceReportType.general &&
+      filters.selection?.id === ReportTypeSelectionEnum.attendance
+    ) {
       return (
         <>
           <Table className="bg-white dark:bg-zinc-900 rounded-lg shadow-sm border border-gray-200 dark:border-zinc-700 mt-5">
@@ -320,7 +326,10 @@ const Report = forwardRef<HTMLDivElement, any>((_props, ref) => {
   }, [filters.selection?.id]);
 
   const salary_single_report = useMemo(() => {
-    if (filters.selection?.id == ReportTypeSelectionEnum.salary) {
+    if (
+      filters.selection?.id === ReportTypeSelectionEnum.salary &&
+      filters.selection?.id === ReportTypeSalary.individual
+    ) {
       return (
         <>
           <Table className="bg-white dark:bg-zinc-900 rounded-lg shadow-sm border border-gray-200 dark:border-zinc-700 mt-5">
@@ -383,7 +392,10 @@ const Report = forwardRef<HTMLDivElement, any>((_props, ref) => {
   }, [filters.selection?.id]);
 
   const salary_general_report = useMemo(() => {
-    if (filters.selection?.id == ReportTypeSalary.general) {
+    if (
+      filters.selection?.id === ReportTypeSalary.general &&
+      filters.selection?.id === ReportTypeSalary.general
+    ) {
       return (
         <>
           <Table className="bg-white dark:bg-zinc-900 rounded-lg shadow-sm border border-gray-200 dark:border-zinc-700 mt-5">
@@ -671,6 +683,7 @@ const Report = forwardRef<HTMLDivElement, any>((_props, ref) => {
           </tr>
         </tfoot>
       </table> */}
+
       {attendance_general}
       {attendance_individual}
       {salary_general_report}
