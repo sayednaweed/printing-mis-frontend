@@ -1,5 +1,4 @@
 import {
-  Attendance,
   Audit,
   Employee,
   EmployeeReport,

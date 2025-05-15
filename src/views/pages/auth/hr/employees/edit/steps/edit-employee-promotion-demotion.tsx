@@ -23,8 +23,8 @@ import { toast } from "@/components/ui/use-toast";
 import NastranSpinner from "@/components/custom-ui/spinner/NastranSpinner";
 import { PositionAssignment } from "@/database/tables";
 import NastranModel from "@/components/custom-ui/model/NastranModel";
-import AssignPositionDailog from "./parts/assign-position-dailog";
 import PrimaryButton from "@/components/custom-ui/button/PrimaryButton";
+import AssignPositionDailog from "./dialog/assign-position-dailog";
 export interface EditEmployeePromotionDemotionProps {
   id: string | undefined;
 }
