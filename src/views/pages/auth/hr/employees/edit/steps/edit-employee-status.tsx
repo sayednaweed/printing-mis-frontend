@@ -49,7 +49,7 @@ export default function EditEmployeeStatus(props: EditEmployeeStatusProps) {
       // 2. Send data
       const response = await axiosClient.get(`employee/statuses/${id}`);
       if (response.status === 200) {
-        const fetch = response.data.statuses as EmployeeStatus[];
+        const fetch = response.data as EmployeeStatus[];
         setEmployeeStatuses(fetch);
         if (failed) setFailed(false);
       }
@@ -113,10 +113,11 @@ export default function EditEmployeeStatus(props: EditEmployeeStatusProps) {
             <Table className="w-full border">
               <TableHeader className="rtl:text-3xl-rtl ltr:text-xl-ltr">
                 <TableRow className="hover:bg-transparent">
-                  <TableHead className="text-start">{t("hr_code")}</TableHead>
+                  <TableHead className="text-start">{t("#")}</TableHead>
                   <TableHead className="text-start">{t("name")}</TableHead>
                   <TableHead className="text-start">{t("status")}</TableHead>
                   <TableHead className="text-start">{t("saved_by")}</TableHead>
+                  <TableHead className="text-start">{t("active")}</TableHead>
                   <TableHead className="text-start">
                     {t("description")}
                   </TableHead>
@@ -128,22 +129,25 @@ export default function EditEmployeeStatus(props: EditEmployeeStatusProps) {
                   <>
                     <TableRow>
                       <TableCell>
-                        <Shimmer className="h-[24px] bg-primary/30 w-full rounded-sm" />
+                        <Shimmer className="h-[24px] w-full rounded-sm" />
                       </TableCell>
                       <TableCell>
-                        <Shimmer className="h-[24px] bg-primary/30 w-full rounded-sm" />
+                        <Shimmer className="h-[24px] w-full rounded-sm" />
                       </TableCell>
                       <TableCell>
-                        <Shimmer className="h-[24px] bg-primary/30 w-full rounded-sm" />
+                        <Shimmer className="h-[24px] w-full rounded-sm" />
                       </TableCell>
                       <TableCell>
-                        <Shimmer className="h-[24px] bg-primary/30 w-full rounded-sm" />
+                        <Shimmer className="h-[24px] w-full rounded-sm" />
                       </TableCell>
                       <TableCell>
-                        <Shimmer className="h-[24px] bg-primary/30 w-full rounded-sm" />
+                        <Shimmer className="h-[24px] w-full rounded-sm" />
                       </TableCell>
                       <TableCell>
-                        <Shimmer className="h-[24px] bg-primary/30 w-full rounded-sm" />
+                        <Shimmer className="h-[24px] w-full rounded-sm" />
+                      </TableCell>
+                      <TableCell>
+                        <Shimmer className="h-[24px] w-full rounded-sm" />
                       </TableCell>
                     </TableRow>
                   </>
@@ -152,6 +156,9 @@ export default function EditEmployeeStatus(props: EditEmployeeStatusProps) {
                     (employeeStatus: EmployeeStatus, index: number) => (
                       <TableRow key={index}>
                         <TableCell>{index + 1}</TableCell>
+                        <TableCell className="truncate max-w-44">
+                          {employeeStatus.name}
+                        </TableCell>
                         <TableCell>
                           <BooleanStatusButton
                             getColor={function (): {
@@ -177,6 +184,9 @@ export default function EditEmployeeStatus(props: EditEmployeeStatusProps) {
                             }}
                           />
                         </TableCell>
+                        <TableCell className="truncate max-w-44">
+                          {employeeStatus.saved_by}
+                        </TableCell>
                         <TableCell>
                           <BooleanStatusButton
                             getColor={function (): {
@@ -195,6 +205,7 @@ export default function EditEmployeeStatus(props: EditEmployeeStatusProps) {
                             }}
                           />
                         </TableCell>
+
                         <TableCell className="truncate max-w-44">
                           {employeeStatus.description}
                         </TableCell>

@@ -259,5 +259,7 @@
   "employee_status": "حالت کارمند",
   "selection": "انتخاب",
   "from_date": "از تاریخ",
-  "to_date": "تا به تاریخ"
+  "to_date": "تا به تاریخ",
+  "more": "بیشتر",
+  "saved_by": "ذخیره شده توسط"
 }

@@ -28,6 +28,7 @@ import { useScrollToElement } from "@/hook/use-scroll-to-element";
 import CheckListChooser from "@/components/custom-ui/chooser/CheckListChooser";
 import { FileType } from "@/lib/types";
 import { getConfiguration, validateFile } from "@/lib/utils";
+import { ValidateItem } from "@/validation/types";
 export interface EmployeeMoreTabProps {
   id: string | undefined;
   permissions: UserPermission;
@@ -35,7 +36,6 @@ export interface EmployeeMoreTabProps {
 export default function EmployeeMoreTab(props: EmployeeMoreTabProps) {
   const { id, permissions } = props;
   const [failed, setFailed] = useState(false);
-
   const [userData, setUserData] = useState<EmployeeMore | undefined>(undefined);
   const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
@@ -49,10 +49,9 @@ export default function EmployeeMoreTab(props: EmployeeMoreTabProps) {
   };
   const loadInformation = async () => {
     try {
-      const response = await axiosClient.get(`employee/more/detail/${id}`);
+      const response = await axiosClient.get(`employee/more/details/${id}`);
       if (response.status == 200) {
-        const user = response.data.employee as EmployeeMore;
-        setUserData(user);
+        setUserData(response.data.employee);
         if (failed) setFailed(false);
       }
     } catch (error: any) {
@@ -76,83 +75,34 @@ export default function EmployeeMoreTab(props: EmployeeMoreTabProps) {
 
     setLoading(true);
     // 1. Validate form
-    const passed = await validate(
-      [
-        {
-          name: "id",
-          rules: ["required"],
-        },
-        {
-          name: "date_of_birth",
-          rules: ["required"],
-        },
-        {
-          name: "contact",
-          rules: ["required"],
-        },
-        {
-          name: "email",
-          rules: ["required"],
-        },
-        {
-          name: "permanent_province",
-          rules: ["required"],
-        },
-        {
-          name: "permanent_district",
-          rules: ["required"],
-        },
-        {
-          name: "permanent_area",
-          rules: ["required"],
-        },
-        {
-          name: "current_province",
-          rules: ["required"],
-        },
-        {
-          name: "current_district",
-          rules: ["required"],
-        },
-        {
-          name: "current_area",
-          rules: ["required"],
-        },
-        {
-          name: "nationality",
-          rules: ["required"],
-        },
-        {
-          name: "gender",
-          rules: ["required"],
-        },
-        {
-          name: "marital_status",
-          rules: ["required"],
-        },
-        {
-          name: "first_name",
-          rules: ["required", "max:45", "min:3"],
-        },
-        {
-          name: "last_name",
-          rules: ["required", "max:45", "min:3"],
-        },
-        {
-          name: "father_name",
-          rules: ["required", "max:45", "min:3"],
-        },
-      ],
-      userData,
-      setError
-    );
+    const validationRules: ValidateItem[] = [
+      {
+        name: "id",
+        rules: ["required"],
+      },
+      { name: "identity_card", rules: ["required"] },
+      { name: "register_no", rules: ["required"] },
+      { name: "education_level", rules: ["required"] },
+    ];
+    if (userData?.identity_card?.id == NidTypeEnum.paper_id_card) {
+      if (!userData?.register) {
+        validationRules.push({ name: "register", rules: ["required"] });
+      }
+      if (!userData?.volume) {
+        validationRules.push({ name: "volume", rules: ["required"] });
+      }
+      if (!userData?.page) {
+        validationRules.push({ name: "page", rules: ["required"] });
+      }
+    }
+    const passed = await validate(validationRules, userData, setError);
     if (!passed) {
       setLoading(false);
       return;
     }
     // 2. Store
     try {
-      const response = await axiosClient.post("employee/update/information", {
+      const response = await axiosClient.post("employee/update/more/details", {
         id: id,
       });
       if (response.status == 200) {
@@ -176,6 +126,7 @@ export default function EmployeeMoreTab(props: EmployeeMoreTabProps) {
     }
   };
 
+  console.log(userData);
   const hasEdit = permissions.sub.get(
     PermissionEnum.employees.sub.personal_information
   )?.edit;

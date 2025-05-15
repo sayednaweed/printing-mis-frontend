@@ -238,9 +238,10 @@ export type TakeAttendance = {
 };
 export type EmployeeStatus = {
   id: string;
-  employee_id: string;
+  name: string;
   status_id: number;
   status_name: string;
+  saved_by: string;
   active: number;
   description: string;
   created_at: string;

@@ -154,7 +154,6 @@ export default function EmployeeDetailTab(props: EmployeeDetailTabProps) {
         last_name: tempUserData?.last_name,
         father_name: tempUserData?.father_name,
         nationality_id: tempUserData?.nationality?.id,
-        has_attachment: userData?.attachment ? true : false,
       });
       if (response.status == 200) {
         // Update user state
