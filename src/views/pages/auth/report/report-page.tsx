@@ -15,14 +15,23 @@ import { ReportSelectionEnum } from "@/lib/constants";
 import CustomInput from "@/components/custom-ui/input/CustomInput";
 
 export default function ReportPage() {
-  const componentRef = useRef(null);
+  const componentRef = useRef<any>(null);
   const reactToPrintFn = useReactToPrint({
     contentRef: componentRef,
+    pageStyle: `
+    @page {
+      size: A4 landscape;
+      margin: 0;
+    }
+    @media print {
+      body {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+        margin: 0;
+      }
+    }
+  `,
   });
-
-  // const handlePrint = useReactToPrint({
-  //   content: () => componentRef?.current,
-  // });
 
   return (
     <div className="flex flex-col items-center">
@@ -162,9 +171,10 @@ const Report = forwardRef<HTMLDivElement, any>((_props, ref) => {
   }, [filters.selection?.id]);
   return (
     <div
-      className="border w-[210mm] h-[297mm] text-black bg-white shadow-md"
+      className="border h-[210mm] w-[297mm] text-black bg-white shadow-md"
       ref={ref}
       dir={direction}
+      style={{ fontFamily: "Arial, sans-serif" }}
     >
       <section dir={direction}>
         <section className="flex gap-x-4 items-center px-8 pt-8">

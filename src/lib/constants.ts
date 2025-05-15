@@ -36,6 +36,7 @@ export const PermissionEnum = {
     sub: {
       personal_information: 1,
       promotion_demotion: 2,
+      employee_status: 3,
     },
   },
   users: {

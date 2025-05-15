@@ -18,7 +18,7 @@ export default function AddEmployeeInformation() {
 
   const handleChange = (e: any) => {
     const { name, value } = e.target;
-    setUserData({ ...userData, [name]: value });
+    setUserData((prev: any) => ({ ...prev, [name]: value }));
   };
   return (
     <div className="flex flex-col lg:grid lg:grid-cols-2 xl:grid-cols-3 gap-x-4 xl:gap-x-12 lg:items-baseline mt-4 gap-y-3 w-full lg:w-full">
@@ -74,7 +74,7 @@ export default function AddEmployeeInformation() {
         required={true}
         value={userData.date_of_birth}
         dateOnComplete={(date: DateObject) => {
-          setUserData({ ...userData, date_of_birth: date });
+          setUserData((prev: any) => ({ ...prev, date_of_birth: date }));
         }}
         className="py-3 w-full"
         errorMessage={error.get("date_of_birth")}
@@ -135,7 +135,7 @@ export default function AddEmployeeInformation() {
         required={true}
         requiredHint={`* ${t("required")}`}
         onSelect={(selection: any) =>
-          setUserData({ ...userData, ["gender"]: selection })
+          setUserData((prev: any) => ({ ...prev, gender: selection }))
         }
         lable={t("gender")}
         selectedItem={userData["gender"]?.name}
@@ -150,7 +150,7 @@ export default function AddEmployeeInformation() {
         required={true}
         requiredHint={`* ${t("required")}`}
         onSelect={(selection: any) =>
-          setUserData({ ...userData, ["marital_status"]: selection })
+          setUserData((prev: any) => ({ ...prev, marital_status: selection }))
         }
         lable={t("marital_status")}
         selectedItem={userData["marital_status"]?.name}
@@ -165,7 +165,7 @@ export default function AddEmployeeInformation() {
         required={true}
         requiredHint={`* ${t("required")}`}
         onSelect={(selection: any) =>
-          setUserData({ ...userData, ["nationality"]: selection })
+          setUserData((prev: any) => ({ ...prev, nationality: selection }))
         }
         lable={t("nationality")}
         selectedItem={userData["nationality"]?.name}
@@ -184,10 +184,10 @@ export default function AddEmployeeInformation() {
           placeholderText={t("search_item")}
           errorText={t("no_item")}
           onSelect={(selection: any) =>
-            setUserData({
-              ...userData,
-              ["permanent_province"]: selection,
-            })
+            setUserData((prev: any) => ({
+              ...prev,
+              permanent_province: selection,
+            }))
           }
           lable={t("province")}
           required={true}
@@ -203,7 +203,10 @@ export default function AddEmployeeInformation() {
             placeholderText={t("search_item")}
             errorText={t("no_item")}
             onSelect={(selection: any) =>
-              setUserData({ ...userData, ["permanent_district"]: selection })
+              setUserData((prev: any) => ({
+                ...prev,
+                permanent_district: selection,
+              }))
             }
             lable={t("permanent_district")}
             required={true}
@@ -242,10 +245,10 @@ export default function AddEmployeeInformation() {
           placeholderText={t("search_item")}
           errorText={t("no_item")}
           onSelect={(selection: any) =>
-            setUserData({
-              ...userData,
-              ["current_province"]: selection,
-            })
+            setUserData((prev: any) => ({
+              ...prev,
+              current_province: selection,
+            }))
           }
           lable={t("province")}
           required={true}
@@ -261,7 +264,10 @@ export default function AddEmployeeInformation() {
             placeholderText={t("search_item")}
             errorText={t("no_item")}
             onSelect={(selection: any) =>
-              setUserData({ ...userData, ["current_district"]: selection })
+              setUserData((prev: any) => ({
+                ...prev,
+                current_district: selection,
+              }))
             }
             lable={t("current_district")}
             required={true}

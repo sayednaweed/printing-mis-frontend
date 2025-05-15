@@ -468,16 +468,16 @@ export function EmployeesTable() {
                     } {
                       return StatusEnum.active == item.status
                         ? {
-                            style: "bg-green-500/90",
+                            style: "border-green-500/90",
                             value: item.status_name,
                           }
                         : StatusEnum.on_leave == item.status
                         ? {
-                            style: "bg-blue-500/90",
+                            style: "border-blue-500/90",
                             value: item.status_name,
                           }
                         : {
-                            style: "bg-red-500",
+                            style: "border-red-500",
                             value: item.status_name,
                           };
                     }}
