@@ -31,6 +31,7 @@ export interface ComboboxItem {
   id: string;
   name: string;
   selected: boolean;
+  value: string;
 }
 
 export type ComboboxMode = "single" | "multiple";
