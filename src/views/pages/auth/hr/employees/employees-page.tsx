@@ -12,7 +12,6 @@ export interface UserPageProps {}
 export default function EmployeesPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const handleGoBack = () => navigate(-1);
   const handleGoHome = () => navigate("/dashboard", { replace: true });
 
   return (
@@ -20,7 +19,7 @@ export default function EmployeesPage() {
       <Breadcrumb>
         <BreadcrumbHome onClick={handleGoHome} />
         <BreadcrumbSeparator />
-        <BreadcrumbItem onClick={handleGoBack}>{t("employees")}</BreadcrumbItem>
+        <BreadcrumbItem>{t("employees")}</BreadcrumbItem>
       </Breadcrumb>
       <EmployeesHeader />
       <EmployeesTable />

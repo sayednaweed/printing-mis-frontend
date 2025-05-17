@@ -71,14 +71,7 @@ export default function AddUserPermission() {
       const updatedUserData = userData.permissions.map(
         (perm: IUserPermission) =>
           perm.permission === permission
-            ? {
-                ...perm,
-                add: value,
-                edit: value,
-                delete: value,
-                view: value,
-                singleRow: value,
-              }
+            ? { ...perm, add: value, edit: value, delete: value, view: value }
             : perm
       );
       setUserData({ ...userData, permissions: updatedUserData });
@@ -164,7 +157,6 @@ export default function AddUserPermission() {
                     edit: value,
                     delete: value,
                     view: value,
-                    singleRow: value,
                   }
                 : sub
             );

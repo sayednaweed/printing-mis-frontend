@@ -244,5 +244,22 @@
   "promotion_demotion": "Promotion & Demotion",
   "is_current_employee": "Is current employee",
   "is_current_employee_des": "You can set is employee currently working or left.",
-  "promote_or_demote": "Promote Or Demote"
+  "promote_or_demote": "Promote Or Demote",
+  "hired": "Hired",
+  "lock": "Lock",
+  "position_change_type": "Change type",
+  "family_mem_contact": "Family members contact",
+  "identity_card": "Identity card",
+  "enter": "Enter",
+  "register": "Register",
+  "volume": "Volume",
+  "register_no": "Register No",
+  "education_level": "Education level",
+  "attendance_status": "Attendance status",
+  "employee_status": "Employee status",
+  "selection": "Selection",
+  "from_date": "From date",
+  "to_date": "To date",
+  "more": "More",
+  "saved_by": "Saved by"
 }

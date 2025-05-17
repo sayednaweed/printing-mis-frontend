@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/table";
 import { toast } from "@/components/ui/use-toast";
 import { Employee, UserPermission } from "@/database/tables";
-import { CACHE, PermissionEnum, PortalEnum } from "@/lib/constants";
+import { CACHE, PermissionEnum, PortalEnum, StatusEnum } from "@/lib/constants";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useSearchParams } from "react-router";
@@ -36,6 +36,7 @@ import {
 import { useAuthStore } from "@/stores/permission/auth-permssion-store";
 import AddEmployee from "./add/add-employee";
 import CachedImage from "@/components/custom-ui/image/CachedImage";
+import BooleanStatusButton from "@/components/custom-ui/button/BooleanStatusButton";
 
 export function EmployeesTable() {
   const { user } = useAuthStore();
@@ -343,11 +344,6 @@ export function EmployeesTable() {
                     translate: t("contact"),
                     onClick: () => {},
                   },
-                  {
-                    name: "is_current_employee",
-                    translate: t("status"),
-                    onClick: () => {},
-                  },
                 ],
                 order: [
                   {
@@ -423,7 +419,7 @@ export function EmployeesTable() {
             <TableHead className="text-start">{t("name")}</TableHead>
             <TableHead className="text-start">{t("father_name")}</TableHead>
             <TableHead className="text-start">{t("contact")}</TableHead>
-            <TableHead className="text-start w-[60px]">{t("status")}</TableHead>
+            <TableHead className="text-start">{t("status")}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody className="rtl:text-xl-rtl ltr:text-2xl-ltr">
@@ -436,7 +432,7 @@ export function EmployeesTable() {
                 remove={false}
                 edit={false}
                 onEdit={async () => {}}
-                key={item.email}
+                key={item.id}
                 item={item}
                 onRemove={async () => {}}
                 onRead={watchOnClick}
@@ -465,15 +461,27 @@ export function EmployeesTable() {
                   {item?.contact}
                 </TableCell>
                 <TableCell>
-                  {item?.is_current_employee == 1 ? (
-                    <h1 className="truncate text-center rtl:text-md-rtl ltr:text-lg-ltr bg-green-500 px-1 py-[2px] shadow-md text-primary-foreground font-bold rounded-sm">
-                      {t("active")}
-                    </h1>
-                  ) : (
-                    <h1 className="truncate text-center rtl:text-md-rtl ltr:text-lg-ltr bg-red-400 px-1 py-[2px] shadow-md text-primary-foreground font-bold rounded-sm">
-                      {t("lock")}
-                    </h1>
-                  )}
+                  <BooleanStatusButton
+                    getColor={function (): {
+                      style: string;
+                      value: string;
+                    } {
+                      return StatusEnum.active == item.status
+                        ? {
+                            style: "border-green-500/90",
+                            value: item.status_name,
+                          }
+                        : StatusEnum.on_leave == item.status
+                        ? {
+                            style: "border-blue-500/90",
+                            value: item.status_name,
+                          }
+                        : {
+                            style: "border-red-500",
+                            value: item.status_name,
+                          };
+                    }}
+                  />
                 </TableCell>
               </TableRowIcon>
             ))

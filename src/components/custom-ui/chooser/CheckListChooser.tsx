@@ -13,7 +13,6 @@ export interface CheckListProps
   requiredHint?: string;
   name: string;
   number?: string;
-  parentClassName?: string;
   errorMessage?: string;
   defaultFile?: File | FileType;
   disabled?: boolean;

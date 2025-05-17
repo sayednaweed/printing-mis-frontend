@@ -14,6 +14,7 @@ import {
   ChecklistEnum,
   ChecklistTypeEnum,
   HireTypeEnum,
+  NidTypeEnum,
 } from "@/lib/constants";
 
 export default function AddHireInformation() {
@@ -23,9 +24,8 @@ export default function AddHireInformation() {
 
   const handleChange = (e: any) => {
     const { name, value } = e.target;
-    setUserData({ ...userData, [name]: value });
+    setUserData((prev: any) => ({ ...prev, [name]: value }));
   };
-  console.log(userData);
 
   const hireTypeDuration = useMemo(() => {
     if (
@@ -41,7 +41,7 @@ export default function AddHireInformation() {
             required={true}
             value={userData.start_date}
             dateOnComplete={(date: DateObject) => {
-              setUserData({ ...userData, start_date: date });
+              setUserData((prev: any) => ({ ...prev, start_date: date }));
             }}
             className="py-3 w-full"
             errorMessage={error.get("start_date")}
@@ -53,7 +53,7 @@ export default function AddHireInformation() {
             required={true}
             value={userData.end_date}
             dateOnComplete={(date: DateObject) => {
-              setUserData({ ...userData, end_date: date });
+              setUserData((prev: any) => ({ ...prev, end_date: date }));
             }}
             className="py-3 w-full"
             errorMessage={error.get("end_date")}
@@ -63,8 +63,109 @@ export default function AddHireInformation() {
     }
     return undefined;
   }, [userData.hire_type]);
+  const nid_details = useMemo(() => {
+    if (
+      userData?.identity_card &&
+      userData?.identity_card?.id == NidTypeEnum.paper_id_card
+    ) {
+      return (
+        <>
+          <CustomInput
+            size_="sm"
+            dir="ltr"
+            className="rtl:text-end"
+            lable={t("register")}
+            placeholder={t("enter")}
+            defaultValue={userData["register"]}
+            type="text"
+            name="register"
+            required={true}
+            requiredHint={`* ${t("required")}`}
+            errorMessage={error.get("register")}
+            onChange={handleChange}
+          />
+          <CustomInput
+            size_="sm"
+            dir="ltr"
+            className="rtl:text-end"
+            lable={t("volume")}
+            placeholder={t("enter")}
+            defaultValue={userData["volume"]}
+            type="text"
+            name="volume"
+            required={true}
+            requiredHint={`* ${t("required")}`}
+            errorMessage={error.get("volume")}
+            onChange={handleChange}
+          />
+          <CustomInput
+            size_="sm"
+            dir="ltr"
+            className="rtl:text-end"
+            lable={t("page")}
+            placeholder={t("enter")}
+            defaultValue={userData["page"]}
+            type="text"
+            name="page"
+            required={true}
+            requiredHint={`* ${t("required")}`}
+            errorMessage={error.get("page")}
+            onChange={handleChange}
+          />
+        </>
+      );
+    }
+    return undefined;
+  }, [userData.identity_card]);
   return (
     <div className="flex flex-col lg:grid lg:grid-cols-2 xl:grid-cols-3 gap-x-4 xl:gap-x-12 lg:items-baseline mt-4 gap-y-3 w-full lg:w-full">
+      <APICombobox
+        placeholderText={t("search_item")}
+        errorText={t("no_item")}
+        required={true}
+        requiredHint={`* ${t("required")}`}
+        onSelect={(selection: any) =>
+          setUserData((prev: any) => ({ ...prev, identity_card: selection }))
+        }
+        lable={t("identity_card")}
+        selectedItem={userData["identity_card"]?.name}
+        placeHolder={t("select_a")}
+        errorMessage={error.get("identity_card")}
+        apiUrl={"nid/types"}
+        mode="single"
+        cacheData={false}
+      />
+      <CustomInput
+        size_="sm"
+        dir="ltr"
+        className="rtl:text-end"
+        lable={t("register_no")}
+        placeholder={t("enter")}
+        defaultValue={userData["register_no"]}
+        type="text"
+        name="register_no"
+        required={true}
+        requiredHint={`* ${t("required")}`}
+        errorMessage={error.get("register_no")}
+        onChange={handleChange}
+      />
+      {nid_details}
+      <APICombobox
+        placeholderText={t("search_item")}
+        errorText={t("no_item")}
+        required={true}
+        requiredHint={`* ${t("required")}`}
+        onSelect={(selection: any) =>
+          setUserData((prev: any) => ({ ...prev, education_level: selection }))
+        }
+        lable={t("education_level")}
+        selectedItem={userData["education_level"]?.name}
+        placeHolder={t("select_a")}
+        errorMessage={error.get("education_level")}
+        apiUrl={"education-levels"}
+        mode="single"
+        cacheData={false}
+      />
       <APICombobox
         placeholderText={t("search_item")}
         errorText={t("no_item")}
@@ -102,7 +203,7 @@ export default function AddHireInformation() {
         required={true}
         requiredHint={`* ${t("required")}`}
         onSelect={(selection: any) =>
-          setUserData({ ...userData, ["department"]: selection })
+          setUserData((prev: any) => ({ ...prev, department: selection }))
         }
         lable={t("department")}
         selectedItem={userData["department"]?.name}
@@ -118,7 +219,7 @@ export default function AddHireInformation() {
         required={true}
         requiredHint={`* ${t("required")}`}
         onSelect={(selection: any) =>
-          setUserData({ ...userData, ["position"]: selection })
+          setUserData((prev: any) => ({ ...prev, position: selection }))
         }
         lable={t("position")}
         selectedItem={userData["position"]?.name}
@@ -136,7 +237,7 @@ export default function AddHireInformation() {
         required={true}
         value={userData.hire_date}
         dateOnComplete={(date: DateObject) => {
-          setUserData({ ...userData, hire_date: date });
+          setUserData((prev: any) => ({ ...prev, hire_date: date }));
         }}
         className="py-3 w-full"
         errorMessage={error.get("hire_date")}
@@ -147,7 +248,7 @@ export default function AddHireInformation() {
         required={true}
         requiredHint={`* ${t("required")}`}
         onSelect={(selection: any) =>
-          setUserData({ ...userData, ["currency"]: selection })
+          setUserData((prev: any) => ({ ...prev, currency: selection }))
         }
         lable={t("currency")}
         selectedItem={userData["currency"]?.name}
@@ -177,7 +278,7 @@ export default function AddHireInformation() {
         required={true}
         requiredHint={`* ${t("required")}`}
         onSelect={(selection: any) =>
-          setUserData({ ...userData, ["work_shift"]: selection })
+          setUserData((prev: any) => ({ ...prev, work_shift: selection }))
         }
         lable={t("work_shift")}
         selectedItem={userData["work_shift"]?.name}
@@ -208,10 +309,7 @@ export default function AddHireInformation() {
         onComplete={async (record: any) => {
           for (const element of record) {
             const checklist = element[element.length - 1];
-            setUserData({
-              ...userData,
-              attachment: checklist,
-            });
+            setUserData((prev: any) => ({ ...prev, attachment: checklist }));
           }
         }}
         onFailed={async (failed: boolean, response: any) => {
@@ -221,10 +319,7 @@ export default function AddHireInformation() {
                 toastType: "ERROR",
                 description: response.data.message,
               });
-              setUserData({
-                ...userData,
-                attachment: undefined,
-              });
+              setUserData((prev: any) => ({ ...prev, attachment: undefined }));
             }
           }
         }}

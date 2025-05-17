@@ -10,7 +10,7 @@ import {
 import { toast } from "@/components/ui/use-toast";
 import { useGlobalState } from "@/context/GlobalStateContext";
 import { User, UserPermission } from "@/database/tables";
-import { CACHE, PermissionEnum, PortalEnum } from "@/lib/constants";
+import { CACHE, PermissionEnum } from "@/lib/constants";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useSearchParams } from "react-router";
@@ -27,14 +27,14 @@ import SecondaryButton from "@/components/custom-ui/button/SecondaryButton";
 import AddUser from "./add/add-user";
 import CustomSelect from "@/components/custom-ui/select/CustomSelect";
 import { DateObject } from "react-multi-date-picker";
+import { Order, UserPaginationData, UserSearch, UserSort } from "@/lib/types";
 import useCacheDB from "@/lib/indexeddb/useCacheDB";
 import CachedImage from "@/components/custom-ui/image/CachedImage";
 import FilterDialog from "@/components/custom-ui/dialog/filter-dialog";
-import { Order, UserPaginationData, UserSearch, UserSort } from "@/lib/types";
 import { useAuthStore } from "@/stores/permission/auth-permssion-store";
 
 export function UserTable() {
-  const { user } = useAuthStore();
+  const { user, portal } = useAuthStore();
   const navigate = useNavigate();
   const searchRef = useRef<HTMLInputElement>(null);
   const { updateComponentCache, getComponentCache } = useCacheDB();
@@ -47,10 +47,10 @@ export function UserTable() {
   const startDate = searchParams.get("st_dt");
   const endDate = searchParams.get("en_dt");
   const filters = {
-    sort: sort == null ? "created_at" : sort,
-    order: order == null ? "desc" : order,
+    sort: sort == null ? "created_at" : (sort as UserSort),
+    order: order == null ? "desc" : (order as Order),
     search: {
-      column: searchColumn == null ? "username" : searchColumn,
+      column: searchColumn == null ? "username" : (searchColumn as UserSearch),
       value: searchValue == null ? "" : searchValue,
     },
     date:
@@ -79,24 +79,21 @@ export function UserTable() {
         endDate: endDate,
       };
       // 2. Send data
-      const response = await axiosClient.get(
-        user.role.name.startsWith("finance") ? "finance/users" : "epi/users",
-        {
-          params: {
-            page: page,
-            per_page: count,
-            filters: {
-              sort: filters.sort,
-              order: filters.order,
-              search: {
-                column: filters.search.column,
-                value: searchInput,
-              },
-              date: dates,
+      const response = await axiosClient.get(`users`, {
+        params: {
+          page: page,
+          per_page: count,
+          filters: {
+            sort: filters.sort,
+            order: filters.order,
+            search: {
+              column: filters.search.column,
+              value: searchInput,
             },
+            date: dates,
           },
-        }
-      );
+        },
+      });
       const fetch = response.data.users.data as User[];
       const lastPage = response.data.users.last_page;
       const totalItems = response.data.users.total;
@@ -186,6 +183,36 @@ export function UserTable() {
     }));
   };
 
+  const deleteOnClick = async (user: User) => {
+    try {
+      const userId = user.id;
+      const response = await axiosClient.delete("user/" + userId);
+      if (response.status == 200) {
+        const filtered = users.unFilterList.data.filter(
+          (item: User) => userId != item?.id
+        );
+        const item = {
+          data: filtered,
+          lastPage: users.unFilterList.lastPage,
+          totalItems: users.unFilterList.totalItems,
+          perPage: users.unFilterList.perPage,
+          currentPage: users.unFilterList.currentPage,
+        };
+        setUsers({ ...users, filterList: item, unFilterList: item });
+      }
+      toast({
+        toastType: "SUCCESS",
+        title: t("success"),
+        description: response.data.message,
+      });
+    } catch (error: any) {
+      toast({
+        toastType: "ERROR",
+        title: t("error"),
+        description: error.response.data.message,
+      });
+    }
+  };
   const skeleton = (
     <TableRow>
       <TableCell>
@@ -209,19 +236,14 @@ export function UserTable() {
       <TableCell>
         <Shimmer className="h-[24px] w-full rounded-sm" />
       </TableCell>
-      <TableCell>
-        <Shimmer className="h-[24px] w-full rounded-sm" />
-      </TableCell>
-      <TableCell>
-        <Shimmer className="h-[24px] w-full rounded-sm" />
-      </TableCell>
     </TableRow>
   );
-  const per: UserPermission = user?.permissions[PortalEnum.hr].get(
+  const per: UserPermission = user?.permissions[portal].get(
     PermissionEnum.users.name
   ) as UserPermission;
   const hasView = per?.view;
   const hasAdd = per?.add;
+  const hasDelete = per?.delete;
 
   const watchOnClick = async (user: User) => {
     const userId = user.id;
@@ -373,11 +395,6 @@ export function UserTable() {
                 ],
                 search: [
                   {
-                    name: "registration_number",
-                    translate: t("registration_number"),
-                    onClick: () => {},
-                  },
-                  {
                     name: "username",
                     translate: t("username"),
                     onClick: () => {},
@@ -386,11 +403,6 @@ export function UserTable() {
                   {
                     name: "contact",
                     translate: t("contact"),
-                    onClick: () => {},
-                  },
-                  {
-                    name: "zone",
-                    translate: t("zone"),
                     onClick: () => {},
                   },
                 ],
@@ -427,9 +439,6 @@ export function UserTable() {
       <Table className="bg-card rounded-md my-[2px] py-8">
         <TableHeader className="rtl:text-3xl-rtl ltr:text-xl-ltr">
           <TableRow className="hover:bg-transparent">
-            <TableHead className="text-start px-1">
-              {t("registration_number")}
-            </TableHead>
             <TableHead className="text-center px-1 w-[60px]">
               {t("profile")}
             </TableHead>
@@ -448,17 +457,14 @@ export function UserTable() {
             users.filterList.data.map((item: User) => (
               <TableRowIcon
                 read={hasView}
-                remove={false}
+                remove={hasDelete}
                 edit={false}
                 onEdit={async () => {}}
                 key={item.email}
                 item={item}
-                onRemove={async () => {}}
+                onRemove={deleteOnClick}
                 onRead={watchOnClick}
               >
-                <TableCell className="rtl:text-md-rtl truncate px-1 py-0">
-                  {item.registration_number}
-                </TableCell>
                 <TableCell className="px-1 py-0">
                   <CachedImage
                     src={item?.profile}
@@ -492,7 +498,7 @@ export function UserTable() {
                   {toLocaleDate(new Date(item.created_at), state)}
                 </TableCell>
                 <TableCell>
-                  {item?.status == 1 ? (
+                  {item?.status ? (
                     <h1 className="truncate text-center rtl:text-md-rtl ltr:text-lg-ltr bg-green-500 px-1 py-[2px] shadow-md text-primary-foreground font-bold rounded-sm">
                       {t("active")}
                     </h1>

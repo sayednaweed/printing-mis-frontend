@@ -1,32 +1,22 @@
-import { cn } from "@/lib/utils";
-
 export interface BooleanStatusButtonProps {
-  id: number;
-  value1: string;
-  value2: string;
+  getColor: () => {
+    style: string;
+    value: string;
+  };
 }
 
 export default function BooleanStatusButton(props: BooleanStatusButtonProps) {
-  const { id, value1, value2 } = props;
-  const data =
-    id == 1
-      ? {
-          style: "bg-green-500/90",
-          value: value1,
-        }
-      : {
-          style: "bg-primary/90",
-          value: value2,
-        };
+  const { getColor } = props;
+  const data = getColor();
 
   return (
-    <h1
-      className={cn(
-        "truncate ring-1 shadow-md text-center rounded-2xl rtl:text-md-rtl ltr:text-md-ltr px-1 py-[2px] text-primary-foreground font-bold",
-        data.style
-      )}
+    <div
+      className={`border-[1px] min-w-fit rtl:text-xl-rtl rtl:font-medium w-fit flex items-center gap-x-2 ltr:py-1 rtl:py-[2px] px-[8px] rounded-full ${data.style}`}
     >
-      {data.value}
-    </h1>
+      <div
+        className={`size-[12px] min-h-[12px] min-w-[12px] rounded-full border-[3px] ${data.style}`}
+      />
+      <h1 className="text-nowrap">{data.value}</h1>
+    </div>
   );
 }

@@ -23,8 +23,8 @@ import { toast } from "@/components/ui/use-toast";
 import NastranSpinner from "@/components/custom-ui/spinner/NastranSpinner";
 import { PositionAssignment } from "@/database/tables";
 import NastranModel from "@/components/custom-ui/model/NastranModel";
-import AssignPositionDailog from "./parts/assign-position-dailog";
 import PrimaryButton from "@/components/custom-ui/button/PrimaryButton";
+import AssignPositionDailog from "./dialog/assign-position-dailog";
 export interface EditEmployeePromotionDemotionProps {
   id: string | undefined;
 }
@@ -79,10 +79,10 @@ export default function EditEmployeePromotionDemotion(
     <Card>
       <CardHeader className="space-y-0">
         <CardTitle className="rtl:text-3xl-rtl ltr:text-2xl-ltr">
-          {t("account_information")}
+          {t("promotion_demotion")}
         </CardTitle>
         <CardDescription className="rtl:text-xl-rtl ltr:text-lg-ltr">
-          {t("update_user_acc_info")}
+          {t("update_promotion")}
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -104,7 +104,9 @@ export default function EditEmployeePromotionDemotion(
                   <TableHead className="text-start">{t("#")}</TableHead>
                   <TableHead className="text-start">{t("hire_type")}</TableHead>
                   <TableHead className="text-start">{t("salary")}</TableHead>
-                  <TableHead className="text-start">{t("shift")}</TableHead>
+                  <TableHead className="text-start">
+                    {t("work_shift")}
+                  </TableHead>
                   <TableHead className="text-start">{t("position")}</TableHead>
                   <TableHead className="text-start">
                     {t("position_change_type")}
@@ -139,7 +141,9 @@ export default function EditEmployeePromotionDemotion(
                         {item.position}
                       </TableCell>
                       <TableCell className="text-start truncate">
-                        {item.position_change_type}
+                        {item.position_change_type != null
+                          ? item.position_change_type
+                          : t("hired")}
                       </TableCell>
                       <TableCell className="text-start truncate">
                         {item.overtime_rate}

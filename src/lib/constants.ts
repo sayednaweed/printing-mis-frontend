@@ -21,6 +21,14 @@ export const HireTypeEnum = {
   temporary: 3,
   internship: 4,
 };
+export const RoleEnum = {
+  super: 1,
+};
+export const NidTypeEnum = {
+  passport: 1,
+  id_card: 2,
+  paper_id_card: 3,
+};
 export const PermissionEnum = {
   dashboard: { name: "dashboard", sub: {} },
   employees: {
@@ -28,6 +36,7 @@ export const PermissionEnum = {
     sub: {
       personal_information: 1,
       promotion_demotion: 2,
+      employee_status: 3,
     },
   },
   users: {
@@ -83,9 +92,17 @@ export const PermissionEnum = {
   },
 };
 export const StatusEnum = {
-  blocked: 1,
+  active: 1,
+  on_leave: 2,
+  resigned: 3,
+  terminated: 4,
+  absconded: 5,
+  deceased: 6,
 };
-
+export const UserStatusEnum = {
+  active: 1,
+  block: 2,
+};
 export const CountryEnum = {
   afghanistan: 2,
 };
@@ -145,6 +162,26 @@ export const CACHE = {
   VACCINE_CERTIFICATE_TABLE_PAGINATION_COUNT: "VACCINE_CERTIFICATE_TABLE",
   USER_TABLE_PAGINATION_COUNT: "USER_TABLE",
   EMPLOYEE_TABLE_PAGINATION_COUNT: "EMPLOYEE_TABLE",
+  EMPLOYEEREPORT_TABLE_PAGINATION_COUNT: "EMPLOYEEREPORT_TABLE",
+  ATTENDANCE_TABLE_PAGINATION_COUNT: "ATTENDANCE_TABLE",
   AUDIT_TABLE_PAGINATION_COUNT: "AUDIT_TABLE",
   SYSTEM_CALENDAR: "SYSTEM_CALENDAR",
+};
+export const ReportSelectionEnum = {
+  individual: 1,
+  all: 2,
+};
+export const ReportTypeSelectionEnum = {
+  salary: 1,
+  attendance: 2,
+};
+
+export const attendanceReportType = {
+  individual: 1,
+  general: 2,
+};
+
+export const ReportTypeSalary = {
+  individual: 1,
+  general: 2,
 };
