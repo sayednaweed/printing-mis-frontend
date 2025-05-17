@@ -7,6 +7,7 @@ import axiosClient from "@/lib/axois-client";
 import NastranSpinner from "@/components/custom-ui/spinner/NastranSpinner";
 import CachedImage from "@/components/custom-ui/image/CachedImage";
 import { validateFile } from "@/lib/utils";
+import { useAuthStore } from "@/stores/permission/auth-permssion-store";
 import { EmployeeModel } from "@/database/tables";
 
 export interface EmployeesEditHeaderProps {

@@ -158,8 +158,12 @@ export type Employee = {
   picture: any;
   contact: string;
   email: string;
+<<<<<<< HEAD
+  is_current_employee: number;
+=======
   status: number;
   status_name: string;
+>>>>>>> 83f7003aada51197ae6359e61cfe47273a417bae
   gender: string;
   nationality: string;
   hire_date: string;
@@ -170,7 +174,10 @@ export type EmployeeModel = {
   date_of_birth: string | DateObject;
   picture: any;
   contact: string;
+<<<<<<< HEAD
+=======
   family_mem_contact: string;
+>>>>>>> 83f7003aada51197ae6359e61cfe47273a417bae
   email: string;
   permanent_province: { id: string; name: string };
   permanent_district: { id: string; name: string };
@@ -187,6 +194,8 @@ export type EmployeeModel = {
   father_name: string;
   attachment: FileType | undefined;
 };
+<<<<<<< HEAD
+=======
 export type EmployeeMore = {
   identity_card: { id: number; name: string };
   register: string;
@@ -196,6 +205,7 @@ export type EmployeeMore = {
   education_level: { id: string; name: string };
   attachment: FileType | undefined;
 };
+>>>>>>> 83f7003aada51197ae6359e61cfe47273a417bae
 export type PositionAssignment = {
   id: string;
   hire_type: string;
@@ -207,6 +217,8 @@ export type PositionAssignment = {
   currency: string;
   department: string;
   hire_date: string;
+<<<<<<< HEAD
+=======
 };
 
 export type EmployeeReport = {
@@ -245,4 +257,5 @@ export type EmployeeStatus = {
   active: number;
   description: string;
   created_at: string;
+>>>>>>> 83f7003aada51197ae6359e61cfe47273a417bae
 };

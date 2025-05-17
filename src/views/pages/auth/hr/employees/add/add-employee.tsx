@@ -11,7 +11,6 @@ import { Check, Database, User as UserIcon } from "lucide-react";
 import { Employee } from "@/database/tables";
 import AddEmployeeInformation from "./steps/add-employee-information";
 import AddHireInformation from "./steps/add-hire-information";
-import { HireTypeEnum, NidTypeEnum } from "@/lib/constants";
 
 export interface AddEmployeeProps {
   onComplete: (employee: Employee) => void;
@@ -98,15 +97,7 @@ export default function AddEmployee(props: AddEmployeeProps) {
           userData?.hire_date && userData?.hire_date?.toDate()?.toISOString(),
         currency_id: userData?.currency?.id,
         salary: userData?.salary,
-        shift_id: userData?.work_shift?.id,
-        has_attachment: userData?.attachment ? true : false,
-        family_mem_contact: userData?.family_mem_contact,
-        nid_type_id: userData?.identity_card?.id,
-        register_no: userData?.register_no,
-        register: userData?.register,
-        volume: userData?.volume,
-        page: userData?.page,
-        education_level_id: userData?.education_level?.id,
+        shift_id: userData?.shift?.id,
       });
       if (response.status == 200) {
         onComplete(response.data.employee);
@@ -175,7 +166,7 @@ export default function AddEmployee(props: AddEmployeeProps) {
               { name: "father_name", rules: ["required", "max:45", "min:3"] },
               { name: "date_of_birth", rules: ["required"] },
               { name: "contact", rules: ["required"] },
-              { name: "family_mem_contact", rules: ["required"] },
+              { name: "department", rules: ["required"] },
               { name: "gender", rules: ["required"] },
               { name: "marital_status", rules: ["required"] },
               { name: "nationality", rules: ["required"] },
@@ -190,100 +181,14 @@ export default function AddEmployee(props: AddEmployeeProps) {
           {
             component: <AddHireInformation />,
             validationRules: [
-              { name: "hire_type", rules: ["required"] },
-              { name: "overtime_rate", rules: ["required"] },
-              { name: "department", rules: ["required"] },
-              { name: "position", rules: ["required"] },
-              { name: "hire_date", rules: ["required"] },
-              { name: "currency", rules: ["required"] },
-              { name: "salary", rules: ["required"] },
-              { name: "work_shift", rules: ["required"] },
-              { name: "identity_card", rules: ["required"] },
-              { name: "register_no", rules: ["required"] },
-              { name: "education_level", rules: ["required"] },
               {
-                name: "register",
+                name: "password",
                 rules: [
-                  (userData: any) => {
-                    if (
-                      userData?.identity_card?.id == NidTypeEnum.paper_id_card
-                    ) {
-                      if (userData?.register) {
-                        return false;
-                      } else {
-                        return true;
-                      }
-                    } else {
-                      return false;
-                    }
-                  },
-                ],
-              },
-              {
-                name: "volume",
-                rules: [
-                  (userData: any) => {
-                    if (
-                      userData?.identity_card?.id == NidTypeEnum.paper_id_card
-                    ) {
-                      if (userData?.volume) {
-                        return false;
-                      } else {
-                        return true;
-                      }
-                    } else {
-                      return false;
-                    }
-                  },
-                ],
-              },
-              {
-                name: "page",
-                rules: [
-                  (userData: any) => {
-                    if (
-                      userData?.identity_card?.id == NidTypeEnum.paper_id_card
-                    ) {
-                      if (userData?.page) {
-                        return false;
-                      } else {
-                        return true;
-                      }
-                    } else {
-                      return false;
-                    }
-                  },
-                ],
-              },
-              {
-                name: "start_date",
-                rules: [
-                  (userData: any) => {
-                    if (userData?.hire_type?.id != HireTypeEnum.permanent) {
-                      if (userData?.start_date) {
-                        return false;
-                      } else {
-                        return true;
-                      }
-                    } else {
-                      return false;
-                    }
-                  },
-                ],
-              },
-              {
-                name: "end_date",
-                rules: [
-                  (userData: any) => {
-                    if (userData?.hire_type?.id != HireTypeEnum.permanent) {
-                      if (userData?.end_date) {
-                        return false;
-                      } else {
-                        return true;
-                      }
-                    } else {
-                      return false;
-                    }
+                  (value: any) => {
+                    const strength = checkStrength(value, t);
+                    const score = passwordStrengthScore(strength);
+                    if (score === 4) return true;
+                    return false;
                   },
                 ],
               },

@@ -26,6 +26,7 @@ export default function AddHireInformation() {
     const { name, value } = e.target;
     setUserData((prev: any) => ({ ...prev, [name]: value }));
   };
+  console.log(userData);
 
   const hireTypeDuration = useMemo(() => {
     if (
@@ -41,6 +42,7 @@ export default function AddHireInformation() {
             required={true}
             value={userData.start_date}
             dateOnComplete={(date: DateObject) => {
+              setUserData({ ...userData, start_date: date });
               setUserData((prev: any) => ({ ...prev, start_date: date }));
             }}
             className="py-3 w-full"
@@ -53,6 +55,7 @@ export default function AddHireInformation() {
             required={true}
             value={userData.end_date}
             dateOnComplete={(date: DateObject) => {
+              setUserData({ ...userData, end_date: date });
               setUserData((prev: any) => ({ ...prev, end_date: date }));
             }}
             className="py-3 w-full"
@@ -166,6 +169,21 @@ export default function AddHireInformation() {
         mode="single"
         cacheData={false}
       />
+      <CustomInput
+        size_="sm"
+        dir="ltr"
+        className="rtl:text-end"
+        lable={t("overtime_rate")}
+        placeholder={t("rate")}
+        defaultValue={userData["overtime_rate"]}
+        type="number"
+        name="overtime_rate"
+        required={true}
+        requiredHint={`* ${t("required")}`}
+        errorMessage={error.get("overtime_rate")}
+        onChange={handleChange}
+      />
+      {hireTypeDuration}
       <APICombobox
         placeholderText={t("search_item")}
         errorText={t("no_item")}
@@ -278,7 +296,7 @@ export default function AddHireInformation() {
         required={true}
         requiredHint={`* ${t("required")}`}
         onSelect={(selection: any) =>
-          setUserData((prev: any) => ({ ...prev, work_shift: selection }))
+          setUserData({ ...userData, ["work_shift"]: selection })
         }
         lable={t("work_shift")}
         selectedItem={userData["work_shift"]?.name}
