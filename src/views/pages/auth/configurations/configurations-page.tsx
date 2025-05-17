@@ -13,6 +13,8 @@ import {
 import { useAuthStore } from "@/stores/permission/auth-permssion-store";
 import DepartmentTab from "./tabs/department/department-tab";
 import LeaveTypeTab from "./tabs/leave-type/leave-type-tab";
+import ShiftTypeTab from "./tabs/shift-type/shift-type-tab";
+import HireTypeTab from "./tabs/hire-type/hire-type-tab";
 
 export default function ConfigurationsPage() {
   const { t, i18n } = useTranslation();
@@ -206,6 +208,18 @@ export default function ConfigurationsPage() {
           className="w-full px-4 pt-8"
         >
           <LeaveTypeTab permissions={per} />
+        </TabsContent>
+        <TabsContent
+          value={PermissionEnum.configurations.sub.hr_configuration_shifts.toString()}
+          className="w-full px-4 pt-8"
+        >
+          <ShiftTypeTab permissions={per} />
+        </TabsContent>
+        <TabsContent
+          value={PermissionEnum.configurations.sub.hr_configuration_hire_type.toString()}
+          className="w-full px-4 pt-8"
+        >
+          <HireTypeTab permissions={per} />
         </TabsContent>
       </Tabs>
     </>
