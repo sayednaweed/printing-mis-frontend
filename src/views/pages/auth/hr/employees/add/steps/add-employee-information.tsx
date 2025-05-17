@@ -2,8 +2,7 @@ import APICombobox from "@/components/custom-ui/combobox/APICombobox";
 import BorderContainer from "@/components/custom-ui/container/BorderContainer";
 import CustomDatePicker from "@/components/custom-ui/DatePicker/CustomDatePicker";
 import CustomInput from "@/components/custom-ui/input/CustomInput";
-import MultiTabTextarea from "@/components/custom-ui/input/mult-tab/MultiTabTextarea";
-import SingleTab from "@/components/custom-ui/input/mult-tab/parts/SingleTab";
+import CustomTextarea from "@/components/custom-ui/input/CustomTextarea";
 import { StepperContext } from "@/components/custom-ui/stepper/StepperContext";
 import { useScrollToElement } from "@/hook/use-scroll-to-element";
 import { CountryEnum } from "@/lib/constants";
@@ -22,7 +21,7 @@ export default function AddEmployeeInformation() {
     setUserData({ ...userData, [name]: value });
   };
   return (
-    <div className="flex flex-col mt-10 w-full lg:w-[60%] 2xl:w-1/3 gap-y-6 pb-12">
+    <div className="flex flex-col lg:grid lg:grid-cols-2 xl:grid-cols-3 gap-x-4 xl:gap-x-12 lg:items-baseline mt-4 gap-y-3 w-full lg:w-full">
       <CustomInput
         required={true}
         lable={t("first_name")}
@@ -30,7 +29,7 @@ export default function AddEmployeeInformation() {
         size_="sm"
         name="first_name"
         defaultValue={userData["first_name"]}
-        placeholder={t("enter")}
+        placeholder={t("enter_f_name")}
         type="text"
         errorMessage={error.get("first_name")}
         onBlur={handleChange}
@@ -45,7 +44,7 @@ export default function AddEmployeeInformation() {
         size_="sm"
         name="last_name"
         defaultValue={userData["last_name"]}
-        placeholder={t("enter")}
+        placeholder={t("enter_l_name")}
         type="text"
         errorMessage={error.get("last_name")}
         onBlur={handleChange}
@@ -60,7 +59,7 @@ export default function AddEmployeeInformation() {
         lable={t("father_name")}
         name="father_name"
         defaultValue={userData["father_name"]}
-        placeholder={t("enter")}
+        placeholder={t("enter_fa_name")}
         type="text"
         errorMessage={error.get("father_name")}
         onBlur={handleChange}
@@ -175,6 +174,7 @@ export default function AddEmployeeInformation() {
           }
           lable={t("province")}
           required={true}
+          requiredHint={`* ${t("required")}`}
           selectedItem={userData["permanent_province"]?.name}
           placeHolder={t("select_a")}
           errorMessage={error.get("permanent_province")}
@@ -190,6 +190,7 @@ export default function AddEmployeeInformation() {
             }
             lable={t("permanent_district")}
             required={true}
+            requiredHint={`* ${t("required")}`}
             selectedItem={userData["permanent_district"]?.name}
             placeHolder={t("select_a")}
             errorMessage={error.get("permanent_district")}
@@ -200,40 +201,25 @@ export default function AddEmployeeInformation() {
         )}
 
         {userData.permanent_district && (
-          <MultiTabTextarea
-            parentClassName="w-full"
-            optionalKey={"optional_lang"}
-            onTabChanged={(key: string, tabName: string) => {
-              setUserData({
-                ...userData,
-                [key]: tabName,
-                optional_lang: tabName,
-              });
-            }}
-            onChanged={(value: string, name: string) => {
-              setUserData({
-                ...userData,
-                [name]: value,
-              });
-            }}
+          <CustomTextarea
+            required={true}
+            requiredHint={`* ${t("required")}`}
+            lable={t("permanent_area")}
             name="permanent_area"
-            highlightColor="bg-tertiary"
-            userData={userData}
-            errorData={error}
-            placeholder={t("content")}
+            defaultValue={userData["permanent_area"]}
+            placeholder={t("detail")}
+            errorMessage={error.get("permanent_area")}
+            onBlur={handleChange}
+            parantClassName=" min-w-full"
             rows={5}
-            className="rtl:text-xl-rtl"
-            tabsClassName="gap-x-5"
-          >
-            <SingleTab>{t("permanent_area")}</SingleTab>
-          </MultiTabTextarea>
+          />
         )}
       </BorderContainer>
       <BorderContainer
         title={t("currently_address")}
         required={true}
         parentClassName="mt-3"
-        className="flex flex-col items-start gap-y-3"
+        className="flex flex-col items-center gap-y-3"
       >
         <APICombobox
           placeholderText={t("search_item")}
@@ -246,6 +232,7 @@ export default function AddEmployeeInformation() {
           }
           lable={t("province")}
           required={true}
+          requiredHint={`* ${t("required")}`}
           selectedItem={userData["current_province"]?.name}
           placeHolder={t("select_a")}
           errorMessage={error.get("current_province")}
@@ -261,6 +248,7 @@ export default function AddEmployeeInformation() {
             }
             lable={t("current_district")}
             required={true}
+            requiredHint={`* ${t("required")}`}
             selectedItem={userData["current_district"]?.name}
             placeHolder={t("select_a")}
             errorMessage={error.get("current_district")}
@@ -271,33 +259,18 @@ export default function AddEmployeeInformation() {
         )}
 
         {userData.current_district && (
-          <MultiTabTextarea
-            parentClassName="w-full"
-            optionalKey={"optional_lang"}
-            onTabChanged={(key: string, tabName: string) => {
-              setUserData({
-                ...userData,
-                [key]: tabName,
-                optional_lang: tabName,
-              });
-            }}
-            onChanged={(value: string, name: string) => {
-              setUserData({
-                ...userData,
-                [name]: value,
-              });
-            }}
+          <CustomTextarea
+            required={true}
+            requiredHint={`* ${t("required")}`}
+            lable={t("current_area")}
             name="current_area"
-            highlightColor="bg-tertiary"
-            userData={userData}
-            errorData={error}
-            placeholder={t("content")}
+            defaultValue={userData["current_area"]}
+            placeholder={t("detail")}
+            errorMessage={error.get("current_area")}
+            onBlur={handleChange}
+            parantClassName=" min-w-full"
             rows={5}
-            className="rtl:text-xl-rtl"
-            tabsClassName="gap-x-5"
-          >
-            <SingleTab>{t("current_area")}</SingleTab>
-          </MultiTabTextarea>
+          />
         )}
       </BorderContainer>
     </div>

@@ -24,7 +24,6 @@ import { Search } from "lucide-react";
 import CustomInput from "@/components/custom-ui/input/CustomInput";
 import AddLeave from "./add-leave";
 import { DateObject } from "react-multi-date-picker";
-import useCacheDB from "@/lib/indexeddb/useCacheDB";
 import CachedImage from "@/components/custom-ui/image/CachedImage";
 import { UserPaginationData } from "@/lib/types";
 import { useAuthStore } from "@/stores/permission/auth-permssion-store";
@@ -33,7 +32,6 @@ export function LeaveTable() {
   const { user } = useAuthStore();
   const navigate = useNavigate();
   const searchRef = useRef<HTMLInputElement>(null);
-  const { getComponentCache } = useCacheDB();
   const [searchParams] = useSearchParams();
   const searchValue = searchParams.get("sch_val");
   const searchColumn = searchParams.get("sch_col");
