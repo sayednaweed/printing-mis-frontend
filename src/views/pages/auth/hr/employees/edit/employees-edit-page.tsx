@@ -111,7 +111,7 @@ export default function EmployeesEditPage() {
               value={key.toString()}
             >
               <KeyRound className="size-[18px]" />
-              {t("status")}
+              {t("employment_status")}
             </TabsTrigger>
           ) : undefined;
         })}
