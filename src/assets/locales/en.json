@@ -259,5 +259,7 @@
   "employee_status": "Employee status",
   "selection": "Selection",
   "from_date": "From date",
-  "to_date": "To date"
+  "to_date": "To date",
+  "more": "More",
+  "saved_by": "Saved by"
 }

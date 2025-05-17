@@ -24,10 +24,9 @@ export default function AddHireInformation() {
 
   const handleChange = (e: any) => {
     const { name, value } = e.target;
-    setUserData({ ...userData, [name]: value });
+    setUserData((prev: any) => ({ ...prev, [name]: value }));
   };
 
-  console.log(error);
   const hireTypeDuration = useMemo(() => {
     if (
       userData?.hire_type &&
@@ -42,7 +41,7 @@ export default function AddHireInformation() {
             required={true}
             value={userData.start_date}
             dateOnComplete={(date: DateObject) => {
-              setUserData({ ...userData, start_date: date });
+              setUserData((prev: any) => ({ ...prev, start_date: date }));
             }}
             className="py-3 w-full"
             errorMessage={error.get("start_date")}
@@ -54,7 +53,7 @@ export default function AddHireInformation() {
             required={true}
             value={userData.end_date}
             dateOnComplete={(date: DateObject) => {
-              setUserData({ ...userData, end_date: date });
+              setUserData((prev: any) => ({ ...prev, end_date: date }));
             }}
             className="py-3 w-full"
             errorMessage={error.get("end_date")}
@@ -126,7 +125,7 @@ export default function AddHireInformation() {
         required={true}
         requiredHint={`* ${t("required")}`}
         onSelect={(selection: any) =>
-          setUserData({ ...userData, ["identity_card"]: selection })
+          setUserData((prev: any) => ({ ...prev, identity_card: selection }))
         }
         lable={t("identity_card")}
         selectedItem={userData["identity_card"]?.name}
@@ -157,7 +156,7 @@ export default function AddHireInformation() {
         required={true}
         requiredHint={`* ${t("required")}`}
         onSelect={(selection: any) =>
-          setUserData({ ...userData, ["education_level"]: selection })
+          setUserData((prev: any) => ({ ...prev, education_level: selection }))
         }
         lable={t("education_level")}
         selectedItem={userData["education_level"]?.name}
@@ -204,7 +203,7 @@ export default function AddHireInformation() {
         required={true}
         requiredHint={`* ${t("required")}`}
         onSelect={(selection: any) =>
-          setUserData({ ...userData, ["department"]: selection })
+          setUserData((prev: any) => ({ ...prev, department: selection }))
         }
         lable={t("department")}
         selectedItem={userData["department"]?.name}
@@ -220,7 +219,7 @@ export default function AddHireInformation() {
         required={true}
         requiredHint={`* ${t("required")}`}
         onSelect={(selection: any) =>
-          setUserData({ ...userData, ["position"]: selection })
+          setUserData((prev: any) => ({ ...prev, position: selection }))
         }
         lable={t("position")}
         selectedItem={userData["position"]?.name}
@@ -238,7 +237,7 @@ export default function AddHireInformation() {
         required={true}
         value={userData.hire_date}
         dateOnComplete={(date: DateObject) => {
-          setUserData({ ...userData, hire_date: date });
+          setUserData((prev: any) => ({ ...prev, hire_date: date }));
         }}
         className="py-3 w-full"
         errorMessage={error.get("hire_date")}
@@ -249,7 +248,7 @@ export default function AddHireInformation() {
         required={true}
         requiredHint={`* ${t("required")}`}
         onSelect={(selection: any) =>
-          setUserData({ ...userData, ["currency"]: selection })
+          setUserData((prev: any) => ({ ...prev, currency: selection }))
         }
         lable={t("currency")}
         selectedItem={userData["currency"]?.name}
@@ -279,7 +278,7 @@ export default function AddHireInformation() {
         required={true}
         requiredHint={`* ${t("required")}`}
         onSelect={(selection: any) =>
-          setUserData({ ...userData, ["work_shift"]: selection })
+          setUserData((prev: any) => ({ ...prev, work_shift: selection }))
         }
         lable={t("work_shift")}
         selectedItem={userData["work_shift"]?.name}
@@ -310,10 +309,7 @@ export default function AddHireInformation() {
         onComplete={async (record: any) => {
           for (const element of record) {
             const checklist = element[element.length - 1];
-            setUserData({
-              ...userData,
-              attachment: checklist,
-            });
+            setUserData((prev: any) => ({ ...prev, attachment: checklist }));
           }
         }}
         onFailed={async (failed: boolean, response: any) => {
@@ -323,10 +319,7 @@ export default function AddHireInformation() {
                 toastType: "ERROR",
                 description: response.data.message,
               });
-              setUserData({
-                ...userData,
-                attachment: undefined,
-              });
+              setUserData((prev: any) => ({ ...prev, attachment: undefined }));
             }
           }
         }}

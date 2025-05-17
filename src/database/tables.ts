@@ -170,6 +170,7 @@ export type EmployeeModel = {
   date_of_birth: string | DateObject;
   picture: any;
   contact: string;
+  family_mem_contact: string;
   email: string;
   permanent_province: { id: string; name: string };
   permanent_district: { id: string; name: string };
@@ -184,6 +185,15 @@ export type EmployeeModel = {
   first_name: string;
   last_name: string;
   father_name: string;
+  attachment: FileType | undefined;
+};
+export type EmployeeMore = {
+  identity_card: { id: number; name: string };
+  register: string;
+  volume: string;
+  page: string;
+  register_no: string;
+  education_level: { id: string; name: string };
   attachment: FileType | undefined;
 };
 export type PositionAssignment = {
@@ -225,4 +235,14 @@ export type TakeAttendance = {
   employee_name: string;
   attendance_status: number;
   description: string;
+};
+export type EmployeeStatus = {
+  id: string;
+  name: string;
+  status_id: number;
+  status_name: string;
+  saved_by: string;
+  active: number;
+  description: string;
+  created_at: string;
 };
