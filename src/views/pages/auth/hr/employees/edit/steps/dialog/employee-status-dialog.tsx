@@ -31,10 +31,10 @@ export default function EmployeeStatusDialog(props: EmployeeStatusDialogProps) {
 
   const [userData, setUserData] = useState<{
     status: { id: string; name: string } | undefined;
-    comment: "";
+    detail: "";
   }>({
     status: undefined,
-    comment: "",
+    detail: "",
   });
   const { modelOnRequestHide } = useModelOnRequestHide();
   const { t } = useTranslation();
@@ -51,7 +51,7 @@ export default function EmployeeStatusDialog(props: EmployeeStatusDialogProps) {
             rules: ["required", "max:128", "min:3"],
           },
           {
-            name: "comment",
+            name: "detail",
             rules: ["required", "max:128", "min:15"],
           },
         ],
@@ -65,7 +65,7 @@ export default function EmployeeStatusDialog(props: EmployeeStatusDialogProps) {
       // 2. Store
       let formData = new FormData();
       if (id) formData.append("employee_id", id.toString());
-      formData.append("comment", userData.comment);
+      formData.append("detail", userData.detail);
       if (userData?.status)
         formData.append("status_type_id", userData.status.id);
 
@@ -102,7 +102,7 @@ export default function EmployeeStatusDialog(props: EmployeeStatusDialogProps) {
     <Card className="w-full self-center [backdrop-filter:blur(20px)] bg-card dark:bg-card-secondary">
       <CardHeader className="relative text-start">
         <CardTitle className="rtl:text-4xl-rtl ltr:text-3xl-ltr text-tertiary">
-          {t("edit")}
+          {t("change_status")}
         </CardTitle>
       </CardHeader>
       {storing ? (
@@ -131,12 +131,12 @@ export default function EmployeeStatusDialog(props: EmployeeStatusDialogProps) {
           <CustomTextarea
             required={true}
             requiredHint={`* ${t("required")}`}
-            lable={t("comment")}
-            name="comment"
-            defaultValue={userData["comment"]}
-            placeholder={t("detail")}
+            lable={t("detail")}
+            name="detail"
+            defaultValue={userData["detail"]}
+            placeholder={t("enter")}
             className="uppercase"
-            errorMessage={error.get("comment")}
+            errorMessage={error.get("detail")}
             onBlur={handleChange}
             rows={5}
           />

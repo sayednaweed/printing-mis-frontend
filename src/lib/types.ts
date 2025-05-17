@@ -142,6 +142,7 @@ export interface FileType {
   name: string;
   extension: string;
   size: number;
+  pending_id?: string;
 }
 export interface UserPaginationData {
   data: User[];
