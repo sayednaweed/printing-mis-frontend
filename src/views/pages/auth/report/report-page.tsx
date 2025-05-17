@@ -156,6 +156,272 @@ const Report = forwardRef<HTMLDivElement, any>((_props, ref) => {
     },
   };
 
+  // const report_Type = useMemo(() => {
+  //   return (
+  //     // <>
+  //     //   {filters.report_type?.id == ReportTypeSelectionEnum.attendance ? (
+  //     //     filters.attendance_status?.id == attendanceReportType.general ? (
+  //     //       <Table className="bg-white dark:bg-zinc-900 rounded-lg shadow-sm border border-gray-200 dark:border-zinc-700 mt-5">
+  //     //         <TableHeader className="bg-gray-50 dark:bg-zinc-800 text-gray-700 dark:text-gray-200 text-[15px] tracking-wide">
+  //     //           <TableRow className="border-b dark:border-zinc-700">
+  //     //             <TableHead className="text-center py-3 px-2 w-[100px] font-medium">
+  //     //               {t("date")}
+  //     //             </TableHead>
+  //     //             <TableHead className="text-center py-3 px-2 w-[100px] font-medium">
+  //     //               {t("name")}
+  //     //             </TableHead>
+  //     //             <TableHead className="text-center py-3 px-2 w-[100px] font-medium">
+  //     //               {t("position")}
+  //     //             </TableHead>
+  //     //             <TableHead className="text-center py-3 px-2 w-[100px] font-medium">
+  //     //               {t("Department")}
+  //     //             </TableHead>
+  //     //             <TableHead className="text-left py-3 px-4 font-medium">
+  //     //               {t("check_in")}
+  //     //             </TableHead>
+  //     //             <TableHead className="text-left py-3 px-4 font-medium">
+  //     //               {t("check_out")}
+  //     //             </TableHead>
+  //     //             <TableHead className="text-left py-3 px-4 font-medium">
+  //     //               {t("total_time")}
+  //     //             </TableHead>
+  //     //             <TableHead className="text-left py-3 px-4 font-medium">
+  //     //               {t("total_over_time")}
+  //     //             </TableHead>
+  //     //             <TableHead className="text-left py-3 px-4 font-medium">
+  //     //               {t("leave")}
+  //     //             </TableHead>
+  //     //             <TableHead className="text-center py-3 px-2 w-[80px] font-medium">
+  //     //               {t("absent")}
+  //     //             </TableHead>
+  //     //           </TableRow>
+  //     //         </TableHeader>
+
+  //     //         <TableBody className="text-gray-800 dark:text-gray-300 text-[14.5px]">
+  //     //           {/* Example row for demonstration */}
+  //     //           <TableRow className="hover:bg-gray-100 dark:hover:bg-zinc-800 transition-colors duration-200 ease-in-out border-b dark:border-zinc-700">
+  //     //             <TableCell className="text-center py-2 px-2">
+  //     //               5/14/2025
+  //     //             </TableCell>
+  //     //             <TableCell className="text-center py-2 px-2">
+  //     //               Fardin
+  //     //             </TableCell>
+  //     //             <TableCell className="text-center py-2 px-2">
+  //     //               Software Developer
+  //     //             </TableCell>
+  //     //             <TableCell className="text-center py-2 px-2">
+  //     //               Information Technology
+  //     //             </TableCell>
+  //     //             <TableCell className="text-center py-2 px-2">08:00</TableCell>
+  //     //             <TableCell className="text-center py-2 px-2">04:00</TableCell>
+  //     //             <TableCell className="text-center py-2 px-2">8h</TableCell>
+  //     //             <TableCell className="text-center py-2 px-2">0h</TableCell>
+  //     //             <TableCell className="text-center py-2 px-2">No</TableCell>
+  //     //             <TableCell className="text-center py-2 px-2">No</TableCell>
+  //     //           </TableRow>
+  //     //           <TableRow className="hover:bg-gray-100 dark:hover:bg-zinc-800 transition-colors duration-200 ease-in-out border-b dark:border-zinc-700"></TableRow>
+  //     //         </TableBody>
+  //     //       </Table>
+  //     //     ) : filters.attendance_status?.id ==
+  //     //       attendanceReportType.individual ? (
+  //     //       <Table className="bg-white dark:bg-zinc-900 rounded-lg shadow-sm border border-gray-200 dark:border-zinc-700 mt-5">
+  //     //         <TableHeader className="bg-gray-50 dark:bg-zinc-800 text-gray-700 dark:text-gray-200 text-[15px] tracking-wide">
+  //     //           <TableRow className="border-b dark:border-zinc-700">
+  //     //             <TableHead className="text-center py-3 px-2 w-[100px] font-medium">
+  //     //               {t("date")}
+  //     //             </TableHead>
+  //     //             <TableHead className="text-center py-3 px-2 w-[100px] font-medium">
+  //     //               {t("name")}
+  //     //             </TableHead>
+  //     //             <TableHead className="text-center py-3 px-2 w-[100px] font-medium">
+  //     //               {t("position")}
+  //     //             </TableHead>
+  //     //             <TableHead className="text-center py-3 px-2 w-[100px] font-medium">
+  //     //               {t("Department")}
+  //     //             </TableHead>
+  //     //             <TableHead className="text-left py-3 px-4 font-medium">
+  //     //               {t("check_in")}
+  //     //             </TableHead>
+  //     //             <TableHead className="text-left py-3 px-4 font-medium">
+  //     //               {t("check_out")}
+  //     //             </TableHead>
+  //     //             <TableHead className="text-left py-3 px-4 font-medium">
+  //     //               {t("total_time")}
+  //     //             </TableHead>
+  //     //             <TableHead className="text-left py-3 px-4 font-medium">
+  //     //               {t("total_over_time")}
+  //     //             </TableHead>
+  //     //             <TableHead className="text-left py-3 px-4 font-medium">
+  //     //               {t("leave")}
+  //     //             </TableHead>
+  //     //             <TableHead className="text-center py-3 px-2 w-[80px] font-medium">
+  //     //               {t("absent")}
+  //     //             </TableHead>
+  //     //           </TableRow>
+  //     //         </TableHeader>
+
+  //     //         <TableBody className="text-gray-800 dark:text-gray-300 text-[14.5px]">
+  //     //           {/* Example row for demonstration */}
+  //     //           <TableRow className="hover:bg-gray-100 dark:hover:bg-zinc-800 transition-colors duration-200 ease-in-out border-b dark:border-zinc-700">
+  //     //             <TableCell className="text-center py-2 px-2">
+  //     //               5/14/2025
+  //     //             </TableCell>
+  //     //             <TableCell className="text-center py-2 px-2">
+  //     //               Fardin
+  //     //             </TableCell>
+  //     //             <TableCell className="text-center py-2 px-2">
+  //     //               Software Developer
+  //     //             </TableCell>
+  //     //             <TableCell className="text-center py-2 px-2">
+  //     //               Information Technology
+  //     //             </TableCell>
+  //     //             <TableCell className="text-center py-2 px-2">08:00</TableCell>
+  //     //             <TableCell className="text-center py-2 px-2">04:00</TableCell>
+  //     //             <TableCell className="text-center py-2 px-2">8h</TableCell>
+  //     //             <TableCell className="text-center py-2 px-2">0h</TableCell>
+  //     //             <TableCell className="text-center py-2 px-2">No</TableCell>
+  //     //             <TableCell className="text-center py-2 px-2">No</TableCell>
+  //     //           </TableRow>
+  //     //           <TableRow className="hover:bg-gray-100 dark:hover:bg-zinc-800 transition-colors duration-200 ease-in-out border-b dark:border-zinc-700"></TableRow>
+  //     //         </TableBody>
+  //     //       </Table>
+  //     //     ) : null
+  //     //   ) : filters.report_type?.id == ReportTypeSelectionEnum.salary ? (
+  //     //     filters.employee_status?.id == ReportSelectionEnum.all ? (
+  //     //       <>
+  //     //         {" "}
+  //     //         <Table className="bg-white dark:bg-zinc-900 rounded-lg shadow-sm border border-gray-200 dark:border-zinc-700 mt-5">
+  //     //           <TableHeader className="bg-gray-50 dark:bg-zinc-800 text-gray-700 dark:text-gray-200 text-[15px] tracking-wide">
+  //     //             <TableRow className="border-b dark:border-zinc-700">
+  //     //               <TableHead className="text-center py-3 px-2 w-[100px] font-medium">
+  //     //                 {t("hr_code")}
+  //     //               </TableHead>
+  //     //               <TableHead className="text-center py-3 px-2 w-[100px] font-medium">
+  //     //                 {t("name")}
+  //     //               </TableHead>
+  //     //               <TableHead className="text-center py-3 px-2 w-[100px] font-medium">
+  //     //                 {t("position")}
+  //     //               </TableHead>
+  //     //               <TableHead className="text-center py-3 px-2 w-[100px] font-medium">
+  //     //                 {t("Department")}
+  //     //               </TableHead>
+  //     //               <TableHead className="text-left py-3 px-4 font-medium">
+  //     //                 {t("date_range")}
+  //     //               </TableHead>
+  //     //               <TableHead className="text-left py-3 px-4 font-medium">
+  //     //                 {t("salary_amount")}
+  //     //               </TableHead>
+  //     //               <TableHead className="text-left py-3 px-4 font-medium">
+  //     //                 {t("over_time")}
+  //     //               </TableHead>
+  //     //               <TableHead className="text-left py-3 px-4 font-medium">
+  //     //                 {t("total")}
+  //     //               </TableHead>
+  //     //             </TableRow>
+  //     //           </TableHeader>
+
+  //     //           <TableBody className="text-gray-800 dark:text-gray-300 text-[14.5px]">
+  //     //             {/* Example row for demonstration */}
+  //     //             <TableRow className="hover:bg-gray-100 dark:hover:bg-zinc-800 transition-colors duration-200 ease-in-out border-b dark:border-zinc-700">
+  //     //               <TableCell className="text-center py-2 px-2">
+  //     //                 5/14/2025
+  //     //               </TableCell>
+  //     //               <TableCell className="text-center py-2 px-2">
+  //     //                 Fardin
+  //     //               </TableCell>
+  //     //               <TableCell className="text-center py-2 px-2">
+  //     //                 Software Developer
+  //     //               </TableCell>
+  //     //               <TableCell className="text-center py-2 px-2">
+  //     //                 Information Technology
+  //     //               </TableCell>
+  //     //               <TableCell className="text-center py-2 px-2">
+  //     //                 08:00
+  //     //               </TableCell>
+  //     //               <TableCell className="text-center py-2 px-2">
+  //     //                 04:00
+  //     //               </TableCell>
+  //     //               <TableCell className="text-center py-2 px-2">8h</TableCell>
+  //     //               <TableCell className="text-center py-2 px-2">0h</TableCell>
+  //     //               <TableCell className="text-center py-2 px-2">No</TableCell>
+  //     //               <TableCell className="text-center py-2 px-2">No</TableCell>
+  //     //             </TableRow>
+  //     //             <TableRow className="hover:bg-gray-100 dark:hover:bg-zinc-800 transition-colors duration-200 ease-in-out border-b dark:border-zinc-700"></TableRow>
+  //     //           </TableBody>
+  //     //         </Table>
+  //     //       </>
+  //     //     ) : filters.employee_status?.id == ReportSelectionEnum.individual ? (
+  //     //       <>
+  //     //         <Table className="bg-white dark:bg-zinc-900 rounded-lg shadow-sm border border-gray-200 dark:border-zinc-700 mt-5">
+  //     //           <TableHeader className="bg-gray-50 dark:bg-zinc-800 text-gray-700 dark:text-gray-200 text-[15px] tracking-wide">
+  //     //             <TableRow className="border-b dark:border-zinc-700">
+  //     //               <TableHead className="text-center py-3 px-2 w-[100px] font-medium">
+  //     //                 {t("Month")}
+  //     //               </TableHead>
+  //     //               <TableHead className="text-center py-3 px-2 w-[100px] font-medium">
+  //     //                 {t("name")}
+  //     //               </TableHead>
+  //     //               <TableHead className="text-center py-3 px-2 w-[100px] font-medium">
+  //     //                 {t("position")}
+  //     //               </TableHead>
+  //     //               <TableHead className="text-center py-3 px-2 w-[100px] font-medium">
+  //     //                 {t("Department")}
+  //     //               </TableHead>
+  //     //               <TableHead className="text-left py-3 px-4 font-medium">
+  //     //                 {t("month")}
+  //     //               </TableHead>
+  //     //               <TableHead className="text-left py-3 px-4 font-medium">
+  //     //                 {t("salary_amount")}
+  //     //               </TableHead>
+  //     //               <TableHead className="text-left py-3 px-4 font-medium">
+  //     //                 {t("over_time")}
+  //     //               </TableHead>
+  //     //               <TableHead className="text-left py-3 px-4 font-medium">
+  //     //                 {t("total")}
+  //     //               </TableHead>
+  //     //             </TableRow>
+  //     //           </TableHeader>
+
+  //     //           <TableBody className="text-gray-800 dark:text-gray-300 text-[14.5px]">
+  //     //             {/* Example row for demonstration */}
+  //     //             <TableRow className="hover:bg-gray-100 dark:hover:bg-zinc-800 transition-colors duration-200 ease-in-out border-b dark:border-zinc-700">
+  //     //               <TableCell className="text-center py-2 px-2">
+  //     //                 5/14/2025
+  //     //               </TableCell>
+  //     //               <TableCell className="text-center py-2 px-2">
+  //     //                 Fardin
+  //     //               </TableCell>
+  //     //               <TableCell className="text-center py-2 px-2">
+  //     //                 Software Developer
+  //     //               </TableCell>
+  //     //               <TableCell className="text-center py-2 px-2">
+  //     //                 Information Technology
+  //     //               </TableCell>
+  //     //               <TableCell className="text-center py-2 px-2">
+  //     //                 08:00
+  //     //               </TableCell>
+  //     //               <TableCell className="text-center py-2 px-2">
+  //     //                 04:00
+  //     //               </TableCell>
+  //     //               <TableCell className="text-center py-2 px-2">8h</TableCell>
+  //     //               <TableCell className="text-center py-2 px-2">0h</TableCell>
+  //     //               <TableCell className="text-center py-2 px-2">No</TableCell>
+  //     //               <TableCell className="text-center py-2 px-2">No</TableCell>
+  //     //             </TableRow>
+  //     //             <TableRow className="hover:bg-gray-100 dark:hover:bg-zinc-800 transition-colors duration-200 ease-in-out border-b dark:border-zinc-700"></TableRow>
+  //     //           </TableBody>
+  //     //         </Table>
+  //     //       </>
+  //     //     ) : null
+  //     //   ) : null}
+  //     // </>
+  //   );
+  // }, [
+  //   filters.report_type?.id,
+  //   filters.attendance_status?.id,
+  //   filters.employee_status?.id,
+  // ]);
+
   const deparment = useMemo(() => {
     if (filters.selection?.id == ReportSelectionEnum.all) {
       return (
@@ -553,9 +819,9 @@ const Report = forwardRef<HTMLDivElement, any>((_props, ref) => {
             placeholderText={t("search_item")}
             errorText={t("no_item")}
             onSelect={(selection: any) =>
-              setFilters({ ...filters, employee_status: selection })
+              setFilters({ ...filters, report_type: selection })
             }
-            selectedItem={filters["employee_status"]?.name}
+            selectedItem={filters["report_type"]?.name}
             placeHolder={t("select_a")}
             apiUrl={"hr/report/types"}
             mode="single"
@@ -683,7 +949,6 @@ const Report = forwardRef<HTMLDivElement, any>((_props, ref) => {
           </tr>
         </tfoot>
       </table> */}
-
       {attendance_general}
       {attendance_individual}
       {salary_general_report}
