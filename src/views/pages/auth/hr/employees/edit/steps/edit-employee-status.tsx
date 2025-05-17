@@ -15,13 +15,7 @@ import PrimaryButton from "@/components/custom-ui/button/PrimaryButton";
 import { RefreshCcw } from "lucide-react";
 import Shimmer from "@/components/custom-ui/shimmer/Shimmer";
 import { useParams } from "react-router";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import ButtonSpinner from "@/components/custom-ui/spinner/ButtonSpinner";
 import { EmployeeStatus, UserPermission } from "@/database/tables";
 import { toLocaleDate } from "@/lib/utils";
@@ -84,12 +78,7 @@ export default function EditEmployeeStatus(props: EditEmployeeStatusProps) {
   )?.edit;
   return (
     <Card>
-      <CardHeader>
-        <CardTitle className="rtl:text-3xl-rtl ltr:text-2xl-ltr">
-          {t("status")}
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="grid gap-x-4 gap-y-6 w-full xl:w-1/">
+      <CardContent className="grid gap-x-4 gap-y-6 w-full mt-6">
         {failed ? (
           <h1 className="rtl:text-2xl-rtl">{t("u_are_not_authzed!")}</h1>
         ) : (
@@ -101,7 +90,7 @@ export default function EditEmployeeStatus(props: EditEmployeeStatusProps) {
                 className="py-8"
                 button={
                   <PrimaryButton className="text-primary-foreground">
-                    {t("edit")}
+                    {t("change_status")}
                   </PrimaryButton>
                 }
                 showDialog={async () => true}
@@ -117,10 +106,8 @@ export default function EditEmployeeStatus(props: EditEmployeeStatusProps) {
                   <TableHead className="text-start">{t("name")}</TableHead>
                   <TableHead className="text-start">{t("status")}</TableHead>
                   <TableHead className="text-start">{t("saved_by")}</TableHead>
-                  <TableHead className="text-start">{t("active")}</TableHead>
-                  <TableHead className="text-start">
-                    {t("description")}
-                  </TableHead>
+                  <TableHead className="text-start">{t("action")}</TableHead>
+                  <TableHead className="text-start">{t("detail")}</TableHead>
                   <TableHead className="text-start">{t("date")}</TableHead>
                 </TableRow>
               </TableHeader>

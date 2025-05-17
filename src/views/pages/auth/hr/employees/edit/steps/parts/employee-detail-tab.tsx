@@ -187,7 +187,7 @@ export default function EmployeeDetailTab(props: EmployeeDetailTabProps) {
           {t("account_information")}
         </CardTitle>
         <CardDescription className="rtl:text-xl-rtl ltr:text-lg-ltr">
-          {t("update_user_acc_info")}
+          {t("update_empl_acc_info")}
         </CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-x-4 gap-y-6 w-full lg:w-[70%] 2xl:w-1/2 pb-16">
