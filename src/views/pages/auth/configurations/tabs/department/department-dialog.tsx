@@ -15,15 +15,16 @@ import CustomInput from "@/components/custom-ui/input/CustomInput";
 import axiosClient from "@/lib/axois-client";
 import { toast } from "@/components/ui/use-toast";
 import { setServerError, validate } from "@/validation/validation";
-import { Department } from "@/database/tables";
+import { SimpleItem } from "@/database/tables";
 
 export interface DepartmentDialogProps {
-  onComplete: (department: Department) => void;
-  department?: Department;
+  onComplete: (department: SimpleItem) => void;
+  department?: SimpleItem;
 }
 export default function DepartmentDialog(props: DepartmentDialogProps) {
   const { onComplete, department } = props;
   const [loading, setLoading] = useState(false);
+  const [fetching, setFetching] = useState(false);
 
   const [error, setError] = useState(new Map<string, string>());
   const [userData, setUserData] = useState({
@@ -35,6 +36,7 @@ export default function DepartmentDialog(props: DepartmentDialogProps) {
   const { t } = useTranslation();
   const fetch = async () => {
     try {
+      setFetching(true);
       const response = await axiosClient.get(`department/${department?.id}`);
       if (response.status === 200) {
         setUserData(response.data);
@@ -42,6 +44,7 @@ export default function DepartmentDialog(props: DepartmentDialogProps) {
     } catch (error: any) {
       console.log(error);
     }
+    setFetching(false);
   };
   useEffect(() => {
     if (department) fetch();
@@ -85,7 +88,7 @@ export default function DepartmentDialog(props: DepartmentDialogProps) {
           toastType: "SUCCESS",
           description: response.data.message,
         });
-        onComplete(response.data.job);
+        onComplete(response.data.department);
         modelOnRequestHide();
       }
     } catch (error: any) {
@@ -131,7 +134,7 @@ export default function DepartmentDialog(props: DepartmentDialogProps) {
           toastType: "SUCCESS",
           description: response.data.message,
         });
-        onComplete(response.data.job);
+        onComplete(response.data.department);
         modelOnRequestHide();
       }
     } catch (error: any) {
@@ -156,6 +159,7 @@ export default function DepartmentDialog(props: DepartmentDialogProps) {
         <CustomInput
           size_="sm"
           dir="ltr"
+          loading={fetching}
           className="rtl:text-end"
           required={true}
           requiredHint={`* ${t("required")}`}
@@ -179,6 +183,7 @@ export default function DepartmentDialog(props: DepartmentDialogProps) {
           placeholder={t("translate_fa")}
           defaultValue={userData.farsi}
           type="text"
+          loading={fetching}
           name="farsi"
           errorMessage={error.get("farsi")}
           onChange={handleChange}
@@ -191,6 +196,7 @@ export default function DepartmentDialog(props: DepartmentDialogProps) {
         />
         <CustomInput
           size_="sm"
+          loading={fetching}
           required={true}
           requiredHint={`* ${t("required")}`}
           placeholder={t("translate_ps")}

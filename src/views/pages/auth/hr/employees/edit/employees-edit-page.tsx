@@ -16,6 +16,10 @@ import {
 import Shimmer from "@/components/custom-ui/shimmer/Shimmer";
 import { useAuthStore } from "@/stores/permission/auth-permssion-store";
 
+import EditEmployeeInformation from "./steps/edit-employee-information";
+import EmployeesEditHeader from "./employees-edit-header";
+import EditEmployeePromotionDemotion from "./steps/edit-employee-promotion-demotion";
+import EditEmployeeStatus from "./steps/edit-employee-status";
 
 export default function EmployeesEditPage() {
   const { user } = useAuthStore();
@@ -64,11 +68,23 @@ export default function EmployeesEditPage() {
           <Shimmer className="h-[32px] shadow-none w-full rounded-sm" />
           <Shimmer className="h-[32px] shadow-none w-full rounded-sm" />
           <Shimmer className="h-[32px] shadow-none w-full rounded-sm" />
+          <Shimmer className=" mx-auto size-[86px] mt-6 rounded-full" />
+          <Shimmer className="h-[32px] !mt-2 !mb-4 w-1/2 mx-auto rounded-sm" />
+          <Shimmer className="h-24 w-[80%] mx-auto rounded-sm" />
+          <Shimmer className="h-[32px] w-full rounded-sm" />
+          <Shimmer className="h-[32px] w-full rounded-sm" />
+          <Shimmer className="h-[32px] w-full rounded-sm" />
         </>
       );
     return (
       <>
         
+        <EmployeesEditHeader
+          id={id}
+          failed={failed}
+          userData={userData}
+          setUserData={setUserData}
+        />
         {Array.from(per.sub).map(([key, _subPermission], index: number) => {
           return key == PermissionEnum.employees.sub.personal_information ? (
             <TabsTrigger
@@ -87,6 +103,15 @@ export default function EmployeesEditPage() {
             >
               <KeyRound className="size-[18px]" />
               {t("promotion_demotion")}
+            </TabsTrigger>
+          ) : key == PermissionEnum.employees.sub.employee_status ? (
+            <TabsTrigger
+              key={index}
+              className={`${selectedTabStyle}`}
+              value={key.toString()}
+            >
+              <KeyRound className="size-[18px]" />
+              {t("status")}
             </TabsTrigger>
           ) : undefined;
         })}
@@ -119,11 +144,26 @@ export default function EmployeesEditPage() {
           value={PermissionEnum.employees.sub.personal_information.toString()}
         >
           
+          <EditEmployeeInformation
+            permissions={per}
+            id={id}
+            failed={failed}
+            userData={userData}
+            setUserData={setUserData}
+            refreshPage={loadInformation}
+          />
         </TabsContent>
         <TabsContent
           className="flex-1 m-0 overflow-x-auto"
           value={PermissionEnum.employees.sub.promotion_demotion.toString()}
         >
+          <EditEmployeePromotionDemotion id={id} />
+        </TabsContent>
+        <TabsContent
+          className="flex-1 m-0 overflow-x-auto"
+          value={PermissionEnum.employees.sub.employee_status.toString()}
+        >
+          <EditEmployeeStatus permissions={per} />
         </TabsContent>
       </Tabs>
     </div>

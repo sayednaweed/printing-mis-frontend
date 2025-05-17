@@ -24,7 +24,6 @@ import { useGlobalState } from "@/context/GlobalStateContext";
 import FakeCombobox from "@/components/custom-ui/combobox/FakeCombobox";
 import { UserPermission } from "@/database/tables";
 import { PermissionEnum } from "@/lib/constants";
-import { useScrollToElement } from "@/hook/use-scroll-to-element";
 export interface EditUserInformationProps {
   id: string | undefined;
   failed: boolean;
@@ -42,8 +41,6 @@ export default function EditUserInformation(props: EditUserInformationProps) {
   const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Map<string, string>>(new Map());
-  useScrollToElement(error);
-
   useEffect(() => {
     setTempUserData(userData);
   }, [userData]);
@@ -75,7 +72,7 @@ export default function EditUserInformation(props: EditUserInformationProps) {
           rules: ["required", "max:45", "min:3"],
         },
         {
-          name: "destination",
+          name: "department",
           rules: ["required"],
         },
         {
@@ -83,19 +80,15 @@ export default function EditUserInformation(props: EditUserInformationProps) {
           rules: ["required"],
         },
         {
+          name: "role",
+          rules: ["required"],
+        },
+        {
           name: "status",
           rules: ["required"],
         },
         {
-          name: "zone",
-          rules: ["required"],
-        },
-        {
-          name: "province",
-          rules: ["required"],
-        },
-        {
-          name: "gender",
+          name: "grant",
           rules: ["required"],
         },
       ],
@@ -113,14 +106,16 @@ export default function EditUserInformation(props: EditUserInformationProps) {
     formData.append("username", tempUserData.username);
     formData.append("contact", tempUserData.contact);
     formData.append("email", tempUserData.email);
-    formData.append("destination_id", tempUserData.destination.id);
-    formData.append("job_id", tempUserData.job.id);
-    formData.append("status", `${tempUserData.status == true}`);
-    formData.append("province_id", tempUserData.province.id);
-    formData.append("gender_id", tempUserData.gender.id);
-    formData.append("zone_id", tempUserData.zone.id);
+    formData.append("department", tempUserData.department.id);
+    formData.append("job", tempUserData.job.id);
+    formData.append("role", tempUserData.role.id?.toString());
+    formData.append("status", tempUserData.status ? "true" : "false");
+    formData.append("grant", tempUserData.grant ? "true" : "false");
     try {
-      const response = await axiosClient.post("url", formData);
+      const response = await axiosClient.post(
+        "user/update/information",
+        formData
+      );
       if (response.status == 200) {
         // Update user state
         setUserData(tempUserData);
@@ -156,7 +151,7 @@ export default function EditUserInformation(props: EditUserInformationProps) {
           {t("update_user_acc_info")}
         </CardDescription>
       </CardHeader>
-      <CardContent className="flex flex-col gap-x-4 gap-y-6 w-full lg:w-[70%] 2xl:w-1/2">
+      <CardContent className="flex flex-col gap-x-4 gap-y-6 w-full lg:w-1/2 2xl:h-1/3">
         {failed ? (
           <h1 className="rtl:text-2xl-rtl">{t("u_are_not_authzed!")}</h1>
         ) : tempUserData === undefined ? (
@@ -223,51 +218,20 @@ export default function EditUserInformation(props: EditUserInformationProps) {
                 <Phone className="text-tertiary size-[18px] pointer-events-none" />
               }
             />
-            <APICombobox
-              placeholderText={t("search_item")}
-              errorText={t("no_item")}
-              required={true}
-              requiredHint={`* ${t("required")}`}
-              onSelect={(selection: any) =>
-                setUserData({ ...tempUserData, zone: selection })
-              }
-              lable={t("zone")}
-              selectedItem={tempUserData?.zone?.name}
-              placeHolder={t("select_a")}
-              errorMessage={error.get("zone")}
-              apiUrl={"zones"}
-              cacheData={false}
-              mode="single"
-            />
-            <APICombobox
-              placeholderText={t("search_item")}
-              errorText={t("no_item")}
-              required={true}
-              requiredHint={`* ${t("required")}`}
-              onSelect={(selection: any) =>
-                setUserData({ ...tempUserData, province: selection })
-              }
-              lable={t("province")}
-              selectedItem={userData?.province?.name}
-              placeHolder={t("select_a")}
-              errorMessage={error.get("province")}
-              apiUrl={"provinces/" + 1}
-              mode="single"
-            />
 
             <APICombobox
               placeholderText={t("search_item")}
               errorText={t("no_item")}
               onSelect={(selection: any) =>
-                setTempUserData({ ...tempUserData, ["destination"]: selection })
+                setTempUserData({ ...tempUserData, ["department"]: selection })
               }
-              lable={t("destination")}
+              lable={t("department")}
               required={true}
               requiredHint={`* ${t("required")}`}
-              selectedItem={tempUserData?.destination?.name}
-              placeHolder={t("select_destination")}
-              errorMessage={error.get("destination")}
-              apiUrl={"destinations"}
+              selectedItem={tempUserData?.department?.name}
+              placeHolder={t("select_a")}
+              errorMessage={error.get("department")}
+              apiUrl={"departments"}
               mode="single"
             />
 
@@ -281,11 +245,12 @@ export default function EditUserInformation(props: EditUserInformationProps) {
               }
               lable={t("job")}
               selectedItem={tempUserData["job"]?.name}
-              placeHolder={t("select_a")}
+              placeHolder={t("select_a_job")}
               errorMessage={error.get("job")}
               apiUrl={"jobs"}
               mode="single"
             />
+
             <APICombobox
               placeholderText={t("search_item")}
               errorText={t("no_item")}
@@ -299,25 +264,8 @@ export default function EditUserInformation(props: EditUserInformationProps) {
               placeHolder={t("select_a_role")}
               errorMessage={error.get("role")}
               apiUrl={"roles"}
+              mode="single"
               translate={true}
-              cacheData={false}
-              mode="single"
-              readonly={true}
-            />
-            <APICombobox
-              placeholderText={t("search_item")}
-              errorText={t("no_item")}
-              required={true}
-              requiredHint={`* ${t("required")}`}
-              onSelect={(selection: any) =>
-                setUserData({ ...tempUserData, ["gender"]: selection })
-              }
-              lable={t("gender")}
-              selectedItem={tempUserData?.gender?.name}
-              placeHolder={t("select_a")}
-              errorMessage={error.get("gender")}
-              apiUrl={"genders"}
-              mode="single"
             />
             <FakeCombobox
               icon={
@@ -337,6 +285,16 @@ export default function EditUserInformation(props: EditUserInformationProps) {
               required={true}
               requiredHint={`* ${t("required")}`}
               errorMessage={error.get("status")}
+            />
+            <CustomCheckbox
+              checked={tempUserData["grant"]}
+              onCheckedChange={(value: boolean) =>
+                setTempUserData({ ...tempUserData, grant: value })
+              }
+              parentClassName="rounded-md py-[12px] gap-x-1 bg-card border px-[10px]"
+              text={t("grant")}
+              description={t("allows_user_grant")}
+              errorMessage={error.get("grant")}
             />
           </>
         )}

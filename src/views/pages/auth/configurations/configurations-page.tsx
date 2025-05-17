@@ -12,6 +12,7 @@ import {
 } from "@/components/custom-ui/Breadcrumb/Breadcrumb";
 import { useAuthStore } from "@/stores/permission/auth-permssion-store";
 import DepartmentTab from "./tabs/department/department-tab";
+import LeaveTypeTab from "./tabs/leave-type/leave-type-tab";
 
 export default function ConfigurationsPage() {
   const { t, i18n } = useTranslation();
@@ -199,6 +200,12 @@ export default function ConfigurationsPage() {
           className="w-full px-4 pt-8"
         >
           <DepartmentTab permissions={per} />
+        </TabsContent>
+        <TabsContent
+          value={PermissionEnum.configurations.sub.hr_configuration_leave_type.toString()}
+          className="w-full px-4 pt-8"
+        >
+          <LeaveTypeTab permissions={per} />
         </TabsContent>
       </Tabs>
     </>

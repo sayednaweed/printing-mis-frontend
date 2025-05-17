@@ -1,12 +1,6 @@
 import IconButton from "@/components/custom-ui/button/IconButton";
 import { Pencil, Trash2 } from "lucide-react";
-import {
-  ChangeEvent,
-  Dispatch,
-  SetStateAction,
-  useMemo,
-  useState,
-} from "react";
+import { ChangeEvent, Dispatch, SetStateAction, useState } from "react";
 import { toast } from "@/components/ui/use-toast";
 import { useTranslation } from "react-i18next";
 import axiosClient from "@/lib/axois-client";
@@ -25,22 +19,9 @@ export interface EmployeesEditHeaderProps {
 
 export default function EmployeesEditHeader(props: EmployeesEditHeaderProps) {
   const { id, userData, setUserData, failed } = props;
-  const { user } = useAuthStore();
   const { t } = useTranslation();
   const [loading, setLoading] = useState<boolean>(false);
 
-  const authData = useMemo(() => {
-    const isFinance = user.role.name.startsWith("finance");
-
-    return {
-      delete_profile_url: isFinance
-        ? "finance/user/delete/profile-picture"
-        : "epi/user/delete/profile-picture",
-      update_profile_url: isFinance
-        ? "finance/user/update/profile-picture"
-        : "epi/user/update/profile-picture",
-    };
-  }, [user.role.name]);
   const onFileUploadChange = async (e: ChangeEvent<HTMLInputElement>) => {
     const maxFileSize = 2 * 1024 * 1024; // 2MB
     const validTypes: string[] = ["image/jpeg", "image/png", "image/jpg"];
@@ -65,7 +46,7 @@ export default function EmployeesEditHeader(props: EmployeesEditHeaderProps) {
       formData.append("profile", file);
       try {
         const response = await axiosClient.post(
-          `${authData.update_profile_url}`,
+          `employee/update/profile-picture`,
           formData,
           {
             headers: {
@@ -117,7 +98,7 @@ export default function EmployeesEditHeader(props: EmployeesEditHeaderProps) {
 
     try {
       const response = await axiosClient.delete(
-        `${authData.delete_profile_url}/${id}`
+        `employee/delete/profile-picture/${id}`
       );
       if (response.status == 200 && userData) {
         // Change logged in user data

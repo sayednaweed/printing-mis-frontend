@@ -1,8 +1,6 @@
 import APICombobox from "@/components/custom-ui/combobox/APICombobox";
 import CustomInput from "@/components/custom-ui/input/CustomInput";
 import { StepperContext } from "@/components/custom-ui/stepper/StepperContext";
-import { useScrollToElement } from "@/hook/use-scroll-to-element";
-import { CountryEnum } from "@/lib/constants";
 import { Mail, Phone, UserRound } from "lucide-react";
 import { useContext } from "react";
 import { useTranslation } from "react-i18next";
@@ -10,8 +8,6 @@ import { useTranslation } from "react-i18next";
 export default function AddUserInformation() {
   const { t } = useTranslation();
   const { userData, setUserData, error } = useContext(StepperContext);
-  useScrollToElement(error);
-
   const handleChange = (e: any) => {
     const { name, value } = e.target;
     setUserData({ ...userData, [name]: value });
@@ -74,8 +70,6 @@ export default function AddUserInformation() {
         defaultValue={userData["contact"]}
         type="text"
         name="contact"
-        required={true}
-        requiredHint={`* ${t("required")}`}
         errorMessage={error.get("contact")}
         onChange={handleChange}
         startContent={
@@ -92,11 +86,10 @@ export default function AddUserInformation() {
         required={true}
         requiredHint={`* ${t("required")}`}
         selectedItem={userData["department"]?.name}
-        placeHolder={t("select_destination")}
+        placeHolder={t("select_a")}
         errorMessage={error.get("department")}
-        apiUrl={"destinations"}
+        apiUrl={"departments"}
         mode="single"
-        cacheData={false}
       />
       <APICombobox
         placeholderText={t("search_item")}
@@ -111,37 +104,6 @@ export default function AddUserInformation() {
         placeHolder={t("select_a_job")}
         errorMessage={error.get("job")}
         apiUrl={"jobs"}
-        mode="single"
-        cacheData={false}
-      />
-      <APICombobox
-        placeholderText={t("search_item")}
-        errorText={t("no_item")}
-        required={true}
-        requiredHint={`* ${t("required")}`}
-        onSelect={(selection: any) =>
-          setUserData({ ...userData, ["province"]: selection })
-        }
-        lable={t("province")}
-        selectedItem={userData["province"]?.name}
-        placeHolder={t("select_a")}
-        errorMessage={error.get("province")}
-        apiUrl={"provinces/" + CountryEnum.afghanistan}
-        mode="single"
-      />
-      <APICombobox
-        placeholderText={t("search_item")}
-        errorText={t("no_item")}
-        required={true}
-        requiredHint={`* ${t("required")}`}
-        onSelect={(selection: any) =>
-          setUserData({ ...userData, ["gender"]: selection })
-        }
-        lable={t("gender")}
-        selectedItem={userData["gender"]?.name}
-        placeHolder={t("select_a")}
-        errorMessage={error.get("gender")}
-        apiUrl={"genders"}
         mode="single"
       />
     </div>

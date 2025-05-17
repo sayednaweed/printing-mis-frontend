@@ -8,9 +8,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { toast } from "@/components/ui/use-toast";
-import { useGlobalState } from "@/context/GlobalStateContext";
 import { Employee, UserPermission } from "@/database/tables";
-import { CACHE, PermissionEnum, PortalEnum } from "@/lib/constants";
+import { CACHE, PermissionEnum, PortalEnum, StatusEnum } from "@/lib/constants";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useSearchParams } from "react-router";
@@ -18,7 +17,7 @@ import axiosClient from "@/lib/axois-client";
 
 import TableRowIcon from "@/components/custom-ui/table/TableRowIcon";
 import Pagination from "@/components/custom-ui/table/Pagination";
-import { setDateToURL, toLocaleDate } from "@/lib/utils";
+import { setDateToURL } from "@/lib/utils";
 import NastranModel from "@/components/custom-ui/model/NastranModel";
 import PrimaryButton from "@/components/custom-ui/button/PrimaryButton";
 import { ListFilter, Search } from "lucide-react";
@@ -37,6 +36,7 @@ import {
 import { useAuthStore } from "@/stores/permission/auth-permssion-store";
 import AddEmployee from "./add/add-employee";
 import CachedImage from "@/components/custom-ui/image/CachedImage";
+import BooleanStatusButton from "@/components/custom-ui/button/BooleanStatusButton";
 
 export function EmployeesTable() {
   const { user } = useAuthStore();
@@ -55,7 +55,7 @@ export function EmployeesTable() {
     sort: sort == null ? "created_at" : sort,
     order: order == null ? "desc" : order,
     search: {
-      column: searchColumn == null ? "username" : searchColumn,
+      column: searchColumn == null ? "hr_code" : searchColumn,
       value: searchValue == null ? "" : searchValue,
     },
     date:
@@ -137,7 +137,7 @@ export function EmployeesTable() {
   ) => {
     if (!count) {
       const countSore = await getComponentCache(
-        CACHE.USER_TABLE_PAGINATION_COUNT
+        CACHE.EMPLOYEE_TABLE_PAGINATION_COUNT
       );
       count = countSore?.value ? countSore.value : 10;
     }
@@ -173,7 +173,6 @@ export function EmployeesTable() {
   });
   const [loading, setLoading] = useState(false);
   const { t } = useTranslation();
-  const [state] = useGlobalState();
 
   const addItem = (employee: Employee) => {
     setEmployees((prevState) => ({
@@ -208,15 +207,6 @@ export function EmployeesTable() {
       <TableCell>
         <Shimmer className="h-[24px] w-full rounded-sm" />
       </TableCell>
-      <TableCell>
-        <Shimmer className="h-[24px] w-full rounded-sm" />
-      </TableCell>
-      <TableCell>
-        <Shimmer className="h-[24px] w-full rounded-sm" />
-      </TableCell>
-      <TableCell>
-        <Shimmer className="h-[24px] w-full rounded-sm" />
-      </TableCell>
     </TableRow>
   );
   const per: UserPermission = user?.permissions[PortalEnum.hr].get(
@@ -227,7 +217,7 @@ export function EmployeesTable() {
 
   const watchOnClick = async (user: Employee) => {
     const userId = user.id;
-    navigate(`/users/${userId}`);
+    navigate(`/employees/${userId}`);
   };
   return (
     <>
@@ -235,10 +225,11 @@ export function EmployeesTable() {
         {hasAdd && (
           <NastranModel
             size="lg"
+            className="overflow-x-hidden"
             isDismissable={false}
             button={
-              <PrimaryButton className="rtl:text-lg-rtl font-semibold ltr:text-md-ltr">
-                {t("register")}
+              <PrimaryButton className="rtl:text-lg-rtl font-semibold ltr:text-md-ltr ">
+                {t("register_employ")}
               </PrimaryButton>
             }
             showDialog={async () => true}
@@ -349,17 +340,10 @@ export function EmployeesTable() {
                     onClick: () => {},
                   },
                   {
-                    name: "username",
-                    translate: t("username"),
+                    name: "contact",
+                    translate: t("contact"),
                     onClick: () => {},
                   },
-                  {
-                    name: "destination",
-                    translate: t("department"),
-                    onClick: () => {},
-                  },
-                  { name: "status", translate: t("status"), onClick: () => {} },
-                  { name: "job", translate: t("job"), onClick: () => {} },
                 ],
                 order: [
                   {
@@ -375,24 +359,23 @@ export function EmployeesTable() {
                 ],
                 search: [
                   {
-                    name: "registration_number",
-                    translate: t("registration_number"),
+                    name: "first_name",
+                    translate: t("first_name"),
                     onClick: () => {},
                   },
                   {
-                    name: "username",
-                    translate: t("username"),
-                    onClick: () => {},
-                  },
-                  { name: "email", translate: t("email"), onClick: () => {} },
-                  {
-                    name: "contact",
-                    translate: t("contact"),
+                    name: "last_name",
+                    translate: t("last_name"),
                     onClick: () => {},
                   },
                   {
-                    name: "zone",
-                    translate: t("zone"),
+                    name: "hr_code",
+                    translate: t("hr_code"),
+                    onClick: () => {},
+                  },
+                  {
+                    name: "father_name",
+                    translate: t("father_name"),
                     onClick: () => {},
                   },
                 ],
@@ -407,7 +390,7 @@ export function EmployeesTable() {
           </NastranModel>
         </div>
         <CustomSelect
-          paginationKey={CACHE.USER_TABLE_PAGINATION_COUNT}
+          paginationKey={CACHE.EMPLOYEE_TABLE_PAGINATION_COUNT}
           options={[
             { value: "10", label: "10" },
             { value: "20", label: "20" },
@@ -416,7 +399,7 @@ export function EmployeesTable() {
           className="w-fit sm:self-baseline"
           updateCache={updateComponentCache}
           getCache={async () =>
-            await getComponentCache(CACHE.USER_TABLE_PAGINATION_COUNT)
+            await getComponentCache(CACHE.EMPLOYEE_TABLE_PAGINATION_COUNT)
           }
           placeholder={`${t("select")}...`}
           emptyPlaceholder={t("no_options_found")}
@@ -429,15 +412,14 @@ export function EmployeesTable() {
       <Table className="bg-card rounded-md my-[2px] py-8">
         <TableHeader className="rtl:text-3xl-rtl ltr:text-xl-ltr">
           <TableRow className="hover:bg-transparent">
-            <TableHead className="text-start px-1">{t("hr_code")}</TableHead>
             <TableHead className="text-center px-1 w-[60px]">
               {t("profile")}
             </TableHead>
+            <TableHead className="text-start px-1">{t("hr_code")}</TableHead>
             <TableHead className="text-start">{t("name")}</TableHead>
             <TableHead className="text-start">{t("father_name")}</TableHead>
             <TableHead className="text-start">{t("contact")}</TableHead>
-            <TableHead className="text-start">{t("join_date")}</TableHead>
-            <TableHead className="text-start w-[60px]">{t("status")}</TableHead>
+            <TableHead className="text-start">{t("status")}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody className="rtl:text-xl-rtl ltr:text-2xl-ltr">
@@ -450,14 +432,11 @@ export function EmployeesTable() {
                 remove={false}
                 edit={false}
                 onEdit={async () => {}}
-                key={item.email}
+                key={item.id}
                 item={item}
                 onRemove={async () => {}}
                 onRead={watchOnClick}
               >
-                <TableCell className="rtl:text-md-rtl truncate px-1 py-0">
-                  {item.hr_code}
-                </TableCell>
                 <TableCell className="px-1 py-0">
                   <CachedImage
                     src={item?.picture}
@@ -469,34 +448,40 @@ export function EmployeesTable() {
                   />
                 </TableCell>
                 <TableCell className="rtl:text-md-rtl truncate px-1 py-0">
+                  {item.hr_code}
+                </TableCell>
+                <TableCell className="rtl:text-md-rtl truncate px-1 py-0">
                   {`${item.first_name} ${item.last_name}`}
                 </TableCell>
                 <TableCell>{item?.father_name}</TableCell>
                 <TableCell
                   dir="ltr"
-                  className="truncate rtl:text-sm-rtl rtl:text-end"
-                >
-                  {item.email}
-                </TableCell>
-                <TableCell
-                  dir="ltr"
                   className="rtl:text-end rtl:text-sm-rtl truncate"
                 >
-                  {item?.contact == "null" ? "" : item?.contact}
-                </TableCell>
-                <TableCell className="truncate">
-                  {toLocaleDate(new Date(item.join_date), state)}
+                  {item?.contact}
                 </TableCell>
                 <TableCell>
-                  {item?.status == 1 ? (
-                    <h1 className="truncate text-center rtl:text-md-rtl ltr:text-lg-ltr bg-green-500 px-1 py-[2px] shadow-md text-primary-foreground font-bold rounded-sm">
-                      {t("active")}
-                    </h1>
-                  ) : (
-                    <h1 className="truncate text-center rtl:text-md-rtl ltr:text-lg-ltr bg-red-400 px-1 py-[2px] shadow-md text-primary-foreground font-bold rounded-sm">
-                      {t("lock")}
-                    </h1>
-                  )}
+                  <BooleanStatusButton
+                    getColor={function (): {
+                      style: string;
+                      value: string;
+                    } {
+                      return StatusEnum.active == item.status
+                        ? {
+                            style: "border-green-500/90",
+                            value: item.status_name,
+                          }
+                        : StatusEnum.on_leave == item.status
+                        ? {
+                            style: "border-blue-500/90",
+                            value: item.status_name,
+                          }
+                        : {
+                            style: "border-red-500",
+                            value: item.status_name,
+                          };
+                    }}
+                  />
                 </TableCell>
               </TableRowIcon>
             ))

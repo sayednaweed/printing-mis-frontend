@@ -18,25 +18,25 @@ import CustomInput from "@/components/custom-ui/input/CustomInput";
 import { Search } from "lucide-react";
 import Shimmer from "@/components/custom-ui/shimmer/Shimmer";
 import TableRowIcon from "@/components/custom-ui/table/TableRowIcon";
-import JobDialog from "./job-dialog";
 import { SimpleItem, UserPermission } from "@/database/tables";
 import { PermissionEnum } from "@/lib/constants";
-interface JobTabProps {
+import LeaveTypeDialog from "./leave-type-dialog";
+interface LeaveTypeTabProps {
   permissions: UserPermission;
 }
-export default function JobTab(props: JobTabProps) {
+export default function LeaveTypeTab(props: LeaveTypeTabProps) {
   const { permissions } = props;
   const { t } = useTranslation();
   const [state] = useGlobalState();
   const [loading, setLoading] = useState(false);
   const [selected, setSelected] = useState<{
     visible: boolean;
-    job: any;
+    leaveType: any;
   }>({
     visible: false,
-    job: undefined,
+    leaveType: undefined,
   });
-  const [jobs, setJobs] = useState<{
+  const [leaveTypes, setLeaveTypes] = useState<{
     unFilterList: SimpleItem[];
     filterList: SimpleItem[];
   }>({
@@ -49,9 +49,9 @@ export default function JobTab(props: JobTabProps) {
       setLoading(true);
 
       // 2. Send data
-      const response = await axiosClient.get(`jobs`);
+      const response = await axiosClient.get(`leave-types`);
       const fetch = response.data as SimpleItem[];
-      setJobs({
+      setLeaveTypes({
         unFilterList: fetch,
         filterList: fetch,
       });
@@ -71,24 +71,24 @@ export default function JobTab(props: JobTabProps) {
   const searchOnChange = (e: any) => {
     const { value } = e.target;
     // 1. Filter
-    const filtered = jobs.unFilterList.filter((item: SimpleItem) =>
+    const filtered = leaveTypes.unFilterList.filter((item: SimpleItem) =>
       item.name.toLowerCase().includes(value.toLowerCase())
     );
-    setJobs({
-      ...jobs,
+    setLeaveTypes({
+      ...leaveTypes,
       filterList: filtered,
     });
   };
-  const add = (job: SimpleItem) => {
-    setJobs((prev) => ({
-      unFilterList: [job, ...prev.unFilterList],
-      filterList: [job, ...prev.filterList],
+  const add = (newItem: SimpleItem) => {
+    setLeaveTypes((prev) => ({
+      unFilterList: [newItem, ...prev.unFilterList],
+      filterList: [newItem, ...prev.filterList],
     }));
   };
-  const update = (job: SimpleItem) => {
-    setJobs((prevState) => {
+  const update = (newItem: SimpleItem) => {
+    setLeaveTypes((prevState) => {
       const updatedUnFiltered = prevState.unFilterList.map((item) =>
-        item.id === job.id ? { ...item, name: job.name } : item
+        item.id === newItem.id ? { ...item, name: newItem.name } : item
       );
 
       return {
@@ -109,22 +109,22 @@ export default function JobTab(props: JobTabProps) {
         showDialog={async () => {
           setSelected({
             visible: false,
-            job: undefined,
+            leaveType: undefined,
           });
           return true;
         }}
       >
-        <JobDialog job={selected.job} onComplete={update} />
+        <LeaveTypeDialog leaveType={selected.leaveType} onComplete={update} />
       </NastranModel>
     ),
     [selected.visible]
   );
-  const job = permissions.sub.get(
-    PermissionEnum.configurations.sub.hr_configuration_job
+  const leaveType = permissions.sub.get(
+    PermissionEnum.configurations.sub.hr_configuration_leave_type
   );
-  const hasEdit = job?.edit;
-  const hasAdd = job?.add;
-  const hasView = job?.view;
+  const hasEdit = leaveType?.edit;
+  const hasAdd = leaveType?.add;
+  const hasView = leaveType?.view;
   return (
     <div className="relative">
       <div className="rounded-md bg-card p-2 flex gap-x-4 items-baseline mt-4">
@@ -134,12 +134,12 @@ export default function JobTab(props: JobTabProps) {
             isDismissable={false}
             button={
               <PrimaryButton className="text-primary-foreground">
-                {t("add_job")}
+                {t("add_leave_type")}
               </PrimaryButton>
             }
             showDialog={async () => true}
           >
-            <JobDialog onComplete={add} />
+            <LeaveTypeDialog onComplete={add} />
           </NastranModel>
         )}
 
@@ -176,29 +176,31 @@ export default function JobTab(props: JobTabProps) {
               </TableCell>
             </TableRow>
           ) : (
-            jobs.filterList.map((job: SimpleItem, index: number) => (
-              <TableRowIcon
-                read={hasView}
-                remove={false}
-                edit={hasEdit}
-                onEdit={async (job: SimpleItem) => {
-                  setSelected({
-                    visible: true,
-                    job: job,
-                  });
-                }}
-                key={index}
-                item={job}
-                onRemove={async () => {}}
-                onRead={async () => {}}
-              >
-                <TableCell className="font-medium">{job.id}</TableCell>
-                <TableCell>{job.name}</TableCell>
-                <TableCell>
-                  {toLocaleDate(new Date(job.created_at), state)}
-                </TableCell>
-              </TableRowIcon>
-            ))
+            leaveTypes.filterList.map(
+              (leaveType: SimpleItem, index: number) => (
+                <TableRowIcon
+                  read={hasView}
+                  remove={false}
+                  edit={hasEdit}
+                  onEdit={async (item: SimpleItem) => {
+                    setSelected({
+                      visible: true,
+                      leaveType: item,
+                    });
+                  }}
+                  key={index}
+                  item={leaveType}
+                  onRemove={async () => {}}
+                  onRead={async () => {}}
+                >
+                  <TableCell className="font-medium">{leaveType.id}</TableCell>
+                  <TableCell>{leaveType.name}</TableCell>
+                  <TableCell>
+                    {toLocaleDate(new Date(leaveType.created_at), state)}
+                  </TableCell>
+                </TableRowIcon>
+              )
+            )
           )}
         </TableBody>
       </Table>

@@ -2,7 +2,6 @@ import HeaderCard from "@/components/custom-ui/card/HeaderCard";
 import { toast } from "@/components/ui/use-toast";
 import axiosClient from "@/lib/axois-client";
 import { UserRecordCount } from "@/lib/types";
-import { useAuthStore } from "@/stores/permission/auth-permssion-store";
 import {
   UserRoundPen,
   UserRoundPlus,
@@ -13,8 +12,6 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 export default function UserHeader() {
-  const { user } = useAuthStore();
-
   const { t } = useTranslation();
   const [recordCount, setRecordCount] = useState<UserRecordCount>({
     activeUserCount: null,
@@ -25,11 +22,7 @@ export default function UserHeader() {
   const [loading, setLoading] = useState(true);
   const fetchCount = async () => {
     try {
-      const response = await axiosClient.get(
-        user.role.name.startsWith("finance")
-          ? `finance/record/count`
-          : "epi/record/count"
-      );
+      const response = await axiosClient.get(`users/record/count`);
       if (response.status == 200) {
         setRecordCount({
           activeUserCount: response.data.counts.activeUserCount,

@@ -10,9 +10,9 @@ import axiosClient from "@/lib/axois-client";
 import { toast } from "@/components/ui/use-toast";
 import { Dispatch, SetStateAction } from "react";
 import { setServerError } from "@/validation/validation";
+import { User } from "@/database/tables";
 import { Check, Database, ShieldBan, User as UserIcon } from "lucide-react";
 import { checkStrength, passwordStrengthScore } from "@/validation/utils";
-import { User } from "@/database/tables";
 
 export interface AddUserProps {
   onComplete: (user: User) => void;
@@ -70,23 +70,20 @@ export default function AddUser(props: AddUserProps) {
     setError: Dispatch<SetStateAction<Map<string, string>>>
   ) => {
     try {
-      const response = await axiosClient.post("", {
+      const response = await axiosClient.post("user/store", {
         permissions: userData?.permissions,
+        grant: userData.grant == true,
         status: userData.status == true,
-        role_id: userData?.role?.id,
-        zone_id: userData?.zone?.id,
+        role: userData.role.id,
+        job: userData.job.name,
         job_id: userData.job.id,
-        destination_id: userData.department.id,
+        department: userData.department.name,
+        department_id: userData.department.id,
         contact: userData.contact,
         password: userData.password,
         email: userData.email,
         username: userData.username,
         full_name: userData.full_name,
-        gender_id: userData.gender.id,
-        province_id: userData.province.id,
-        zone: userData.zone.name,
-        job: userData.job.name,
-        destination: userData.department.name,
       });
       if (response.status == 200) {
         onComplete(response.data.user);
@@ -99,7 +96,7 @@ export default function AddUser(props: AddUserProps) {
       toast({
         toastType: "ERROR",
         title: t("error"),
-        description: error.response?.data?.message,
+        description: error.response.data.message,
       });
       setServerError(error.response.data.errors, setError);
       console.log(error);
@@ -157,11 +154,8 @@ export default function AddUser(props: AddUserProps) {
               { name: "full_name", rules: ["required", "max:45", "min:3"] },
               { name: "username", rules: ["required", "max:45", "min:3"] },
               { name: "email", rules: ["required"] },
-              { name: "contact", rules: ["required"] },
               { name: "department", rules: ["required"] },
               { name: "job", rules: ["required"] },
-              { name: "province", rules: ["required"] },
-              { name: "gender", rules: ["required"] },
             ],
           },
           {
@@ -178,41 +172,7 @@ export default function AddUser(props: AddUserProps) {
                   },
                 ],
               },
-              { name: "user_letter_of_introduction", rules: ["required"] },
               { name: "role", rules: ["required"] },
-              { name: "zone", rules: ["required"] },
-              // {
-              //   name: "role",
-              //   rules: [
-              //     (value: any) => {
-              //       if (
-              //         user.role.role == RoleEnum.epi_super ||
-              //         user.role.role == RoleEnum.finance_super
-              //       ) {
-              //         return false;
-              //       } else {
-              //         if (value) return false;
-              //         else return true;
-              //       }
-              //     },
-              //   ],
-              // },
-              // {
-              //   name: "zone",
-              //   rules: [
-              //     (value: any) => {
-              //       if (
-              //         user.role.role == RoleEnum.epi_super ||
-              //         user.role.role == RoleEnum.finance_super
-              //       ) {
-              //         return false;
-              //       } else {
-              //         if (value) return false;
-              //         else return true;
-              //       }
-              //     },
-              //   ],
-              // },
             ],
           },
           {

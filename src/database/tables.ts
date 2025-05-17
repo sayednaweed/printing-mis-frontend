@@ -78,7 +78,7 @@ export type Notifications = {
   read_status: number;
   created_at: string;
 };
-export type Job = {
+export type SimpleItem = {
   id: string;
   name: string;
   created_at: string;
@@ -92,12 +92,6 @@ export type NidType = {
   name: string;
 };
 // APPLICATION
-
-export type Department = {
-  id: string;
-  name: string;
-  created_at: string;
-};
 
 export type Country = {
   id: string;
@@ -164,7 +158,12 @@ export type Employee = {
   picture: any;
   contact: string;
   email: string;
+<<<<<<< HEAD
   is_current_employee: number;
+=======
+  status: number;
+  status_name: string;
+>>>>>>> 83f7003aada51197ae6359e61cfe47273a417bae
   gender: string;
   nationality: string;
   hire_date: string;
@@ -175,6 +174,10 @@ export type EmployeeModel = {
   date_of_birth: string | DateObject;
   picture: any;
   contact: string;
+<<<<<<< HEAD
+=======
+  family_mem_contact: string;
+>>>>>>> 83f7003aada51197ae6359e61cfe47273a417bae
   email: string;
   permanent_province: { id: string; name: string };
   permanent_district: { id: string; name: string };
@@ -191,6 +194,18 @@ export type EmployeeModel = {
   father_name: string;
   attachment: FileType | undefined;
 };
+<<<<<<< HEAD
+=======
+export type EmployeeMore = {
+  identity_card: { id: number; name: string };
+  register: string;
+  volume: string;
+  page: string;
+  register_no: string;
+  education_level: { id: string; name: string };
+  attachment: FileType | undefined;
+};
+>>>>>>> 83f7003aada51197ae6359e61cfe47273a417bae
 export type PositionAssignment = {
   id: string;
   hire_type: string;
@@ -202,4 +217,45 @@ export type PositionAssignment = {
   currency: string;
   department: string;
   hire_date: string;
+<<<<<<< HEAD
+=======
+};
+
+export type EmployeeReport = {
+  emp_id: string;
+  emp_name: string;
+  department: string;
+  position: string;
+  email: string;
+  hire_date: string;
+  status: string;
+};
+
+export type Attendance = {
+  id: string;
+  hr_code: string;
+  picture: string;
+  employee_name: string;
+  check_in_time: string;
+  check_out_time: string;
+  status: number;
+  description: string;
+};
+export type TakeAttendance = {
+  hr_code: string;
+  picture: string;
+  employee_name: string;
+  attendance_status: number;
+  description: string;
+};
+export type EmployeeStatus = {
+  id: string;
+  name: string;
+  status_id: number;
+  status_name: string;
+  saved_by: string;
+  active: number;
+  description: string;
+  created_at: string;
+>>>>>>> 83f7003aada51197ae6359e61cfe47273a417bae
 };
