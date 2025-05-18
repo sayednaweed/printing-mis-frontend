@@ -229,13 +229,7 @@ export type Attendance = {
   status: number;
   description: string;
 };
-export type TakeAttendance = {
-  hr_code: string;
-  picture: string;
-  employee_name: string;
-  attendance_status: number;
-  description: string;
-};
+
 export type EmployeeStatus = {
   id: string;
   status_id: number;

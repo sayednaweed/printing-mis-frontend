@@ -47,6 +47,10 @@ export const PermissionEnum = {
       user_permission: 3,
     },
   },
+  leave: {
+    name: "leave",
+    sub: {},
+  },
   vaccine_certificate: {
     name: "vaccine_certificate",
     sub: {
@@ -93,12 +97,15 @@ export const PermissionEnum = {
   },
 };
 export const StatusEnum = {
-  active: 1,
-  on_leave: 2,
-  resigned: 3,
-  terminated: 4,
-  absconded: 5,
-  deceased: 6,
+  hired: 1,
+  resigned: 2,
+  terminated: 3,
+  absconded: 4,
+  deceased: 5,
+  working: 6,
+  // User status
+  active: 7,
+  in_active: 8,
 };
 export const UserStatusEnum = {
   active: 1,

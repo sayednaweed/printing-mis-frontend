@@ -273,5 +273,6 @@
   "download": "Download",
   "take_leave": "Take leave",
   "employee_name": "Employee name",
-  "leave_type": "Type of leave"
+  "leave_type": "Type of leave",
+  "reason": "Reason"
 }

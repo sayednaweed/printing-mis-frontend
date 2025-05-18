@@ -1,17 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { useModelOnRequestHide } from "@/components/custom-ui/model/hook/useModelOnRequestHide";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import CachedImage from "@/components/custom-ui/image/CachedImage";
-import { useEffect, useState } from "react";
-import { AttendanceStatus, TakeAttendance } from "@/database/tables";
-import CustomCheckbox from "@/components/custom-ui/checkbox/CustomCheckbox";
+import { useState } from "react";
 import {
   Card,
   CardContent,
@@ -23,51 +12,88 @@ import NastranSpinner from "@/components/custom-ui/spinner/NastranSpinner";
 import PrimaryButton from "@/components/custom-ui/button/PrimaryButton";
 import { toast } from "@/components/ui/use-toast";
 import axiosClient from "@/lib/axois-client";
-import Shimmer from "@/components/custom-ui/shimmer/Shimmer";
+import { DateObject } from "react-multi-date-picker";
+import CustomTextarea from "@/components/custom-ui/input/CustomTextarea";
+import { setServerError, validate } from "@/validation/validation";
+import CustomDatePicker from "@/components/custom-ui/DatePicker/CustomDatePicker";
+import APICombobox from "@/components/custom-ui/combobox/APICombobox";
 
 export default function AddLeave() {
   const { t } = useTranslation();
   const { modelOnRequestHide } = useModelOnRequestHide();
+  const [loading, setLoading] = useState(false);
   const closeModel = () => {
     modelOnRequestHide();
   };
-  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<Map<string, string>>(new Map());
+  const [userData, setUserData] = useState<{
+    hr_code: { id: string; name: string } | undefined;
+    leave_type: { id: string; name: string } | undefined;
+    start_date: DateObject;
+    end_date: DateObject;
+    reason: string;
+  }>({
+    hr_code: undefined,
+    leave_type: undefined,
+    start_date: new DateObject(new Date()),
+    end_date: new DateObject(new Date()),
+    reason: "",
+  });
 
-  const [attendances, setAttendances] = useState<TakeAttendance[]>([]);
-  const [statuses, setStatuses] = useState<AttendanceStatus[]>();
-
-  const initialize = async () => {
-    try {
-      if (loading) return;
-      setLoading(true);
-      const response = await axiosClient.get("employee/attendance");
-      if (response.status === 200) {
-        const attendances = response.data.attendances;
-        const statuses = response.data.statuses;
-        setAttendances(attendances);
-        setStatuses(statuses);
-      }
-    } catch (error: any) {
-      toast({
-        toastType: "ERROR",
-        description: error.response.data.message,
-      });
-      console.log(error);
-    } finally {
-      setLoading(false);
-    }
-  };
-  useEffect(() => {
-    initialize();
-  }, []);
   const store = async () => {
+    if (loading) {
+      return;
+    }
+
+    setLoading(true);
+    // 1. Validate form
+    const passed = await validate(
+      [
+        {
+          name: "hr_code",
+          rules: ["required"],
+        },
+        {
+          name: "leave_type",
+          rules: ["required"],
+        },
+        {
+          name: "start_date",
+          rules: ["required"],
+        },
+        {
+          name: "end_date",
+          rules: ["required"],
+        },
+        {
+          name: "reason",
+          rules: ["required", "min:5"],
+        },
+      ],
+
+      userData,
+      setError
+    );
+    if (!passed) {
+      setLoading(false);
+      return;
+    }
+    // 2. Store
     try {
-      if (loading) return;
-      setLoading(true);
-      const response = await axiosClient.post("employee/assigment/change", {});
-      if (response.status === 200) {
+      const response = await axiosClient.post("employees/take/leave", {
+        employee_id: userData.hr_code?.id,
+        hr_code: userData.hr_code,
+        status_id: userData.leave_type?.id,
+        status: userData.leave_type?.name,
+        reason: userData.reason,
+        start_date: userData?.start_date?.toDate()?.toISOString(),
+        end_date: userData?.end_date?.toDate()?.toISOString(),
+      });
+      if (response.status == 200) {
+        // Update user state
         toast({
           toastType: "SUCCESS",
+          title: t("success"),
           description: response.data.message,
         });
         closeModel();
@@ -75,35 +101,19 @@ export default function AddLeave() {
     } catch (error: any) {
       toast({
         toastType: "ERROR",
+        title: t("error"),
         description: error.response.data.message,
       });
+      setServerError(error.response.data.errors, setError);
       console.log(error);
     } finally {
       setLoading(false);
     }
   };
-  const skeleton = (
-    <TableRow>
-      <TableCell>
-        <Shimmer className="h-[24px] w-full rounded-sm" />
-      </TableCell>
-      <TableCell>
-        <Shimmer className="h-[24px] w-full rounded-sm" />
-      </TableCell>
-      <TableCell>
-        <Shimmer className="h-[24px] w-full rounded-sm" />
-      </TableCell>
-      <TableCell>
-        <Shimmer className="h-[24px] w-full rounded-sm" />
-      </TableCell>
-      <TableCell>
-        <Shimmer className="h-[24px] w-full rounded-sm" />
-      </TableCell>
-      <TableCell>
-        <Shimmer className="h-[24px] w-full rounded-sm" />
-      </TableCell>
-    </TableRow>
-  );
+  const handleChange = (e: any) => {
+    const { name, value } = e.target;
+    setUserData((prev: any) => ({ ...prev, [name]: value }));
+  };
   return (
     <Card className="w-full my-16 self-center [backdrop-filter:blur(20px)] bg-card">
       {loading ? (
@@ -112,64 +122,92 @@ export default function AddLeave() {
         <>
           <CardHeader className="text-start sticky top-0 rounded-t-lg border-b bg-card pb-2 z-10">
             <CardTitle className="rtl:text-4xl-rtl mb-4 ltr:text-3xl-ltr text-tertiary">
-              {t("promote_or_demote")}
+              {t("take_leave")}
             </CardTitle>
           </CardHeader>
-          <CardContent className="">
-            <Table className="bg-card rounded-md my-[2px] py-8">
-              <TableHeader className="rtl:text-3xl-rtl ltr:text-xl-ltr">
-                <TableRow className="hover:bg-transparent">
-                  <TableHead className="text-center px-1 w-[60px]">
-                    {t("profile")}
-                  </TableHead>
-                  <TableHead className="text-start px-1">
-                    {t("hr_code")}
-                  </TableHead>
-                  <TableHead className="text-start">{t("name")}</TableHead>
-                  <TableHead className="text-start">{t("action")}</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody className="rtl:text-xl-rtl ltr:text-2xl-ltr">
-                {loading ? (
-                  <>{skeleton}</>
-                ) : (
-                  attendances.map((item) => (
-                    <TableRow>
-                      <TableCell className="px-1 py-0">
-                        <CachedImage
-                          src={item?.picture}
-                          alt="Avatar"
-                          ShimmerIconClassName="size-[18px]"
-                          shimmerClassName="size-[36px] mx-auto shadow-lg border border-tertiary rounded-full"
-                          className="size-[36px] object-center object-cover mx-auto shadow-lg border border-tertiary rounded-full"
-                          routeIdentifier={"profile"}
-                        />
-                      </TableCell>
-                      <TableCell className="rtl:text-md-rtl truncate px-1 py-0">
-                        {item.hr_code}
-                      </TableCell>
-                      <TableCell className="rtl:text-md-rtl truncate px-1 py-0">
-                        {`${item.employee_name}`}
-                      </TableCell>
-                      <TableCell>
-                        {statuses?.map((item) => (
-                          <CustomCheckbox
-                            checked={selected?.selected}
-                            onCheckedChange={(value: boolean) => {
-                              item.selected = value;
-                              setSelected(item);
-                            }}
-                            parentClassName="rounded-md py-[12px] gap-x-1 bg-card border px-[10px]"
-                            text={item.name}
-                            required={true}
-                          />
-                        ))}
-                      </TableCell>
-                    </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
+          <CardContent className="flex flex-col items-center justify-center mt-4 gap-y-3">
+            <APICombobox
+              placeholderText={t("search_item")}
+              errorText={t("no_item")}
+              required={true}
+              requiredHint={`* ${t("required")}`}
+              onSelect={(selection: any) =>
+                setUserData((prev: any) => ({
+                  ...prev,
+                  hr_code: selection,
+                }))
+              }
+              lable={t("hr_code")}
+              selectedItem={userData?.hr_code?.name}
+              placeHolder={t("select_a")}
+              errorMessage={error.get("hr_code")}
+              apiUrl={"hr/codes"}
+              mode="single"
+              className="sm:min-w-[400px] w-fit"
+              cacheData={false}
+            />
+            <APICombobox
+              placeholderText={t("search_item")}
+              errorText={t("no_item")}
+              required={true}
+              requiredHint={`* ${t("required")}`}
+              onSelect={(selection: any) =>
+                setUserData((prev: any) => ({
+                  ...prev,
+                  leave_type: selection,
+                }))
+              }
+              lable={t("leave_type")}
+              selectedItem={userData?.leave_type?.name}
+              placeHolder={t("select_a")}
+              errorMessage={error.get("leave_type")}
+              apiUrl={"leave/types"}
+              mode="single"
+              className="sm:min-w-[400px] w-fit"
+              cacheData={false}
+            />
+            <CustomDatePicker
+              placeholder={t("select_a_date")}
+              lable={t("start_date")}
+              requiredHint={`* ${t("required")}`}
+              required={true}
+              value={userData.start_date}
+              dateOnComplete={(date: DateObject) => {
+                setUserData((prev: any) => ({
+                  ...prev,
+                  start_date: date,
+                }));
+              }}
+              className="py-3 sm:min-w-[400px] w-full"
+              errorMessage={error.get("start_date")}
+            />
+            <CustomDatePicker
+              placeholder={t("select_a_date")}
+              lable={t("end_date")}
+              requiredHint={`* ${t("required")}`}
+              required={true}
+              value={userData.end_date}
+              dateOnComplete={(date: DateObject) => {
+                setUserData((prev: any) => ({
+                  ...prev,
+                  end_date: date,
+                }));
+              }}
+              className="py-3 sm:min-w-[400px] w-full"
+              errorMessage={error.get("end_date")}
+            />
+            <CustomTextarea
+              required={true}
+              requiredHint={`* ${t("required")}`}
+              placeholder={t("reason")}
+              value={userData.reason}
+              name="reason"
+              rows={5}
+              parantClassName=" col-span-3 mx-auto min-w-[100%] lg:min-w-[60%]"
+              className=""
+              errorMessage={error.get("reason")}
+              onChange={handleChange}
+            />
           </CardContent>
           <CardFooter className="flex justify-evenly items-center mt-12">
             <PrimaryButton

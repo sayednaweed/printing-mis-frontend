@@ -274,5 +274,6 @@
   "download": "دانلود",
   "take_leave": "گرفت رخصتی",
   "employee_name": "نام کارمند",
-  "leave_type": "نوع رخصتی"
+  "leave_type": "نوع رخصتی",
+  "reason": "دلیل"
 }

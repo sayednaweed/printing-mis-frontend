@@ -39,7 +39,6 @@ import {
   BreadcrumbSeparator,
 } from "@/components/custom-ui/Breadcrumb/Breadcrumb";
 import AddLeave from "./add-leave";
-import BooleanStatusButton from "@/components/custom-ui/button/BooleanStatusButton";
 
 export default function LeavePage() {
   const { user } = useAuthStore();
@@ -218,7 +217,7 @@ export default function LeavePage() {
     </TableRow>
   );
   const per: UserPermission = user?.permissions[PortalEnum.hr].get(
-    PermissionEnum.users.name
+    PermissionEnum.leave.name
   ) as UserPermission;
   const hasView = per?.view;
   const hasAdd = per?.add;
@@ -232,7 +231,7 @@ export default function LeavePage() {
       <Breadcrumb className="mx-2 mt-2">
         <BreadcrumbHome />
         <BreadcrumbSeparator />
-        <BreadcrumbItem>{t("leaves")}</BreadcrumbItem>
+        <BreadcrumbItem>{t("leave")}</BreadcrumbItem>
       </Breadcrumb>
       <div className="flex flex-col sm:items-baseline sm:flex-row rounded-md bg-card gap-2  px-2 py-2 mt-4">
         {hasAdd && (

@@ -140,10 +140,10 @@ export default function EmployeesEditPage() {
               extension: "application/pdf",
               size: 0,
             }}
-            className="mx-auto my-auto border rounded-lg p-2 w-full bg-primary/95 hover:bg-primary/90 transition-all duration-300 ease-in-out"
+            className="mx-auto my-auto border rounded-lg p-2 w-full bg-gray-300/15 hover:shadow transition-all duration-300 ease-in-out"
             errorText={t("error")}
             cancelText={t("cancel")}
-            apiUrl={""}
+            apiUrl={"generate/employee/contract/" + id}
           />
         </TabsList>
         <TabsContent
