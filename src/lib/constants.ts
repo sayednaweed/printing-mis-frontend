@@ -70,6 +70,7 @@ export const PermissionEnum = {
       hr_configuration_leave_type: 23,
       hr_configuration_shifts: 24,
       hr_configuration_hire_type: 25,
+      hr_app_configuration: 26,
       expense_configuration_expense_type: 51,
       inventory_configuration_accounts: 111,
       inventory_configuration_warehouse: 112,
@@ -164,6 +165,7 @@ export const CACHE = {
   EMPLOYEE_TABLE_PAGINATION_COUNT: "EMPLOYEE_TABLE",
   EMPLOYEEREPORT_TABLE_PAGINATION_COUNT: "EMPLOYEEREPORT_TABLE",
   ATTENDANCE_TABLE_PAGINATION_COUNT: "ATTENDANCE_TABLE",
+  LEAVE_TABLE_PAGINATION_COUNT: "LEAVE_TABLE",
   AUDIT_TABLE_PAGINATION_COUNT: "AUDIT_TABLE",
   SYSTEM_CALENDAR: "SYSTEM_CALENDAR",
 };

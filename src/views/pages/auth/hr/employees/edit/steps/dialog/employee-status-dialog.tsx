@@ -52,7 +52,7 @@ export default function EmployeeStatusDialog(props: EmployeeStatusDialogProps) {
           },
           {
             name: "detail",
-            rules: ["required", "max:128", "min:15"],
+            rules: ["required", "max:128", "min:5"],
           },
         ],
         userData,
@@ -69,10 +69,12 @@ export default function EmployeeStatusDialog(props: EmployeeStatusDialogProps) {
       if (userData?.status)
         formData.append("status_type_id", userData.status.id);
 
-      const response = await axiosClient.post(
-        "employee/change-status",
-        formData
-      );
+      const response = await axiosClient.post(`update/employent/status/${id}`, {
+        employee_id: id,
+        detail: userData.detail,
+        status_id: userData.status?.id,
+        status: userData.status?.name,
+      });
       if (response.status === 200) {
         toast({
           toastType: "SUCCESS",
@@ -124,8 +126,9 @@ export default function EmployeeStatusDialog(props: EmployeeStatusDialogProps) {
             selectedItem={userData?.status?.name}
             placeHolder={t("select_a")}
             errorMessage={error.get("status")}
-            apiUrl={"block/statuse/types"}
+            apiUrl={"employee/status/list/" + id}
             mode="single"
+            cacheData={false}
           />
 
           <CustomTextarea

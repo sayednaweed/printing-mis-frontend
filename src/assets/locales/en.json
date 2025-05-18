@@ -1,5 +1,5 @@
 {
-  "app_name": "Printing Management",
+  "app_name": "Fardai Naveen Printing Press",
   "total": "Total",
   "user_today": "User Today",
   "total_active": "Total Active",
@@ -263,10 +263,15 @@
   "more": "More",
   "saved_by": "Saved by",
   "action": "Action",
-  "former": "Former",
+  "formerly": "Formerly",
   "currently": "Currently",
   "change_status": "Change status",
   "employment_status": "Employment status",
   "update_promotion": "You can promote or demote an employee.",
-  "update_empl_acc_info": "Update employee account information"
+  "update_empl_acc_info": "Update employee account information",
+  "download_contract": "Download contract",
+  "download": "Download",
+  "take_leave": "Take leave",
+  "employee_name": "Employee name",
+  "leave_type": "Type of leave"
 }

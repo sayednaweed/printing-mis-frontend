@@ -19,6 +19,7 @@ import EditEmployeeInformation from "./steps/edit-employee-information";
 import EmployeesEditHeader from "./employees-edit-header";
 import EditEmployeePromotionDemotion from "./steps/edit-employee-promotion-demotion";
 import EditEmployeeStatus from "./steps/edit-employee-status";
+import Downloader from "@/components/custom-ui/chooser/Downloader";
 
 export default function EmployeesEditPage() {
   const { user } = useAuthStore();
@@ -130,6 +131,20 @@ export default function EmployeesEditPage() {
       >
         <TabsList className="sm:min-h-[550px] h-fit pb-8 min-w-[300px] md:w-[300px] gap-y-4 items-start justify-start flex flex-col bg-card border">
           {tabList}
+          <Downloader
+            downloadText={t("download_contract")}
+            filetoDownload={{
+              id: "",
+              path: "",
+              name: `${userData?.first_name + " " + userData?.last_name}.pdf`,
+              extension: "application/pdf",
+              size: 0,
+            }}
+            className="mx-auto my-auto border rounded-lg p-2 w-full bg-primary/95 hover:bg-primary/90 transition-all duration-300 ease-in-out"
+            errorText={t("error")}
+            cancelText={t("cancel")}
+            apiUrl={""}
+          />
         </TabsList>
         <TabsContent
           className="flex-1 m-0"

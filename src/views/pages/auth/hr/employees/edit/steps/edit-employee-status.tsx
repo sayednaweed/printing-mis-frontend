@@ -63,14 +63,14 @@ export default function EditEmployeeStatus(props: EditEmployeeStatusProps) {
   }, []);
 
   const add = (employeeStatus: EmployeeStatus) => {
-    if (employeeStatus.active == 1) {
-      const updatedUnFiltered = employeeStatuses.map((item) => {
-        return { ...item, is_active: 0 };
-      });
-      setEmployeeStatuses([employeeStatus, ...updatedUnFiltered]);
-    } else {
-      setEmployeeStatuses([employeeStatus, ...employeeStatuses]);
-    }
+    setEmployeeStatuses((prev) => {
+      // Set is_active to 0 for all others
+      const updated = prev.map((item) => ({
+        ...item,
+        active: 0,
+      }));
+      return [employeeStatus, ...updated];
+    });
   };
 
   const hasEdit = permissions.sub.get(
@@ -103,7 +103,6 @@ export default function EditEmployeeStatus(props: EditEmployeeStatusProps) {
               <TableHeader className="rtl:text-3xl-rtl ltr:text-xl-ltr">
                 <TableRow className="hover:bg-transparent">
                   <TableHead className="text-start">{t("#")}</TableHead>
-                  <TableHead className="text-start">{t("name")}</TableHead>
                   <TableHead className="text-start">{t("status")}</TableHead>
                   <TableHead className="text-start">{t("saved_by")}</TableHead>
                   <TableHead className="text-start">{t("action")}</TableHead>
@@ -133,9 +132,6 @@ export default function EditEmployeeStatus(props: EditEmployeeStatusProps) {
                       <TableCell>
                         <Shimmer className="h-[24px] w-full rounded-sm" />
                       </TableCell>
-                      <TableCell>
-                        <Shimmer className="h-[24px] w-full rounded-sm" />
-                      </TableCell>
                     </TableRow>
                   </>
                 ) : (
@@ -143,9 +139,6 @@ export default function EditEmployeeStatus(props: EditEmployeeStatusProps) {
                     (employeeStatus: EmployeeStatus, index: number) => (
                       <TableRow key={index}>
                         <TableCell>{index + 1}</TableCell>
-                        <TableCell className="truncate max-w-44">
-                          {employeeStatus.name}
-                        </TableCell>
                         <TableCell>
                           <BooleanStatusButton
                             getColor={function (): {

@@ -1,5 +1,5 @@
 {
-  "app_name": "مدیریت چاپ",
+  "app_name": "مطبعه فردای نوین",
   "total": "مجموع",
   "user_today": "کاربر امروز",
   "total_active": "مجموع فعال",
@@ -264,10 +264,15 @@
   "saved_by": "ذخیره شده توسط",
   "employment_stat": "حالت کاری",
   "action": "عمل",
-  "former": "",
+  "formerly": "سابق",
   "currently": "بر حال",
   "change_status": "تغییر حالت",
   "employment_status": "وضعیت کارمندی",
   "update_promotion": "شما می‌توانید یک کارمند را ارتقا دهید یا او را تنزل رتبه دهید.",
-  "update_empl_acc_info": "شما میتوانید اطلاعات حساب کارمندان را اینجا ویرایش کنید"
+  "update_empl_acc_info": "شما میتوانید اطلاعات حساب کارمندان را اینجا ویرایش کنید",
+  "download_contract": "دانلود قرارداد",
+  "download": "دانلود",
+  "take_leave": "گرفت رخصتی",
+  "employee_name": "نام کارمند",
+  "leave_type": "نوع رخصتی"
 }

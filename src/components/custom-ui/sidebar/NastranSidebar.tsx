@@ -90,6 +90,7 @@ export default function NastranSidebar() {
     }
     bgSidebarRef.current!.style.display = "none";
   };
+
   return (
     <>
       <div
