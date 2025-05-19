@@ -44,7 +44,10 @@ const CustomInput = React.forwardRef<HTMLInputElement, InputProps>(
         ) : (
           <>
             <div
-              className={`rtl:text-lg-rtl ltr:text-lg-ltr relative select-none h-fit ${marginTop} ${parentClassName}`}
+              className={cn(
+                `rtl:text-lg-rtl ltr:text-lg-ltr relative select-none h-fit ${marginTop}`,
+                parentClassName
+              )}
             >
               {startContent && (
                 <span

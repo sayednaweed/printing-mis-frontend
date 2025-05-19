@@ -9,28 +9,30 @@ import {
 } from "@/components/ui/table";
 import { toast } from "@/components/ui/use-toast";
 import { useGlobalState } from "@/context/GlobalStateContext";
-import { Attendance, UserPermission } from "@/database/tables";
+import { AttendanceModel, UserPermission } from "@/database/tables";
 import { CACHE, PermissionEnum, PortalEnum } from "@/lib/constants";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useSearchParams } from "react-router";
 import axiosClient from "@/lib/axois-client";
-
 import TableRowIcon from "@/components/custom-ui/table/TableRowIcon";
 import Pagination from "@/components/custom-ui/table/Pagination";
-import { setDateToURL } from "@/lib/utils";
+import { setDateToURL, toLocaleDate } from "@/lib/utils";
 import NastranModel from "@/components/custom-ui/model/NastranModel";
 import PrimaryButton from "@/components/custom-ui/button/PrimaryButton";
 import { ListFilter, Search } from "lucide-react";
 import CustomInput from "@/components/custom-ui/input/CustomInput";
 import SecondaryButton from "@/components/custom-ui/button/SecondaryButton";
-
 import CustomSelect from "@/components/custom-ui/select/CustomSelect";
 import { DateObject } from "react-multi-date-picker";
 import useCacheDB from "@/lib/indexeddb/useCacheDB";
-import CachedImage from "@/components/custom-ui/image/CachedImage";
 import FilterDialog from "@/components/custom-ui/dialog/filter-dialog";
-import { Order, UserSearch, UserSort } from "@/lib/types";
+import {
+  AttendancePaginationData,
+  Order,
+  UserSearch,
+  UserSort,
+} from "@/lib/types";
 import { useAuthStore } from "@/stores/permission/auth-permssion-store";
 import {
   Breadcrumb,
@@ -38,11 +40,15 @@ import {
   BreadcrumbItem,
   BreadcrumbSeparator,
 } from "@/components/custom-ui/Breadcrumb/Breadcrumb";
-import AddAttendance from "./add-attendance";
+import AddUpdateAttendance from "./add-update-attendance";
 
 export default function AttendancePage() {
   const { user } = useAuthStore();
   const navigate = useNavigate();
+  const [state] = useGlobalState();
+  const [attendance, setAttendance] = useState<AttendanceModel | undefined>(
+    undefined
+  );
   const searchRef = useRef<HTMLInputElement>(null);
   const { updateComponentCache, getComponentCache } = useCacheDB();
   const [searchParams] = useSearchParams();
@@ -86,7 +92,7 @@ export default function AttendancePage() {
         endDate: endDate,
       };
       // 2. Send data
-      const response = await axiosClient.get("api/attendance", {
+      const response = await axiosClient.get("attendancies", {
         params: {
           page: page,
           per_page: count,
@@ -101,12 +107,12 @@ export default function AttendancePage() {
           },
         },
       });
-      const fetch = response.data.attendance.data as Attendance[];
-      const lastPage = response.data.attendance.last_page;
-      const totalItems = response.data.attendance.total;
-      const perPage = response.data.attendance.per_page;
-      const currentPage = response.data.attendance.current_page;
-      setAttendance({
+      const fetch = response.data.data as AttendanceModel[];
+      const lastPage = response.data.last_page;
+      const totalItems = response.data.total;
+      const perPage = response.data.per_page;
+      const currentPage = response.data.current_page;
+      setAttendances({
         filterList: {
           data: fetch,
           lastPage: lastPage,
@@ -154,7 +160,7 @@ export default function AttendancePage() {
   useEffect(() => {
     initialize(undefined, undefined, 1);
   }, [sort, startDate, endDate, order]);
-  const [attendance, setAttendance] = useState<{
+  const [attendances, setAttendances] = useState<{
     filterList: AttendancePaginationData;
     unFilterList: AttendancePaginationData;
   }>({
@@ -175,10 +181,9 @@ export default function AttendancePage() {
   });
   const [loading, setLoading] = useState(false);
   const { t } = useTranslation();
-  const [state] = useGlobalState();
 
-  const addItem = (attendance: Attendance) => {
-    setAttendance((prevState) => ({
+  const addItem = (attendance: AttendanceModel) => {
+    setAttendances((prevState) => ({
       filterList: {
         ...prevState.filterList,
         data: [attendance, ...prevState.filterList.data],
@@ -213,17 +218,19 @@ export default function AttendancePage() {
       <TableCell>
         <Shimmer className="h-[24px] w-full rounded-sm" />
       </TableCell>
+      <TableCell>
+        <Shimmer className="h-[24px] w-full rounded-sm" />
+      </TableCell>
     </TableRow>
   );
   const per: UserPermission = user?.permissions[PortalEnum.hr].get(
-    PermissionEnum.users.name
+    PermissionEnum.attendance.name
   ) as UserPermission;
   const hasView = per?.view;
   const hasAdd = per?.add;
 
-  const watchOnClick = async (attendance: Attendance) => {
-    const attendanceId = attendance.id;
-    navigate(`/attendance${attendanceId}`);
+  const watchOnClick = async (attendance: AttendanceModel) => {
+    setAttendance(attendance);
   };
   return (
     <>
@@ -235,16 +242,23 @@ export default function AttendancePage() {
       <div className="flex flex-col sm:items-baseline sm:flex-row rounded-md bg-card gap-2  px-2 py-2 mt-4">
         {hasAdd && (
           <NastranModel
+            visible={attendance && true}
             size="lg"
             isDismissable={false}
             button={
               <PrimaryButton className="rtl:text-lg-rtl font-semibold ltr:text-md-ltr">
-                {t("add")}
+                {t("take_attendance")}
               </PrimaryButton>
             }
             showDialog={async () => true}
           >
-            <AddAttendance />
+            <AddUpdateAttendance
+              onCloseModel={() => {
+                setAttendance(undefined);
+              }}
+              attendance={attendance}
+              onComplete={addItem}
+            />
           </NastranModel>
         )}
 
@@ -417,23 +431,20 @@ export default function AttendancePage() {
       <Table className="bg-card rounded-md my-[2px] py-8">
         <TableHeader className="rtl:text-3xl-rtl ltr:text-xl-ltr">
           <TableRow className="hover:bg-transparent">
-            <TableHead className="text-start px-1">{t("profile")}</TableHead>
-            <TableHead className="text-center px-1 ">{t("hr_code")}</TableHead>
-            <TableHead className="text-start">{t("name")}</TableHead>
-            <TableHead className="text-start">{t("check_in_time")}</TableHead>
-            <TableHead className="text-start">{t("check_out_time")}</TableHead>
-            <TableHead className="text-start">{t("description")}</TableHead>
-            <TableHead className="text-start">{t("status")}</TableHead>
-
-            <TableHead className="text-start w-[60px]">{t("action")}</TableHead>
+            <TableHead className="text-center px-1">{t("present")}</TableHead>
+            <TableHead className="text-start">{t("absent")}</TableHead>
+            <TableHead className="text-start">{t("leave")}</TableHead>
+            <TableHead className="text-start">{t("other")}</TableHead>
+            <TableHead className="text-start">{t("taken_by")}</TableHead>
+            <TableHead className="text-start">{t("date")}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody className="rtl:text-xl-rtl ltr:text-2xl-ltr">
           {loading ? (
             <>{skeleton}</>
           ) : (
-            attendance.filterList.data.map(
-              (item: Attendance, index: number) => (
+            attendances.filterList.data.map(
+              (item: AttendanceModel, index: number) => (
                 <TableRowIcon
                   read={hasView}
                   remove={false}
@@ -444,34 +455,17 @@ export default function AttendancePage() {
                   onRemove={async () => {}}
                   onRead={watchOnClick}
                 >
-                  <TableCell className="px-1 py-0">
-                    <CachedImage
-                      src={item?.picture}
-                      alt="Avatar"
-                      ShimmerIconClassName="size-[18px]"
-                      shimmerClassName="size-[36px] mx-auto shadow-lg border border-tertiary rounded-full"
-                      className="size-[36px] object-center object-cover mx-auto shadow-lg border border-tertiary rounded-full"
-                      routeIdentifier={"profile"}
-                    />
+                  <TableCell className="truncate">
+                    {item.total_present}
                   </TableCell>
-                  <TableCell className="rtl:text-md-rtl truncate px-1 py-0">
-                    {item.hr_code}
+                  <TableCell className="truncate">
+                    {item.total_absent}
                   </TableCell>
-
-                  <TableCell className="rtl:text-md-rtl truncate px-1 py-0">
-                    {item.employee_name}
-                  </TableCell>
-                  <TableCell>
-                    <h1 className="truncate">{item.check_in_time}</h1>
-                  </TableCell>
-                  <TableCell dir="ltr" className="truncate">
-                    {item.check_out_time}
-                  </TableCell>
-                  <TableCell dir="ltr" className="truncate">
-                    {item.description}
-                  </TableCell>
-                  <TableCell dir="ltr" className="truncate">
-                    {item.status}
+                  <TableCell className="truncate">{item.total_leave}</TableCell>
+                  <TableCell className="truncate">{item.total_other}</TableCell>
+                  <TableCell className="truncate">{item.taken_by}</TableCell>
+                  <TableCell className="truncate">
+                    {toLocaleDate(new Date(item.created_at), state)}
                   </TableCell>
                 </TableRowIcon>
               )
@@ -482,11 +476,11 @@ export default function AttendancePage() {
       <div className="flex justify-between rounded-md bg-card  p-3 items-center">
         <h1 className="rtl:text-lg-rtl ltr:text-md-ltr font-medium">{`${t(
           "page"
-        )} ${attendance.unFilterList.currentPage} ${t("of")} ${
-          attendance.unFilterList.lastPage
+        )} ${attendances.unFilterList.currentPage} ${t("of")} ${
+          attendances.unFilterList.lastPage
         }`}</h1>
         <Pagination
-          lastPage={attendance.unFilterList.lastPage}
+          lastPage={attendances.unFilterList.lastPage}
           onPageChange={async (page) =>
             await initialize(undefined, undefined, page)
           }

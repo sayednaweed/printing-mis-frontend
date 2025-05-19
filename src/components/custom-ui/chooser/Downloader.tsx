@@ -5,6 +5,7 @@ import { CloudDownload } from "lucide-react";
 import { useState } from "react";
 import { FileType } from "@/lib/types";
 import IconButton from "../button/IconButton";
+import { cn } from "@/lib/utils";
 
 interface DownloaderProps {
   downloadText: string;
@@ -13,6 +14,7 @@ interface DownloaderProps {
   errorText: string;
   cancelText: string;
   apiUrl: string;
+  className?: string;
   params?: any;
   lockUpload?: (lock: boolean) => void;
 }
@@ -24,6 +26,7 @@ const Downloader = (props: DownloaderProps) => {
     cancelText,
     lockUpload,
     apiUrl,
+    className,
     params,
     onComplete,
   } = props;
@@ -91,7 +94,7 @@ const Downloader = (props: DownloaderProps) => {
     }
   };
   return (
-    <div className="flex flex-col items-center">
+    <div className={cn("flex flex-col items-center", className)}>
       <label
         onClick={download}
         className="flex flex-col items-center justify-center h-full transition-opacity duration-150 cursor-pointer hover:opacity-80"

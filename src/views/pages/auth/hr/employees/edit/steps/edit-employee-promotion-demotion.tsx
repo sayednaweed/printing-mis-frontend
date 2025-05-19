@@ -69,7 +69,10 @@ export default function EditEmployeePromotionDemotion(
     >
       <AssignPositionDailog
         onComplete={(item: PositionAssignment) => {
-          setPositionAssignments([item, ...positionAssignments]);
+          setPositionAssignments((prev: PositionAssignment[]) => [
+            ...prev,
+            item,
+          ]);
         }}
         onClose={() => setViewDialog(false)}
       />
