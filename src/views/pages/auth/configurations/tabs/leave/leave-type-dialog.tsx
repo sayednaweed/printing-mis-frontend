@@ -37,7 +37,7 @@ export default function LeaveTypeDialog(props: LeaveDialogProps) {
   const fetch = async () => {
     try {
       setFetching(true);
-      const response = await axiosClient.get(`leave/type/${leave?.id}`);
+      const response = await axiosClient.get(`leave/${leave?.id}`);
       if (response.status === 200) {
         setUserData(response.data);
       }
@@ -82,7 +82,7 @@ export default function LeaveTypeDialog(props: LeaveDialogProps) {
       formData.append("english", userData.english);
       formData.append("farsi", userData.farsi);
       formData.append("pashto", userData.pashto);
-      const response = await axiosClient.post("leave/type/store", formData);
+      const response = await axiosClient.post("/leave-types", formData);
       if (response.status === 200) {
         toast({
           toastType: "SUCCESS",
