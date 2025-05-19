@@ -17,8 +17,15 @@ import CustomTextarea from "@/components/custom-ui/input/CustomTextarea";
 import { setServerError, validate } from "@/validation/validation";
 import CustomDatePicker from "@/components/custom-ui/DatePicker/CustomDatePicker";
 import APICombobox from "@/components/custom-ui/combobox/APICombobox";
+import { Leave } from "@/database/tables";
 
-export default function AddLeave() {
+interface AddLeaveProps {
+  onComplete: (leave: Leave) => void;
+  leave?: Leave;
+}
+
+export default function AddLeave(props: AddLeaveProps) {
+  const { onComplete, leave } = props;
   const { t } = useTranslation();
   const { modelOnRequestHide } = useModelOnRequestHide();
   const [loading, setLoading] = useState(false);
@@ -80,7 +87,7 @@ export default function AddLeave() {
     }
     // 2. Store
     try {
-      const response = await axiosClient.post("employees/take/leave", {
+      const response = await axiosClient.post("leaves", {
         employee_id: userData.hr_code?.id,
         hr_code: userData.hr_code,
         status_id: userData.leave_type?.id,
@@ -90,6 +97,78 @@ export default function AddLeave() {
         end_date: userData?.end_date?.toDate()?.toISOString(),
       });
       if (response.status == 200) {
+        onComplete(response.data?.leave);
+        // Update user state
+        toast({
+          toastType: "SUCCESS",
+          title: t("success"),
+          description: response.data.message,
+        });
+        closeModel();
+      }
+    } catch (error: any) {
+      toast({
+        toastType: "ERROR",
+        title: t("error"),
+        description: error.response.data.message,
+      });
+      setServerError(error.response.data.errors, setError);
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+  const update = async () => {
+    if (loading) {
+      return;
+    }
+
+    setLoading(true);
+    // 1. Validate form
+    const passed = await validate(
+      [
+        {
+          name: "hr_code",
+          rules: ["required"],
+        },
+        {
+          name: "leave_type",
+          rules: ["required"],
+        },
+        {
+          name: "start_date",
+          rules: ["required"],
+        },
+        {
+          name: "end_date",
+          rules: ["required"],
+        },
+        {
+          name: "reason",
+          rules: ["required", "min:5"],
+        },
+      ],
+
+      userData,
+      setError
+    );
+    if (!passed) {
+      setLoading(false);
+      return;
+    }
+    // 2. Store
+    try {
+      const response = await axiosClient.put("leaves", {
+        employee_id: userData.hr_code?.id,
+        hr_code: userData.hr_code,
+        status_id: userData.leave_type?.id,
+        status: userData.leave_type?.name,
+        reason: userData.reason,
+        start_date: userData?.start_date?.toDate()?.toISOString(),
+        end_date: userData?.end_date?.toDate()?.toISOString(),
+      });
+      if (response.status == 200) {
+        onComplete(response.data?.leave);
         // Update user state
         toast({
           toastType: "SUCCESS",
@@ -161,7 +240,7 @@ export default function AddLeave() {
               selectedItem={userData?.leave_type?.name}
               placeHolder={t("select_a")}
               errorMessage={error.get("leave_type")}
-              apiUrl={"leave/types"}
+              apiUrl={"leave-types"}
               mode="single"
               className="sm:min-w-[400px] w-fit"
               cacheData={false}
@@ -212,7 +291,7 @@ export default function AddLeave() {
           <CardFooter className="flex justify-evenly items-center mt-12">
             <PrimaryButton
               disabled={loading}
-              onClick={store}
+              onClick={leave ? update : store}
               className={`shadow-lg`}
             >
               {t("confirm")}

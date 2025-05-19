@@ -245,7 +245,7 @@ export default function LeavePage() {
             }
             showDialog={async () => true}
           >
-            <AddLeave />
+            <AddLeave onComplete={addItem} />
           </NastranModel>
         )}
 
@@ -418,8 +418,8 @@ export default function LeavePage() {
       <Table className="bg-card rounded-md my-[2px] py-8">
         <TableHeader className="rtl:text-3xl-rtl ltr:text-xl-ltr">
           <TableRow className="hover:bg-transparent">
-            <TableHead className="text-start px-1">{t("profile")}</TableHead>
-            <TableHead className="text-center px-1 ">{t("hr_code")}</TableHead>
+            <TableHead className="text-center px-1">{t("picture")}</TableHead>
+            <TableHead className="text-start">{t("hr_code")}</TableHead>
             <TableHead className="text-start">{t("employee_name")}</TableHead>
             <TableHead className="text-start">{t("start_date")}</TableHead>
             <TableHead className="text-start">{t("end_date")}</TableHead>
@@ -453,44 +453,19 @@ export default function LeavePage() {
                     routeIdentifier={"profile"}
                   />
                 </TableCell>
-                <TableCell className="rtl:text-md-rtl truncate px-1 py-0">
-                  {item.hr_code}
-                </TableCell>
-                <TableCell className="rtl:text-md-rtl truncate px-1 py-0">
-                  {item.employee_name}
-                </TableCell>
+                <TableCell className="truncate">{item.hr_code}</TableCell>
+                <TableCell className="truncate">{item.employee_name}</TableCell>
                 <TableCell>
                   {toLocaleDate(new Date(item.start_date), state)}
                 </TableCell>
                 <TableCell>
                   {toLocaleDate(new Date(item.end_date), state)}
                 </TableCell>
-                <TableCell className="rtl:text-md-rtl truncate px-1 py-0">
-                  {item.employee_name}
+                <TableCell className="truncate">{item.leave_type}</TableCell>
+                <TableCell className="truncate">{item.saved_by}</TableCell>
+                <TableCell className="truncate">
+                  {toLocaleDate(new Date(item.created_at), state)}
                 </TableCell>
-                {/* <TableCell>
-                                  <BooleanStatusButton
-                                    getColor={function (): {
-                                      style: string;
-                                      value: string;
-                                    } {
-                                      return StatusEnum.active == item.status
-                                        ? {
-                                            style: "border-green-500/90",
-                                            value: item.status_name,
-                                          }
-                                        : StatusEnum.on_leave == item.status
-                                        ? {
-                                            style: "border-blue-500/90",
-                                            value: item.status_name,
-                                          }
-                                        : {
-                                            style: "border-red-500",
-                                            value: item.status_name,
-                                          };
-                                    }}
-                                  />
-                                </TableCell> */}
               </TableRowIcon>
             ))
           )}
