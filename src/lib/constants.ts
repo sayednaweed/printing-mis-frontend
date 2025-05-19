@@ -75,7 +75,7 @@ export const PermissionEnum = {
     sub: {
       hr_configuration_job: 21,
       hr_configuration_department: 22,
-      hr_configuration_leave_type: 23,
+      hr_configuration_leave: 23,
       hr_configuration_shifts: 24,
       hr_configuration_hire_type: 25,
       hr_app_configuration: 26,

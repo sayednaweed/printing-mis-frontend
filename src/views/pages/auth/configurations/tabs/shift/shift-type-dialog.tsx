@@ -17,12 +17,13 @@ import { toast } from "@/components/ui/use-toast";
 import { setServerError, validate } from "@/validation/validation";
 import { SimpleItem } from "@/database/tables";
 
-export interface LeaveTypeDialogProps {
-  onComplete: (leaveType: SimpleItem) => void;
-  leaveType?: SimpleItem;
+export interface ShiftDialogProps {
+  onComplete: (shiftType: SimpleItem) => void;
+  
+  shift?: SimpleItem;
 }
-export default function LeaveTypeDialog(props: LeaveTypeDialogProps) {
-  const { onComplete, leaveType } = props;
+export default function LeaveTypeDialog(props: ShiftDialogProps) {
+  const { onComplete, shift } = props;
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(false);
 
@@ -37,7 +38,7 @@ export default function LeaveTypeDialog(props: LeaveTypeDialogProps) {
   const fetch = async () => {
     try {
       setFetching(true);
-      const response = await axiosClient.get(`leave/type/${leaveType?.id}`);
+      const response = await axiosClient.get(`shift/type/${shift?.id}`);
       if (response.status === 200) {
         setUserData(response.data);
       }
@@ -47,7 +48,7 @@ export default function LeaveTypeDialog(props: LeaveTypeDialogProps) {
     setFetching(false);
   };
   useEffect(() => {
-    if (leaveType) fetch();
+    if (shift) fetch();
   }, []);
   const handleChange = (e: any) => {
     const { name, value } = e.target;
@@ -88,7 +89,7 @@ export default function LeaveTypeDialog(props: LeaveTypeDialogProps) {
           toastType: "SUCCESS",
           description: response.data.message,
         });
-        onComplete(response.data.leaveType);
+        onComplete(response.data.leave);
         modelOnRequestHide();
       }
     } catch (error: any) {
@@ -124,17 +125,17 @@ export default function LeaveTypeDialog(props: LeaveTypeDialogProps) {
       if (!passed) return;
       // 2. update
       let formData = new FormData();
-      if (leaveType?.id) formData.append("id", leaveType.id);
+      if (shift?.id) formData.append("id", shift.id);
       formData.append("english", userData.english);
       formData.append("farsi", userData.farsi);
       formData.append("pashto", userData.pashto);
-      const response = await axiosClient.post("leave/type/update", formData);
+      const response = await axiosClient.post("shift/type/update", formData);
       if (response.status === 200) {
         toast({
           toastType: "SUCCESS",
           description: response.data.message,
         });
-        onComplete(response.data.leaveType);
+        onComplete(response.data.shift);
         modelOnRequestHide();
       }
     } catch (error: any) {
@@ -152,7 +153,7 @@ export default function LeaveTypeDialog(props: LeaveTypeDialogProps) {
     <Card className="w-fit min-w-[400px] self-center [backdrop-filter:blur(20px)] bg-white/70 dark:!bg-black/40">
       <CardHeader className="relative text-start">
         <CardTitle className="rtl:text-4xl-rtl ltr:text-3xl-ltr text-tertiary">
-          {leaveType ? t("edit") : t("add")}
+          {shift ? t("edit") : t("add")}
         </CardTitle>
       </CardHeader>
       <CardContent>
@@ -223,7 +224,7 @@ export default function LeaveTypeDialog(props: LeaveTypeDialogProps) {
         </Button>
         <PrimaryButton
           disabled={loading}
-          onClick={leaveType ? update : store}
+          onClick={shift ? update : store}
           className={`${loading && "opacity-90"}`}
           type="submit"
         >
