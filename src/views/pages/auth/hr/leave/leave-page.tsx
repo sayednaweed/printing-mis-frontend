@@ -178,17 +178,38 @@ export default function LeavePage() {
   const [loading, setLoading] = useState(false);
   const { t } = useTranslation();
 
-  const addItem = (leave: Leave) => {
-    setLeaves((prevState) => ({
-      filterList: {
-        ...prevState.filterList,
-        data: [leave, ...prevState.filterList.data],
-      },
-      unFilterList: {
-        ...prevState.unFilterList,
-        data: [leave, ...prevState.unFilterList.data],
-      },
-    }));
+  const addUpdateItem = (leave: Leave, isEdit: boolean) => {
+    console.log(leave);
+    if (isEdit) {
+      setLeaves((prevState) => {
+        const updateList = (list: Leave[]) => {
+          const filtered = list.filter((item) => item.id != leave.id); // Remove old
+          return [leave, ...filtered]; // Add new on top
+        };
+
+        return {
+          filterList: {
+            ...prevState.filterList,
+            data: updateList(prevState.filterList.data),
+          },
+          unFilterList: {
+            ...prevState.unFilterList,
+            data: updateList(prevState.unFilterList.data),
+          },
+        };
+      });
+    } else {
+      setLeaves((prevState) => ({
+        filterList: {
+          ...prevState.filterList,
+          data: [leave, ...prevState.filterList.data],
+        },
+        unFilterList: {
+          ...prevState.unFilterList,
+          data: [leave, ...prevState.unFilterList.data],
+        },
+      }));
+    }
   };
 
   const skeleton = (
@@ -253,7 +274,7 @@ export default function LeavePage() {
                 setLeave(undefined);
               }}
               leave={leave}
-              onComplete={addItem}
+              onComplete={addUpdateItem}
             />
           </NastranModel>
         )}

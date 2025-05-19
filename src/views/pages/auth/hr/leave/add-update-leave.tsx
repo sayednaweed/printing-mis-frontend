@@ -21,7 +21,7 @@ import { Leave } from "@/database/tables";
 import { isString } from "@/lib/utils";
 
 interface AddUpdateLeaveProps {
-  onComplete: (leave: Leave) => void;
+  onComplete: (leave: Leave, isEdit: boolean) => void;
   leave?: Leave;
   onCloseModel?: () => void;
 }
@@ -37,12 +37,14 @@ export default function AddUpdateLeave(props: AddUpdateLeaveProps) {
   };
   const [error, setError] = useState<Map<string, string>>(new Map());
   const [userData, setUserData] = useState<{
+    leave_id: string | undefined;
     hr_code: { id: string; name: string } | undefined;
     leave_type: { id: string; name: string } | undefined;
     start_date: DateObject;
     end_date: DateObject;
     reason: string;
   }>({
+    leave_id: undefined,
     hr_code: undefined,
     leave_type: undefined,
     start_date: new DateObject(new Date()),
@@ -54,7 +56,7 @@ export default function AddUpdateLeave(props: AddUpdateLeaveProps) {
       setLoading(true);
       const response = await axiosClient.get(`leaves/${leave?.id}`);
       if (response.status === 200) {
-        setUserData(response.data);
+        setUserData(response.data.leave);
       }
     } catch (error: any) {
       console.log(error);
@@ -114,7 +116,7 @@ export default function AddUpdateLeave(props: AddUpdateLeaveProps) {
         end_date: userData?.end_date?.toDate()?.toISOString(),
       });
       if (response.status == 200) {
-        onComplete(response.data?.leave);
+        onComplete(response.data?.leave, false);
         // Update user state
         toast({
           toastType: "SUCCESS",
@@ -175,7 +177,7 @@ export default function AddUpdateLeave(props: AddUpdateLeaveProps) {
     }
     // 2. Store
     try {
-      const response = await axiosClient.put("leaves", {
+      const response = await axiosClient.put("leaves/" + userData.leave_id, {
         employee_id: userData.hr_code?.id,
         hr_code: userData.hr_code,
         status_id: userData.leave_type?.id,
@@ -189,7 +191,7 @@ export default function AddUpdateLeave(props: AddUpdateLeaveProps) {
           : userData?.end_date?.toDate()?.toISOString(),
       });
       if (response.status == 200) {
-        onComplete(response.data?.leave);
+        onComplete(response.data?.leave, true);
         // Update user state
         toast({
           toastType: "SUCCESS",

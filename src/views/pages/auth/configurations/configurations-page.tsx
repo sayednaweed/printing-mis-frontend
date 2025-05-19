@@ -68,7 +68,7 @@ export default function ConfigurationsPage() {
           className="gap-x-1 bg-card shadow rtl:text-2xl-rtl ltr:text-xl-ltr data-[state=active]:bg-primary data-[state=active]:text-tertiary"
         >
           <MapPinHouse className="size-[16px] ltr:mr-1 rtl:ml-1" />
-          {t("shifts")}
+          {t("work_shift")}
         </TabsTrigger>
       ) : key ==
         PermissionEnum.configurations.sub.hr_configuration_hire_type ? (
