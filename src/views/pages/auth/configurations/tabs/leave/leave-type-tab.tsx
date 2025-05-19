@@ -10,7 +10,6 @@ import {
 import { toast } from "@/components/ui/use-toast";
 import { useGlobalState } from "@/context/GlobalStateContext";
 import axiosClient from "@/lib/axois-client";
-import { toLocaleDate } from "@/lib/utils";
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import PrimaryButton from "@/components/custom-ui/button/PrimaryButton";
@@ -21,6 +20,7 @@ import TableRowIcon from "@/components/custom-ui/table/TableRowIcon";
 import { SimpleItem, UserPermission } from "@/database/tables";
 import { PermissionEnum } from "@/lib/constants";
 import LeaveTypeDialog from "./leave-type-dialog";
+import { toLocaleDate } from "@/lib/utils";
 interface LeaveTypeTabProps {
   permissions: UserPermission;
 }
@@ -49,7 +49,7 @@ export default function LeaveTypeTab(props: LeaveTypeTabProps) {
       setLoading(true);
 
       // 2. Send data
-      const response = await axiosClient.get(`leave-types`);
+      const response = await axiosClient.get(`/leave-types`);
       const fetch = response.data as SimpleItem[];
       setLeaveTypes({
         unFilterList: fetch,
@@ -114,17 +114,17 @@ export default function LeaveTypeTab(props: LeaveTypeTabProps) {
           return true;
         }}
       >
-        <LeaveTypeDialog leaveType={selected.leaveType} onComplete={update} />
+        <LeaveTypeDialog leave={selected.leaveType} onComplete={update} />
       </NastranModel>
     ),
     [selected.visible]
   );
-  const leaveType = permissions.sub.get(
-    PermissionEnum.configurations.sub.hr_configuration_leave_type
+  const leave = permissions.sub.get(
+    PermissionEnum.configurations.sub.hr_configuration_leave
   );
-  const hasEdit = leaveType?.edit;
-  const hasAdd = leaveType?.add;
-  const hasView = leaveType?.view;
+  const hasEdit = leave?.edit;
+  const hasAdd = leave?.add;
+  const hasView = leave?.view;
   return (
     <div className="relative">
       <div className="rounded-md bg-card p-2 flex gap-x-4 items-baseline mt-4">
@@ -134,7 +134,7 @@ export default function LeaveTypeTab(props: LeaveTypeTabProps) {
             isDismissable={false}
             button={
               <PrimaryButton className="text-primary-foreground">
-                {t("add_leave_type")}
+                {t("add_leave")}
               </PrimaryButton>
             }
             showDialog={async () => true}
@@ -158,7 +158,7 @@ export default function LeaveTypeTab(props: LeaveTypeTabProps) {
         <TableHeader className="rtl:text-3xl-rtl ltr:text-xl-ltr">
           <TableRow className="hover:bg-transparent">
             <TableHead className="text-start">{t("id")}</TableHead>
-            <TableHead className="text-start">{t("name")}</TableHead>
+            <TableHead className="text-start">{t("value")}</TableHead>
             <TableHead className="text-start">{t("date")}</TableHead>
           </TableRow>
         </TableHeader>
@@ -176,31 +176,29 @@ export default function LeaveTypeTab(props: LeaveTypeTabProps) {
               </TableCell>
             </TableRow>
           ) : (
-            leaveTypes.filterList.map(
-              (leaveType: SimpleItem, index: number) => (
-                <TableRowIcon
-                  read={hasView}
-                  remove={false}
-                  edit={hasEdit}
-                  onEdit={async (item: SimpleItem) => {
-                    setSelected({
-                      visible: true,
-                      leaveType: item,
-                    });
-                  }}
-                  key={index}
-                  item={leaveType}
-                  onRemove={async () => {}}
-                  onRead={async () => {}}
-                >
-                  <TableCell className="font-medium">{leaveType.id}</TableCell>
-                  <TableCell>{leaveType.name}</TableCell>
-                  <TableCell>
-                    {toLocaleDate(new Date(leaveType.created_at), state)}
-                  </TableCell>
-                </TableRowIcon>
-              )
-            )
+            leaveTypes.filterList.map((leave: SimpleItem, index: number) => (
+              <TableRowIcon
+                read={hasView}
+                remove={false}
+                edit={hasEdit}
+                onEdit={async (item: SimpleItem) => {
+                  setSelected({
+                    visible: true,
+                    leaveType: item,
+                  });
+                }}
+                key={index}
+                item={leave}
+                onRemove={async () => {}}
+                onRead={async () => {}}
+              >
+                <TableCell className="font-medium">{leave.id}</TableCell>
+                <TableCell>{leave.name}</TableCell>
+                <TableCell>
+                  {toLocaleDate(new Date(leave.created_at), state)}
+                </TableCell>
+              </TableRowIcon>
+            ))
           )}
         </TableBody>
       </Table>

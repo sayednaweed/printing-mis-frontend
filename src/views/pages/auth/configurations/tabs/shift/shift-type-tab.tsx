@@ -10,7 +10,6 @@ import {
 import { toast } from "@/components/ui/use-toast";
 import { useGlobalState } from "@/context/GlobalStateContext";
 import axiosClient from "@/lib/axois-client";
-import { toLocaleDate } from "@/lib/utils";
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import PrimaryButton from "@/components/custom-ui/button/PrimaryButton";
@@ -20,12 +19,12 @@ import Shimmer from "@/components/custom-ui/shimmer/Shimmer";
 import TableRowIcon from "@/components/custom-ui/table/TableRowIcon";
 import { SimpleItem, UserPermission } from "@/database/tables";
 import { PermissionEnum } from "@/lib/constants";
-import ShiftTypeDialog from "./shift-type-dialog";
-
-interface ShiftTypeTabProps {
+import LeaveTypeDialog from "./shift-type-dialog";
+import { toLocaleDate } from "@/lib/utils";
+interface shiftTypeTabProps {
   permissions: UserPermission;
 }
-export default function ShiftTypeTab(props: ShiftTypeTabProps) {
+export default function ShiftTypeTab(props: shiftTypeTabProps) {
   const { permissions } = props;
   const { t } = useTranslation();
   const [state] = useGlobalState();
@@ -50,7 +49,7 @@ export default function ShiftTypeTab(props: ShiftTypeTabProps) {
       setLoading(true);
 
       // 2. Send data
-      const response = await axiosClient.get(`shift-types`);
+      const response = await axiosClient.get(`shifts`);
       const fetch = response.data as SimpleItem[];
       setShiftTypes({
         unFilterList: fetch,
@@ -115,17 +114,17 @@ export default function ShiftTypeTab(props: ShiftTypeTabProps) {
           return true;
         }}
       >
-        <ShiftTypeDialog shiftType={selected.shiftType} onComplete={update} />
+        <LeaveTypeDialog shift={selected.shiftType} onComplete={update} />
       </NastranModel>
     ),
     [selected.visible]
   );
-  const shiftType = permissions.sub.get(
+  const shift = permissions.sub.get(
     PermissionEnum.configurations.sub.hr_configuration_shifts
   );
-  const hasEdit = shiftType?.edit;
-  const hasAdd = shiftType?.add;
-  const hasView = shiftType?.view;
+  const hasEdit = shift?.edit;
+  const hasAdd = shift?.add;
+  const hasView = shift?.view;
   return (
     <div className="relative">
       <div className="rounded-md bg-card p-2 flex gap-x-4 items-baseline mt-4">
@@ -135,12 +134,12 @@ export default function ShiftTypeTab(props: ShiftTypeTabProps) {
             isDismissable={false}
             button={
               <PrimaryButton className="text-primary-foreground">
-                {t("add_shift_type")}
+                {t("add_leave")}
               </PrimaryButton>
             }
             showDialog={async () => true}
           >
-            <ShiftTypeDialog onComplete={add} />
+            <LeaveTypeDialog onComplete={add} />
           </NastranModel>
         )}
 
@@ -159,7 +158,7 @@ export default function ShiftTypeTab(props: ShiftTypeTabProps) {
         <TableHeader className="rtl:text-3xl-rtl ltr:text-xl-ltr">
           <TableRow className="hover:bg-transparent">
             <TableHead className="text-start">{t("id")}</TableHead>
-            <TableHead className="text-start">{t("name")}</TableHead>
+            <TableHead className="text-start">{t("shift")}</TableHead>
             <TableHead className="text-start">{t("date")}</TableHead>
           </TableRow>
         </TableHeader>
@@ -177,31 +176,29 @@ export default function ShiftTypeTab(props: ShiftTypeTabProps) {
               </TableCell>
             </TableRow>
           ) : (
-            shiftTypes.filterList.map(
-              (shiftType: SimpleItem, index: number) => (
-                <TableRowIcon
-                  read={hasView}
-                  remove={false}
-                  edit={hasEdit}
-                  onEdit={async (item: SimpleItem) => {
-                    setSelected({
-                      visible: true,
-                      shiftType: item,
-                    });
-                  }}
-                  key={index}
-                  item={shiftType}
-                  onRemove={async () => {}}
-                  onRead={async () => {}}
-                >
-                  <TableCell className="font-medium">{shiftType.id}</TableCell>
-                  <TableCell>{shiftType.name}</TableCell>
-                  <TableCell>
-                    {toLocaleDate(new Date(shiftType.created_at), state)}
-                  </TableCell>
-                </TableRowIcon>
-              )
-            )
+            shiftTypes.filterList.map((shift: SimpleItem, index: number) => (
+              <TableRowIcon
+                read={hasView}
+                remove={false}
+                edit={hasEdit}
+                onEdit={async (item: SimpleItem) => {
+                  setSelected({
+                    visible: true,
+                    shiftType: item,
+                  });
+                }}
+                key={index}
+                item={shift}
+                onRemove={async () => {}}
+                onRead={async () => {}}
+              >
+                <TableCell className="font-medium">{shift.id}</TableCell>
+                <TableCell>{shift.name}</TableCell>
+                <TableCell>
+                  {toLocaleDate(new Date(shift.created_at), state)}
+                </TableCell>
+              </TableRowIcon>
+            ))
           )}
         </TableBody>
       </Table>

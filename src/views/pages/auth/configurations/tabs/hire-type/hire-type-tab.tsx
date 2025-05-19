@@ -10,7 +10,6 @@ import {
 import { toast } from "@/components/ui/use-toast";
 import { useGlobalState } from "@/context/GlobalStateContext";
 import axiosClient from "@/lib/axois-client";
-import { toLocaleDate } from "@/lib/utils";
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import PrimaryButton from "@/components/custom-ui/button/PrimaryButton";
@@ -18,9 +17,10 @@ import CustomInput from "@/components/custom-ui/input/CustomInput";
 import { Search } from "lucide-react";
 import Shimmer from "@/components/custom-ui/shimmer/Shimmer";
 import TableRowIcon from "@/components/custom-ui/table/TableRowIcon";
-import { SimpleItem, UserPermission } from "@/database/tables";
+import { HireTypeItem, UserPermission } from "@/database/tables";
 import { PermissionEnum } from "@/lib/constants";
 import HireTypeDialog from "./hire-type-dialog";
+import { toLocaleDate } from "@/lib/utils";
 
 interface HireTypeTabProps {
   permissions: UserPermission;
@@ -37,9 +37,9 @@ export default function HireTypeTab(props: HireTypeTabProps) {
     visible: false,
     hireType: undefined,
   });
-  const [hireTypes, sethireTypes] = useState<{
-    unFilterList: SimpleItem[];
-    filterList: SimpleItem[];
+  const [hireTypes, setHireTypes] = useState<{
+    unFilterList: HireTypeItem[];
+    filterList: HireTypeItem[];
   }>({
     unFilterList: [],
     filterList: [],
@@ -50,9 +50,9 @@ export default function HireTypeTab(props: HireTypeTabProps) {
       setLoading(true);
 
       // 2. Send data
-      const response = await axiosClient.get(`leave-types`);
-      const fetch = response.data as SimpleItem[];
-      sethireTypes({
+      const response = await axiosClient.get(`hire-types`);
+      const fetch = response.data as HireTypeItem[];
+      setHireTypes({
         unFilterList: fetch,
         filterList: fetch,
       });
@@ -72,22 +72,22 @@ export default function HireTypeTab(props: HireTypeTabProps) {
   const searchOnChange = (e: any) => {
     const { value } = e.target;
     // 1. Filter
-    const filtered = hireTypes.unFilterList.filter((item: SimpleItem) =>
+    const filtered = hireTypes.unFilterList.filter((item: HireTypeItem) =>
       item.name.toLowerCase().includes(value.toLowerCase())
     );
-    sethireTypes({
+    setHireTypes({
       ...hireTypes,
       filterList: filtered,
     });
   };
-  const add = (newItem: SimpleItem) => {
-    sethireTypes((prev) => ({
+  const add = (newItem: HireTypeItem) => {
+    setHireTypes((prev) => ({
       unFilterList: [newItem, ...prev.unFilterList],
       filterList: [newItem, ...prev.filterList],
     }));
   };
-  const update = (newItem: SimpleItem) => {
-    sethireTypes((prevState) => {
+  const update = (newItem: HireTypeItem) => {
+    setHireTypes((prevState) => {
       const updatedUnFiltered = prevState.unFilterList.map((item) =>
         item.id === newItem.id ? { ...item, name: newItem.name } : item
       );
@@ -120,12 +120,12 @@ export default function HireTypeTab(props: HireTypeTabProps) {
     ),
     [selected.visible]
   );
-  const leaveType = permissions.sub.get(
-    PermissionEnum.configurations.sub.hr_configuration_leave_type
+  const hireType = permissions.sub.get(
+    PermissionEnum.configurations.sub.hr_configuration_hire_type
   );
-  const hasEdit = leaveType?.edit;
-  const hasAdd = leaveType?.add;
-  const hasView = leaveType?.view;
+  const hasEdit = hireType?.edit;
+  const hasAdd = hireType?.add;
+  const hasView = hireType?.view;
   return (
     <div className="relative">
       <div className="rounded-md bg-card p-2 flex gap-x-4 items-baseline mt-4">
@@ -159,8 +159,9 @@ export default function HireTypeTab(props: HireTypeTabProps) {
         <TableHeader className="rtl:text-3xl-rtl ltr:text-xl-ltr">
           <TableRow className="hover:bg-transparent">
             <TableHead className="text-start">{t("id")}</TableHead>
-            <TableHead className="text-start">{t("name")}</TableHead>
+            <TableHead className="text-start">{t("contract")}</TableHead>
             <TableHead className="text-start">{t("date")}</TableHead>
+            <TableHead className="text-start">{t("description")}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody className="rtl:text-xl-rtl ltr:text-lg-ltr">
@@ -175,31 +176,37 @@ export default function HireTypeTab(props: HireTypeTabProps) {
               <TableCell>
                 <Shimmer className="h-[24px] bg-primary/30 w-full rounded-sm" />
               </TableCell>
+              <TableCell>
+                <Shimmer className="h-[24px] bg-primary/30 w-full rounded-sm" />
+              </TableCell>
             </TableRow>
           ) : (
-            hireTypes.filterList.map((leaveType: SimpleItem, index: number) => (
-              <TableRowIcon
-                read={hasView}
-                remove={false}
-                edit={hasEdit}
-                onEdit={async (item: SimpleItem) => {
-                  setSelected({
-                    visible: true,
-                    hireType: item,
-                  });
-                }}
-                key={index}
-                item={leaveType}
-                onRemove={async () => {}}
-                onRead={async () => {}}
-              >
-                <TableCell className="font-medium">{leaveType.id}</TableCell>
-                <TableCell>{leaveType.name}</TableCell>
-                <TableCell>
-                  {toLocaleDate(new Date(leaveType.created_at), state)}
-                </TableCell>
-              </TableRowIcon>
-            ))
+            hireTypes.filterList.map(
+              (hireType: HireTypeItem, index: number) => (
+                <TableRowIcon
+                  read={hasView}
+                  remove={false}
+                  edit={hasEdit}
+                  onEdit={async (item: HireTypeItem) => {
+                    setSelected({
+                      visible: true,
+                      hireType: item,
+                    });
+                  }}
+                  key={index}
+                  item={hireType}
+                  onRemove={async () => {}}
+                  onRead={async () => {}}
+                >
+                  <TableCell className="font-medium">{hireType.id}</TableCell>
+                  <TableCell>{hireType.name}</TableCell>
+                  <TableCell>
+                    {toLocaleDate(new Date(hireType.created_at), state)}
+                  </TableCell>
+                  <TableCell>{hireType.description}</TableCell>
+                </TableRowIcon>
+              )
+            )
           )}
         </TableBody>
       </Table>

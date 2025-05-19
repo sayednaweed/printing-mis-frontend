@@ -17,12 +17,12 @@ import { toast } from "@/components/ui/use-toast";
 import { setServerError, validate } from "@/validation/validation";
 import { SimpleItem } from "@/database/tables";
 
-export interface ShiftTypeDialogProps {
-  onComplete: (shiftType: SimpleItem) => void;
-  shiftType?: SimpleItem;
+export interface LeaveDialogProps {
+  onComplete: (leaveType: SimpleItem) => void;
+  leave?: SimpleItem;
 }
-export default function ShiftTypeDialog(props: ShiftTypeDialogProps) {
-  const { onComplete, shiftType } = props;
+export default function LeaveTypeDialog(props: LeaveDialogProps) {
+  const { onComplete, leave } = props;
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(false);
 
@@ -37,7 +37,7 @@ export default function ShiftTypeDialog(props: ShiftTypeDialogProps) {
   const fetch = async () => {
     try {
       setFetching(true);
-      const response = await axiosClient.get(`shift/type/${shiftType?.id}`);
+      const response = await axiosClient.get(`leave/type/${leave?.id}`);
       if (response.status === 200) {
         setUserData(response.data);
       }
@@ -47,7 +47,7 @@ export default function ShiftTypeDialog(props: ShiftTypeDialogProps) {
     setFetching(false);
   };
   useEffect(() => {
-    if (shiftType) fetch();
+    if (leave) fetch();
   }, []);
   const handleChange = (e: any) => {
     const { name, value } = e.target;
@@ -82,13 +82,13 @@ export default function ShiftTypeDialog(props: ShiftTypeDialogProps) {
       formData.append("english", userData.english);
       formData.append("farsi", userData.farsi);
       formData.append("pashto", userData.pashto);
-      const response = await axiosClient.post("shift/type/store", formData);
+      const response = await axiosClient.post("leave/type/store", formData);
       if (response.status === 200) {
         toast({
           toastType: "SUCCESS",
           description: response.data.message,
         });
-        onComplete(response.data.leaveType);
+        onComplete(response.data.leave);
         modelOnRequestHide();
       }
     } catch (error: any) {
@@ -124,7 +124,7 @@ export default function ShiftTypeDialog(props: ShiftTypeDialogProps) {
       if (!passed) return;
       // 2. update
       let formData = new FormData();
-      if (shiftType?.id) formData.append("id", shiftType.id);
+      if (leave?.id) formData.append("id", leave.id);
       formData.append("english", userData.english);
       formData.append("farsi", userData.farsi);
       formData.append("pashto", userData.pashto);
@@ -134,7 +134,7 @@ export default function ShiftTypeDialog(props: ShiftTypeDialogProps) {
           toastType: "SUCCESS",
           description: response.data.message,
         });
-        onComplete(response.data.leaveType);
+        onComplete(response.data.leave);
         modelOnRequestHide();
       }
     } catch (error: any) {
@@ -152,7 +152,7 @@ export default function ShiftTypeDialog(props: ShiftTypeDialogProps) {
     <Card className="w-fit min-w-[400px] self-center [backdrop-filter:blur(20px)] bg-white/70 dark:!bg-black/40">
       <CardHeader className="relative text-start">
         <CardTitle className="rtl:text-4xl-rtl ltr:text-3xl-ltr text-tertiary">
-          {shiftType ? t("edit") : t("add")}
+          {leave ? t("edit") : t("add")}
         </CardTitle>
       </CardHeader>
       <CardContent>
@@ -223,7 +223,7 @@ export default function ShiftTypeDialog(props: ShiftTypeDialogProps) {
         </Button>
         <PrimaryButton
           disabled={loading}
-          onClick={shiftType ? update : store}
+          onClick={leave ? update : store}
           className={`${loading && "opacity-90"}`}
           type="submit"
         >

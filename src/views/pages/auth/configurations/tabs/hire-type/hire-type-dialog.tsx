@@ -15,11 +15,11 @@ import CustomInput from "@/components/custom-ui/input/CustomInput";
 import axiosClient from "@/lib/axois-client";
 import { toast } from "@/components/ui/use-toast";
 import { setServerError, validate } from "@/validation/validation";
-import { SimpleItem } from "@/database/tables";
+import { HireTypeItem } from "@/database/tables";
 
 export interface HireTypeDialogProps {
-  onComplete: (leaveType: SimpleItem) => void;
-  hireType?: SimpleItem;
+  onComplete: (hireType: HireTypeItem) => void;
+  hireType?: HireTypeItem;
 }
 export default function HireTypeDialog(props: HireTypeDialogProps) {
   const { onComplete, hireType } = props;
@@ -37,7 +37,7 @@ export default function HireTypeDialog(props: HireTypeDialogProps) {
   const fetch = async () => {
     try {
       setFetching(true);
-      const response = await axiosClient.get(`leave/type/${hireType?.id}`);
+      const response = await axiosClient.get(`hire/type`);
       if (response.status === 200) {
         setUserData(response.data);
       }
@@ -82,7 +82,7 @@ export default function HireTypeDialog(props: HireTypeDialogProps) {
       formData.append("english", userData.english);
       formData.append("farsi", userData.farsi);
       formData.append("pashto", userData.pashto);
-      const response = await axiosClient.post("hire/type/store", formData);
+      const response = await axiosClient.post("/hire/type/store", formData);
       if (response.status === 200) {
         toast({
           toastType: "SUCCESS",

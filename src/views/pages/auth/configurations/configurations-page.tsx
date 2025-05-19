@@ -12,9 +12,9 @@ import {
 } from "@/components/custom-ui/Breadcrumb/Breadcrumb";
 import { useAuthStore } from "@/stores/permission/auth-permssion-store";
 import DepartmentTab from "./tabs/department/department-tab";
-import LeaveTypeTab from "./tabs/leave-type/leave-type-tab";
-import ShiftTypeTab from "./tabs/shift-type/shift-type-tab";
 import HireTypeTab from "./tabs/hire-type/hire-type-tab";
+import ShiftTab from "./tabs/shift/shift-type-tab";
+import LeaveTab from "./tabs/leave/leave-type-tab";
 
 export default function ConfigurationsPage() {
   const { t, i18n } = useTranslation();
@@ -52,8 +52,7 @@ export default function ConfigurationsPage() {
           <MapPinHouse className="size-[16px] ltr:mr-1 rtl:ml-1" />
           {t("department")}
         </TabsTrigger>
-      ) : key ==
-        PermissionEnum.configurations.sub.hr_configuration_leave_type ? (
+      ) : key == PermissionEnum.configurations.sub.hr_configuration_leave ? (
         <TabsTrigger
           key={index}
           value={key.toString()}
@@ -204,16 +203,16 @@ export default function ConfigurationsPage() {
           <DepartmentTab permissions={per} />
         </TabsContent>
         <TabsContent
-          value={PermissionEnum.configurations.sub.hr_configuration_leave_type.toString()}
+          value={PermissionEnum.configurations.sub.hr_configuration_leave.toString()}
           className="w-full px-4 pt-8"
         >
-          <LeaveTypeTab permissions={per} />
+          <LeaveTab permissions={per} />
         </TabsContent>
         <TabsContent
           value={PermissionEnum.configurations.sub.hr_configuration_shifts.toString()}
           className="w-full px-4 pt-8"
         >
-          <ShiftTypeTab permissions={per} />
+          <ShiftTab permissions={per} />
         </TabsContent>
         <TabsContent
           value={PermissionEnum.configurations.sub.hr_configuration_hire_type.toString()}

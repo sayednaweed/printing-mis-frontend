@@ -83,6 +83,22 @@ export type SimpleItem = {
   name: string;
   created_at: string;
 };
+
+export type HireTypeItem = {
+  id: string;
+  name: string;
+  created_at: string;
+  description:string;
+
+};
+export type SimpleShiftItem = {
+  id: string;
+  name:string;
+  start_time:string;
+  end_time:string;
+  description:string;
+  created_at: string;
+};
 export type Gender = {
   id: string;
   name: string;
