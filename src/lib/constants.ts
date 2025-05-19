@@ -51,6 +51,10 @@ export const PermissionEnum = {
     name: "leave",
     sub: {},
   },
+  attendance: {
+    name: "attendance",
+    sub: {},
+  },
   vaccine_certificate: {
     name: "vaccine_certificate",
     sub: {
@@ -76,6 +80,7 @@ export const PermissionEnum = {
       hr_configuration_hire_type: 25,
       hr_app_configuration: 26,
       expense_configuration_expense_type: 51,
+      expense_configuration_expense_icon: 52,
       inventory_configuration_accounts: 111,
       inventory_configuration_warehouse: 112,
       inventory_configuration_material: 113,

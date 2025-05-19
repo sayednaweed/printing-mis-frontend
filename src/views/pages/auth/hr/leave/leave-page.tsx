@@ -38,13 +38,13 @@ import {
   BreadcrumbItem,
   BreadcrumbSeparator,
 } from "@/components/custom-ui/Breadcrumb/Breadcrumb";
-import AddLeave from "./add-leave";
+import AddUpdateLeave from "./add-update-leave";
 
 export default function LeavePage() {
   const { user } = useAuthStore();
   const navigate = useNavigate();
   const [state] = useGlobalState();
-
+  const [leave, setLeave] = useState<Leave | undefined>(undefined);
   const searchRef = useRef<HTMLInputElement>(null);
   const { updateComponentCache, getComponentCache } = useCacheDB();
   const [searchParams] = useSearchParams();
@@ -103,11 +103,11 @@ export default function LeavePage() {
           },
         },
       });
-      const fetch = response.data.leave.data as Leave[];
-      const lastPage = response.data.leave.last_page;
-      const totalItems = response.data.leave.total;
-      const perPage = response.data.leave.per_page;
-      const currentPage = response.data.leave.current_page;
+      const fetch = response.data.data as Leave[];
+      const lastPage = response.data.last_page;
+      const totalItems = response.data.total;
+      const perPage = response.data.per_page;
+      const currentPage = response.data.current_page;
       setLeaves({
         filterList: {
           data: fetch,
@@ -214,6 +214,9 @@ export default function LeavePage() {
       <TableCell>
         <Shimmer className="h-[24px] w-full rounded-sm" />
       </TableCell>
+      <TableCell>
+        <Shimmer className="h-[24px] w-full rounded-sm" />
+      </TableCell>
     </TableRow>
   );
   const per: UserPermission = user?.permissions[PortalEnum.hr].get(
@@ -223,8 +226,7 @@ export default function LeavePage() {
   const hasAdd = per?.add;
 
   const watchOnClick = async (leave: Leave) => {
-    const leaveId = leave.id;
-    navigate(`/leave${leaveId}`);
+    setLeave(leave);
   };
   return (
     <>
@@ -236,6 +238,7 @@ export default function LeavePage() {
       <div className="flex flex-col sm:items-baseline sm:flex-row rounded-md bg-card gap-2  px-2 py-2 mt-4">
         {hasAdd && (
           <NastranModel
+            visible={leave && true}
             size="lg"
             isDismissable={false}
             button={
@@ -245,7 +248,13 @@ export default function LeavePage() {
             }
             showDialog={async () => true}
           >
-            <AddLeave onComplete={addItem} />
+            <AddUpdateLeave
+              onCloseModel={() => {
+                setLeave(undefined);
+              }}
+              leave={leave}
+              onComplete={addItem}
+            />
           </NastranModel>
         )}
 

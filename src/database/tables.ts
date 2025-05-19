@@ -219,17 +219,6 @@ export type EmployeeReport = {
   status: string;
 };
 
-export type Attendance = {
-  id: string;
-  hr_code: string;
-  picture: string;
-  employee_name: string;
-  check_in_time: string;
-  check_out_time: string;
-  status: number;
-  description: string;
-};
-
 export type EmployeeStatus = {
   id: string;
   status_id: number;
@@ -250,5 +239,36 @@ export type Leave = {
   reason: string;
   leave_type: string;
   saved_by: string;
+  created_at: string;
+};
+export type AttendanceStatus = {
+  id: string;
+  name: string;
+  selected: boolean;
+};
+export type Attendance = {
+  id: string;
+  picture: string;
+  hr_code: string;
+  first_name: string;
+  last_name: string;
+  detail: string;
+  status: AttendanceStatus[];
+  created_at: string;
+};
+export type AttendanceModel = {
+  id: string;
+  total_present: string;
+  total_absent: string;
+  total_leave: string;
+  total_other: string;
+  taken_by: string;
+  created_at: string;
+};
+export type ExpenseType = {
+  id: string;
+  name: string;
+  icon_id: string;
+  expense_type_id: string;
   created_at: string;
 };

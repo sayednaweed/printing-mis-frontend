@@ -12,7 +12,7 @@
   "filter": "فیلتر",
   "search": "جستجو",
   "add": "افزودن",
-  "profile": "مشخصات",
+  "picture": "تصویر",
   "role": "نقش",
   "email": "ایمیل",
   "contact": "شماره تلفن",
@@ -275,5 +275,12 @@
   "take_leave": "گرفت رخصتی",
   "employee_name": "نام کارمند",
   "leave_type": "نوع رخصتی",
-  "reason": "دلیل"
+  "reason": "دلیل",
+  "check_in_time": "زمان ورود",
+  "check_out_time": "زمان خروج",
+  "present": "حاضر",
+  "absent": "غیر حاضر",
+  "other": "دیگر",
+  "taken_by": "گرفته شده توسط",
+  "take_attendance": "گرفت حاضری"
 }

@@ -12,7 +12,7 @@
   "filter": "Filter",
   "search": "Search",
   "add": "Add",
-  "profile": "Profile",
+  "picture": "Picture",
   "role": "Role",
   "email": "Email",
   "contact": "Contact",
@@ -274,5 +274,12 @@
   "take_leave": "Take leave",
   "employee_name": "Employee name",
   "leave_type": "Type of leave",
-  "reason": "Reason"
+  "reason": "Reason",
+  "check_in_time": "Check in time",
+  "check_out_time": "Check out time",
+  "present": "Present",
+  "absent": "Absent",
+  "other": "Other",
+  "taken_by": "Taken by",
+  "take_attendance": "Take attendance"
 }

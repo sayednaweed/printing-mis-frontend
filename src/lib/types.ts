@@ -1,4 +1,5 @@
 import {
+  AttendanceModel,
   Audit,
   Employee,
   EmployeeReport,
@@ -169,6 +170,13 @@ export interface EmployeeReportPaginationData {
 }
 export interface LeavePaginationData {
   data: Leave[];
+  lastPage: number;
+  perPage: number;
+  currentPage: number;
+  totalItems: number;
+}
+export interface AttendancePaginationData {
+  data: AttendanceModel[];
   lastPage: number;
   perPage: number;
   currentPage: number;

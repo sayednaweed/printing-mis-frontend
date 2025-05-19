@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { useModelOnRequestHide } from "@/components/custom-ui/model/hook/useModelOnRequestHide";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Card,
   CardContent,
@@ -18,18 +18,21 @@ import { setServerError, validate } from "@/validation/validation";
 import CustomDatePicker from "@/components/custom-ui/DatePicker/CustomDatePicker";
 import APICombobox from "@/components/custom-ui/combobox/APICombobox";
 import { Leave } from "@/database/tables";
+import { isString } from "@/lib/utils";
 
-interface AddLeaveProps {
+interface AddUpdateLeaveProps {
   onComplete: (leave: Leave) => void;
   leave?: Leave;
+  onCloseModel?: () => void;
 }
 
-export default function AddLeave(props: AddLeaveProps) {
-  const { onComplete, leave } = props;
+export default function AddUpdateLeave(props: AddUpdateLeaveProps) {
+  const { onComplete, leave, onCloseModel } = props;
   const { t } = useTranslation();
   const { modelOnRequestHide } = useModelOnRequestHide();
   const [loading, setLoading] = useState(false);
   const closeModel = () => {
+    if (onCloseModel) onCloseModel();
     modelOnRequestHide();
   };
   const [error, setError] = useState<Map<string, string>>(new Map());
@@ -46,7 +49,21 @@ export default function AddLeave(props: AddLeaveProps) {
     end_date: new DateObject(new Date()),
     reason: "",
   });
-
+  const fetch = async () => {
+    try {
+      setLoading(true);
+      const response = await axiosClient.get(`leaves/${leave?.id}`);
+      if (response.status === 200) {
+        setUserData(response.data);
+      }
+    } catch (error: any) {
+      console.log(error);
+    }
+    setLoading(false);
+  };
+  useEffect(() => {
+    if (leave) fetch();
+  }, []);
   const store = async () => {
     if (loading) {
       return;
@@ -164,8 +181,12 @@ export default function AddLeave(props: AddLeaveProps) {
         status_id: userData.leave_type?.id,
         status: userData.leave_type?.name,
         reason: userData.reason,
-        start_date: userData?.start_date?.toDate()?.toISOString(),
-        end_date: userData?.end_date?.toDate()?.toISOString(),
+        start_date: isString(userData?.start_date)
+          ? userData?.start_date
+          : userData?.start_date?.toDate()?.toISOString(),
+        end_date: isString(userData?.end_date)
+          ? userData?.end_date
+          : userData?.end_date?.toDate()?.toISOString(),
       });
       if (response.status == 200) {
         onComplete(response.data?.leave);
