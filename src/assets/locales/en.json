@@ -285,5 +285,8 @@
   "take_attendance": "Take attendance",
   "add_leave": "Add leave",
   "add_shift": "Add work shift",
-  "add_hire_type": "Add hire type"
+  "add_hire_type": "Add hire type",
+  "company_name": "Company name",
+  "add_seller": "Add seller",
+  "logo": "Logo"
 }

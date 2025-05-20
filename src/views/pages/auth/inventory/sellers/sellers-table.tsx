@@ -8,8 +8,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { toast } from "@/components/ui/use-toast";
-import { Employee, UserPermission } from "@/database/tables";
-import { CACHE, PermissionEnum, PortalEnum, StatusEnum } from "@/lib/constants";
+import { PartyModel, UserPermission } from "@/database/tables";
+import { CACHE, PermissionEnum, PortalEnum } from "@/lib/constants";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useSearchParams } from "react-router";
@@ -28,15 +28,14 @@ import { DateObject } from "react-multi-date-picker";
 import useCacheDB from "@/lib/indexeddb/useCacheDB";
 import FilterDialog from "@/components/custom-ui/dialog/filter-dialog";
 import {
-  EmployeePaginationData,
   Order,
-  UserSearch,
-  UserSort,
+  PartyPaginationData,
+  SellersSearch,
+  SellersSort,
 } from "@/lib/types";
 import { useAuthStore } from "@/stores/permission/auth-permssion-store";
-import AddEmployee from "./add/add-employee";
 import CachedImage from "@/components/custom-ui/image/CachedImage";
-import BooleanStatusButton from "@/components/custom-ui/button/BooleanStatusButton";
+import AddSellers from "./add/add-seller";
 
 export function SellersTable() {
   const { user } = useAuthStore();
@@ -52,10 +51,10 @@ export function SellersTable() {
   const startDate = searchParams.get("st_dt");
   const endDate = searchParams.get("en_dt");
   const filters = {
-    sort: sort == null ? "created_at" : sort,
+    sort: sort == null ? "name" : sort,
     order: order == null ? "desc" : order,
     search: {
-      column: searchColumn == null ? "hr_code" : searchColumn,
+      column: searchColumn == null ? "name" : searchColumn,
       value: searchValue == null ? "" : searchValue,
     },
     date:
@@ -84,7 +83,7 @@ export function SellersTable() {
         endDate: endDate,
       };
       // 2. Send data
-      const response = await axiosClient.get("employees", {
+      const response = await axiosClient.get("sellers", {
         params: {
           page: page,
           per_page: count,
@@ -99,12 +98,12 @@ export function SellersTable() {
           },
         },
       });
-      const fetch = response.data.data as Employee[];
+      const fetch = response.data.data as PartyModel[];
       const lastPage = response.data.last_page;
       const totalItems = response.data.total;
       const perPage = response.data.per_page;
       const currentPage = response.data.current_page;
-      setEmployees({
+      setParties({
         filterList: {
           data: fetch,
           lastPage: lastPage,
@@ -137,7 +136,7 @@ export function SellersTable() {
   ) => {
     if (!count) {
       const countSore = await getComponentCache(
-        CACHE.EMPLOYEE_TABLE_PAGINATION_COUNT
+        CACHE.SELLERS_TABLE_PAGINATION_COUNT
       );
       count = countSore?.value ? countSore.value : 10;
     }
@@ -152,9 +151,9 @@ export function SellersTable() {
   useEffect(() => {
     initialize(undefined, undefined, 1);
   }, [sort, startDate, endDate, order]);
-  const [employees, setEmployees] = useState<{
-    filterList: EmployeePaginationData;
-    unFilterList: EmployeePaginationData;
+  const [parties, setParties] = useState<{
+    filterList: PartyPaginationData;
+    unFilterList: PartyPaginationData;
   }>({
     filterList: {
       data: [],
@@ -174,15 +173,15 @@ export function SellersTable() {
   const [loading, setLoading] = useState(false);
   const { t } = useTranslation();
 
-  const addItem = (employee: Employee) => {
-    setEmployees((prevState) => ({
+  const addItem = (party: PartyModel) => {
+    setParties((prevState) => ({
       filterList: {
         ...prevState.filterList,
-        data: [employee, ...prevState.filterList.data],
+        data: [party, ...prevState.filterList.data],
       },
       unFilterList: {
         ...prevState.unFilterList,
-        data: [employee, ...prevState.unFilterList.data],
+        data: [party, ...prevState.unFilterList.data],
       },
     }));
   };
@@ -204,20 +203,17 @@ export function SellersTable() {
       <TableCell>
         <Shimmer className="h-[24px] w-full rounded-sm" />
       </TableCell>
-      <TableCell>
-        <Shimmer className="h-[24px] w-full rounded-sm" />
-      </TableCell>
     </TableRow>
   );
-  const per: UserPermission = user?.permissions[PortalEnum.hr].get(
-    PermissionEnum.users.name
+  const per: UserPermission = user?.permissions[PortalEnum.inventory].get(
+    PermissionEnum.sellers.name
   ) as UserPermission;
   const hasView = per?.view;
   const hasAdd = per?.add;
 
-  const watchOnClick = async (user: Employee) => {
-    const userId = user.id;
-    navigate(`/sellers/${userId}`);
+  const watchOnClick = async (party: PartyModel) => {
+    const partyId = party.id;
+    navigate(`/sellers/${partyId}`);
   };
   return (
     <>
@@ -229,12 +225,12 @@ export function SellersTable() {
             isDismissable={false}
             button={
               <PrimaryButton className="rtl:text-lg-rtl font-semibold ltr:text-md-ltr ">
-                {t("register_employ")}
+                {t("add_seller")}
               </PrimaryButton>
             }
             showDialog={async () => true}
           >
-            <AddEmployee onComplete={addItem} />
+            <AddSellers onComplete={addItem} />
           </NastranModel>
         )}
 
@@ -280,7 +276,7 @@ export function SellersTable() {
           >
             <FilterDialog
               filters={filters}
-              sortOnComplete={async (filterName: UserSort) => {
+              sortOnComplete={async (filterName: SellersSort) => {
                 if (filterName != filters.sort) {
                   const queryParams = new URLSearchParams();
                   queryParams.set("sort", filterName);
@@ -293,7 +289,7 @@ export function SellersTable() {
                   });
                 }
               }}
-              searchFilterChanged={async (filterName: UserSearch) => {
+              searchFilterChanged={async (filterName: SellersSearch) => {
                 if (filterName != filters.search.column) {
                   const queryParams = new URLSearchParams();
                   queryParams.set("sort", filters.sort);
@@ -314,7 +310,7 @@ export function SellersTable() {
                   queryParams.set("sch_col", filters.search.column);
                   queryParams.set("sch_val", filters.search.value);
                   setDateToURL(queryParams, filters.date);
-                  navigate(`/users?${queryParams.toString()}`, {
+                  navigate(`/sellers?${queryParams.toString()}`, {
                     replace: true,
                   });
                 }
@@ -335,13 +331,13 @@ export function SellersTable() {
               filtersShowData={{
                 sort: [
                   {
-                    name: "created_at",
-                    translate: t("date"),
+                    name: "name",
+                    translate: t("name"),
                     onClick: () => {},
                   },
                   {
-                    name: "contact",
-                    translate: t("contact"),
+                    name: "company_name",
+                    translate: t("company_name"),
                     onClick: () => {},
                   },
                 ],
@@ -359,23 +355,23 @@ export function SellersTable() {
                 ],
                 search: [
                   {
-                    name: "first_name",
-                    translate: t("first_name"),
+                    name: "name",
+                    translate: t("name"),
                     onClick: () => {},
                   },
                   {
-                    name: "last_name",
-                    translate: t("last_name"),
+                    name: "company_name",
+                    translate: t("company_name"),
                     onClick: () => {},
                   },
                   {
-                    name: "hr_code",
-                    translate: t("hr_code"),
+                    name: "email",
+                    translate: t("email"),
                     onClick: () => {},
                   },
                   {
-                    name: "father_name",
-                    translate: t("father_name"),
+                    name: "contact",
+                    translate: t("contact"),
                     onClick: () => {},
                   },
                 ],
@@ -390,7 +386,7 @@ export function SellersTable() {
           </NastranModel>
         </div>
         <CustomSelect
-          paginationKey={CACHE.EMPLOYEE_TABLE_PAGINATION_COUNT}
+          paginationKey={CACHE.SELLERS_TABLE_PAGINATION_COUNT}
           options={[
             { value: "10", label: "10" },
             { value: "20", label: "20" },
@@ -399,7 +395,7 @@ export function SellersTable() {
           className="w-fit sm:self-baseline"
           updateCache={updateComponentCache}
           getCache={async () =>
-            await getComponentCache(CACHE.EMPLOYEE_TABLE_PAGINATION_COUNT)
+            await getComponentCache(CACHE.SELLERS_TABLE_PAGINATION_COUNT)
           }
           placeholder={`${t("select")}...`}
           emptyPlaceholder={t("no_options_found")}
@@ -413,20 +409,19 @@ export function SellersTable() {
         <TableHeader className="rtl:text-3xl-rtl ltr:text-xl-ltr">
           <TableRow className="hover:bg-transparent">
             <TableHead className="text-center px-1 w-[60px]">
-              {t("profile")}
+              {t("picture")}
             </TableHead>
-            <TableHead className="text-start px-1">{t("hr_code")}</TableHead>
             <TableHead className="text-start">{t("name")}</TableHead>
-            <TableHead className="text-start">{t("father_name")}</TableHead>
+            <TableHead className="text-start">{t("company_name")}</TableHead>
             <TableHead className="text-start">{t("contact")}</TableHead>
-            <TableHead className="text-start">{t("status")}</TableHead>
+            <TableHead className="text-start">{t("email")}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody className="rtl:text-xl-rtl ltr:text-2xl-ltr">
           {loading ? (
             <>{skeleton}</>
           ) : (
-            employees.filterList.data.map((item: Employee) => (
+            parties.filterList.data.map((item: PartyModel) => (
               <TableRowIcon
                 read={hasView}
                 remove={false}
@@ -448,17 +443,17 @@ export function SellersTable() {
                   />
                 </TableCell>
                 <TableCell className="rtl:text-md-rtl truncate px-1 py-0">
-                  {item.hr_code}
+                  {item.name}
                 </TableCell>
                 <TableCell className="rtl:text-md-rtl truncate px-1 py-0">
-                  {`${item.first_name} ${item.last_name}`}
+                  {item.company_name}
                 </TableCell>
-                <TableCell>{item?.father_name}</TableCell>
+                <TableCell>{item?.contact}</TableCell>
                 <TableCell
                   dir="ltr"
                   className="rtl:text-end rtl:text-sm-rtl truncate"
                 >
-                  {item?.contact}
+                  {item?.email}
                 </TableCell>
               </TableRowIcon>
             ))
@@ -468,11 +463,11 @@ export function SellersTable() {
       <div className="flex justify-between rounded-md bg-card flex-1 p-3 items-center">
         <h1 className="rtl:text-lg-rtl ltr:text-md-ltr font-medium">{`${t(
           "page"
-        )} ${employees.unFilterList.currentPage} ${t("of")} ${
-          employees.unFilterList.lastPage
+        )} ${parties.unFilterList.currentPage} ${t("of")} ${
+          parties.unFilterList.lastPage
         }`}</h1>
         <Pagination
-          lastPage={employees.unFilterList.lastPage}
+          lastPage={parties.unFilterList.lastPage}
           onPageChange={async (page) =>
             await initialize(undefined, undefined, page)
           }

@@ -4,6 +4,7 @@ import {
   Employee,
   EmployeeReport,
   Leave,
+  PartyModel,
   SelectUserPermission,
   SubPermission,
   User,
@@ -93,13 +94,8 @@ export type EmployeeSearch =
   | "father_name"
   | "contact";
 
-export type SellersSort = "hr_code" | "name" | "status";
-export type SellersSearch =
-  | "hr_code"
-  | "first_name"
-  | "last_name"
-  | "father_name"
-  | "contact";
+export type SellersSort = "name" | "company_name";
+export type SellersSearch = "name" | "company_name" | "email" | "contact";
 export interface Configuration {
   token?: string;
   type?: string;
@@ -174,7 +170,13 @@ export interface EmployeePaginationData {
   currentPage: number;
   totalItems: number;
 }
-
+export interface PartyPaginationData {
+  data: PartyModel[];
+  lastPage: number;
+  perPage: number;
+  currentPage: number;
+  totalItems: number;
+}
 export interface EmployeeReportPaginationData {
   data: EmployeeReport[];
   lastPage: number;

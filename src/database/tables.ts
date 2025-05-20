@@ -287,3 +287,11 @@ export type ExpenseType = {
   expense_type_id: string;
   created_at: string;
 };
+export type PartyModel = {
+  id: string;
+  email: string;
+  contact: string;
+  name: string;
+  picture: any;
+  company_name: string;
+};
