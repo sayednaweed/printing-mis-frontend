@@ -107,11 +107,12 @@ export default function AttendancePage() {
           },
         },
       });
-      const fetch = response.data.data as AttendanceModel[];
-      const lastPage = response.data.last_page;
-      const totalItems = response.data.total;
-      const perPage = response.data.per_page;
-      const currentPage = response.data.current_page;
+      const fetch = response.data.attendance.data as AttendanceModel[];
+      console.log(fetch, "Naweed");
+      const lastPage = response.data.attendance?.last_page;
+      const totalItems = response.data.attendance?.total;
+      const perPage = response.data.attendance?.per_page;
+      const currentPage = response.data.attendance?.current_page;
       setAttendances({
         filterList: {
           data: fetch,
@@ -197,12 +198,6 @@ export default function AttendancePage() {
 
   const skeleton = (
     <TableRow>
-      <TableCell>
-        <Shimmer className="h-[24px] w-full rounded-sm" />
-      </TableCell>
-      <TableCell>
-        <Shimmer className="h-[24px] w-full rounded-sm" />
-      </TableCell>
       <TableCell>
         <Shimmer className="h-[24px] w-full rounded-sm" />
       </TableCell>
@@ -312,7 +307,7 @@ export default function AttendancePage() {
                   queryParams.set("sch_col", filters.search.column);
                   queryParams.set("sch_val", filters.search.value);
                   setDateToURL(queryParams, filters.date);
-                  navigate(`/users?${queryParams.toString()}`, {
+                  navigate(`/attendance?${queryParams.toString()}`, {
                     replace: true,
                   });
                 }
@@ -325,7 +320,7 @@ export default function AttendancePage() {
                   queryParams.set("sch_col", filterName);
                   queryParams.set("sch_val", filters.search.value);
                   setDateToURL(queryParams, filters.date);
-                  navigate(`/users?${queryParams.toString()}`, {
+                  navigate(`/attendance?${queryParams.toString()}`, {
                     replace: true,
                   });
                 }
@@ -338,7 +333,7 @@ export default function AttendancePage() {
                   queryParams.set("sch_col", filters.search.column);
                   queryParams.set("sch_val", filters.search.value);
                   setDateToURL(queryParams, filters.date);
-                  navigate(`/users?${queryParams.toString()}`, {
+                  navigate(`/attendance?${queryParams.toString()}`, {
                     replace: true,
                   });
                 }
@@ -431,7 +426,7 @@ export default function AttendancePage() {
       <Table className="bg-card rounded-md my-[2px] py-8">
         <TableHeader className="rtl:text-3xl-rtl ltr:text-xl-ltr">
           <TableRow className="hover:bg-transparent">
-            <TableHead className="text-center px-1">{t("present")}</TableHead>
+            <TableHead className="text-start">{t("present")}</TableHead>
             <TableHead className="text-start">{t("absent")}</TableHead>
             <TableHead className="text-start">{t("leave")}</TableHead>
             <TableHead className="text-start">{t("other")}</TableHead>
@@ -455,14 +450,10 @@ export default function AttendancePage() {
                   onRemove={async () => {}}
                   onRead={watchOnClick}
                 >
-                  <TableCell className="truncate">
-                    {item.total_present}
-                  </TableCell>
-                  <TableCell className="truncate">
-                    {item.total_absent}
-                  </TableCell>
-                  <TableCell className="truncate">{item.total_leave}</TableCell>
-                  <TableCell className="truncate">{item.total_other}</TableCell>
+                  <TableCell className="truncate">{item.present}</TableCell>
+                  <TableCell className="truncate">{item.absent}</TableCell>
+                  <TableCell className="truncate">{item.leave}</TableCell>
+                  <TableCell className="truncate">{item.other}</TableCell>
                   <TableCell className="truncate">{item.taken_by}</TableCell>
                   <TableCell className="truncate">
                     {toLocaleDate(new Date(item.created_at), state)}

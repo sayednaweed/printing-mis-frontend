@@ -210,8 +210,8 @@ export default function AddUpdateAttendance(props: AddUpdateAttendanceProps) {
                 {loading ? (
                   <>{skeleton}</>
                 ) : (
-                  attendances.map((attendance, index: number) => (
-                    <TableRow key={index}>
+                  attendances.map((attendance) => (
+                    <TableRow key={attendance.hr_code}>
                       <TableCell className="px-1 py-0">
                         <CachedImage
                           src={attendance?.hr_code}
@@ -238,10 +238,10 @@ export default function AddUpdateAttendance(props: AddUpdateAttendanceProps) {
                           className="p-1 resize-none"
                         />
                       </TableCell>
-                      {attendance.status?.map((item, index: number) => (
+                      {attendance.status?.map((item) => (
                         <TableCell className="truncate text-start">
                           <CustomCheckbox
-                            key={index}
+                            key={item.id}
                             checked={item.selected}
                             onCheckedChange={(value: boolean) =>
                               handleCheck(attendance, item, value)

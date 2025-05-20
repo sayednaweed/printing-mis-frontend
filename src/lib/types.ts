@@ -85,7 +85,21 @@ export interface UserFilter {
   };
   date: DateObject[];
 }
+export type EmployeeSort = "hr_code" | "name" | "status";
+export type EmployeeSearch =
+  | "hr_code"
+  | "first_name"
+  | "last_name"
+  | "father_name"
+  | "contact";
 
+export type SellersSort = "hr_code" | "name" | "status";
+export type SellersSearch =
+  | "hr_code"
+  | "first_name"
+  | "last_name"
+  | "father_name"
+  | "contact";
 export interface Configuration {
   token?: string;
   type?: string;

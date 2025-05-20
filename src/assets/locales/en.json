@@ -13,6 +13,7 @@
   "search": "Search",
   "add": "Add",
   "picture": "Picture",
+  "profile": "Profile",
   "role": "Role",
   "email": "Email",
   "contact": "Contact",
@@ -281,5 +282,8 @@
   "absent": "Absent",
   "other": "Other",
   "taken_by": "Taken by",
-  "take_attendance": "Take attendance"
+  "take_attendance": "Take attendance",
+  "add_leave": "Add leave",
+  "add_shift": "Add work shift",
+  "add_hire_type": "Add hire type"
 }

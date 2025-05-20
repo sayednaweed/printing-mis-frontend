@@ -158,7 +158,7 @@ export default function ShiftTypeTab(props: shiftTypeTabProps) {
         <TableHeader className="rtl:text-3xl-rtl ltr:text-xl-ltr">
           <TableRow className="hover:bg-transparent">
             <TableHead className="text-start">{t("id")}</TableHead>
-            <TableHead className="text-start">{t("shift")}</TableHead>
+            <TableHead className="text-start">{t("name")}</TableHead>
             <TableHead className="text-start">{t("date")}</TableHead>
           </TableRow>
         </TableHeader>

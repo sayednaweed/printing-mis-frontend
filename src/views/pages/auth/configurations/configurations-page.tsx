@@ -15,7 +15,6 @@ import DepartmentTab from "./tabs/department/department-tab";
 import HireTypeTab from "./tabs/hire-type/hire-type-tab";
 import ShiftTab from "./tabs/shift/shift-type-tab";
 import LeaveTab from "./tabs/leave/leave-type-tab";
-import LeaveTypeTab from "./tabs/leave-type/leave-type-tab";
 import ExpenseTypeTab from "./tabs/expense-type/expense-type-tab";
 
 export default function ConfigurationsPage() {

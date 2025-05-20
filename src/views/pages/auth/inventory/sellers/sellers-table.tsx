@@ -29,16 +29,16 @@ import useCacheDB from "@/lib/indexeddb/useCacheDB";
 import FilterDialog from "@/components/custom-ui/dialog/filter-dialog";
 import {
   EmployeePaginationData,
-  EmployeeSearch,
-  EmployeeSort,
   Order,
+  UserSearch,
+  UserSort,
 } from "@/lib/types";
 import { useAuthStore } from "@/stores/permission/auth-permssion-store";
 import AddEmployee from "./add/add-employee";
 import CachedImage from "@/components/custom-ui/image/CachedImage";
 import BooleanStatusButton from "@/components/custom-ui/button/BooleanStatusButton";
 
-export function EmployeesTable() {
+export function SellersTable() {
   const { user } = useAuthStore();
   const navigate = useNavigate();
   const searchRef = useRef<HTMLInputElement>(null);
@@ -215,9 +215,9 @@ export function EmployeesTable() {
   const hasView = per?.view;
   const hasAdd = per?.add;
 
-  const watchOnClick = async (employee: Employee) => {
-    const employeeId = employee.id;
-    navigate(`/employees/${employeeId}`);
+  const watchOnClick = async (user: Employee) => {
+    const userId = user.id;
+    navigate(`/sellers/${userId}`);
   };
   return (
     <>
@@ -280,7 +280,7 @@ export function EmployeesTable() {
           >
             <FilterDialog
               filters={filters}
-              sortOnComplete={async (filterName: EmployeeSort) => {
+              sortOnComplete={async (filterName: UserSort) => {
                 if (filterName != filters.sort) {
                   const queryParams = new URLSearchParams();
                   queryParams.set("sort", filterName);
@@ -288,12 +288,12 @@ export function EmployeesTable() {
                   queryParams.set("sch_col", filters.search.column);
                   queryParams.set("sch_val", filters.search.value);
                   setDateToURL(queryParams, filters.date);
-                  navigate(`/employees?${queryParams.toString()}`, {
+                  navigate(`/sellers?${queryParams.toString()}`, {
                     replace: true,
                   });
                 }
               }}
-              searchFilterChanged={async (filterName: EmployeeSearch) => {
+              searchFilterChanged={async (filterName: UserSearch) => {
                 if (filterName != filters.search.column) {
                   const queryParams = new URLSearchParams();
                   queryParams.set("sort", filters.sort);
@@ -301,7 +301,7 @@ export function EmployeesTable() {
                   queryParams.set("sch_col", filterName);
                   queryParams.set("sch_val", filters.search.value);
                   setDateToURL(queryParams, filters.date);
-                  navigate(`/employees?${queryParams.toString()}`, {
+                  navigate(`/sellers?${queryParams.toString()}`, {
                     replace: true,
                   });
                 }
@@ -314,7 +314,7 @@ export function EmployeesTable() {
                   queryParams.set("sch_col", filters.search.column);
                   queryParams.set("sch_val", filters.search.value);
                   setDateToURL(queryParams, filters.date);
-                  navigate(`/employees?${queryParams.toString()}`, {
+                  navigate(`/users?${queryParams.toString()}`, {
                     replace: true,
                   });
                 }
@@ -327,7 +327,7 @@ export function EmployeesTable() {
                   queryParams.set("sch_col", filters.search.column);
                   queryParams.set("sch_val", filters.search.value);
                   setDateToURL(queryParams, selectedDates);
-                  navigate(`/employees?${queryParams.toString()}`, {
+                  navigate(`/sellers?${queryParams.toString()}`, {
                     replace: true,
                   });
                 }
@@ -459,34 +459,6 @@ export function EmployeesTable() {
                   className="rtl:text-end rtl:text-sm-rtl truncate"
                 >
                   {item?.contact}
-                </TableCell>
-                <TableCell>
-                  <BooleanStatusButton
-                    getColor={function (): {
-                      style: string;
-                      value: string;
-                    } {
-                      return StatusEnum.hired == item.status
-                        ? {
-                            style: "border-green-500/90",
-                            value: item.status_name,
-                          }
-                        : StatusEnum.working == item.status
-                        ? {
-                            style: "border-blue-500/90",
-                            value: item.status_name,
-                          }
-                        : StatusEnum.active == item.status
-                        ? {
-                            style: "border-blue-500/90",
-                            value: item.status_name,
-                          }
-                        : {
-                            style: "border-red-500",
-                            value: item.status_name,
-                          };
-                    }}
-                  />
                 </TableCell>
               </TableRowIcon>
             ))
