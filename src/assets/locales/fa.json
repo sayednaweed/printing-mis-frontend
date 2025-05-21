@@ -13,6 +13,7 @@
   "search": "جستجو",
   "add": "افزودن",
   "picture": "تصویر",
+  "profile": "پروفایل",
   "role": "نقش",
   "email": "ایمیل",
   "contact": "شماره تلفن",
@@ -182,6 +183,9 @@
   "general": "عمومی",
   "configurations": "تنظیمات سیستم",
   "store_infor": "ذخیره اطلاعات",
+  "start_time": "زمان شروع",
+  "end_time": "زمان پایان",
+  "select_time": "یک زمان انتخاب کنید",
   "application": "application",
   "inv_configurations": "تنظیمات سیستم",
   "inv_reports": "گزارش‌ها",
@@ -282,5 +286,12 @@
   "absent": "غیر حاضر",
   "other": "دیگر",
   "taken_by": "گرفته شده توسط",
-  "take_attendance": "گرفت حاضری"
+  "take_attendance": "گرفت حاضری",
+  "add_leave": "اضافه کردن نوع رخصتی",
+  "add_shift": "اضافه کردن شیفت کاری",
+  "add_hire_type": "اضافه کردن نوع استخدام",
+  "company_name": "نام شرکت",
+  "add_seller": "اضافه کردن فروشنده",
+  "logo": "لوگو",
+  "add_buyer": "اضافه کردن خریدار"
 }

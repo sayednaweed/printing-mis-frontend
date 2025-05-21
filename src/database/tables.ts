@@ -97,15 +97,14 @@ export type HireTypeItem = {
   id: string;
   name: string;
   created_at: string;
-  description:string;
-
+  description: string;
 };
 export type SimpleShiftItem = {
   id: string;
-  name:string;
-  start_time:string;
-  end_time:string;
-  description:string;
+  name: string;
+  start_time: string;
+  end_time: string;
+  description: string;
   created_at: string;
 };
 export type Gender = {
@@ -283,10 +282,10 @@ export type Attendance = {
 };
 export type AttendanceModel = {
   id: string;
-  total_present: string;
-  total_absent: string;
-  total_leave: string;
-  total_other: string;
+  present: string;
+  absent: string;
+  leave: string;
+  other: string;
   taken_by: string;
   created_at: string;
 };
@@ -296,4 +295,12 @@ export type ExpenseType = {
   icon_id: string;
   expense_type_id: string;
   created_at: string;
+};
+export type PartyModel = {
+  id: string;
+  email: string;
+  contact: string;
+  name: string;
+  logo: any;
+  company_name: string;
 };

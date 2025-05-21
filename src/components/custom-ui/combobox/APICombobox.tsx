@@ -263,11 +263,11 @@ function APICombobox(props: IAPIComboboxProps) {
           </Command>
         </PopoverContent>
       </Popover>
-      {
+      {errorMessage && (
         <h1 className="rtl:text-sm-rtl ltr:text-sm-ltr text-start text-red-400">
           {errorMessage}
         </h1>
-      }
+      )}
     </div>
   );
 }

@@ -11,9 +11,13 @@ export const PortalEnum = {
 };
 export const ChecklistTypeEnum = {
   employee: 1,
+  sellers: 2,
+  buyers: 3,
 };
 export const ChecklistEnum = {
   employee_attachment: 1,
+  sellers_logo: 2,
+  buyers_logo: 3,
 };
 export const HireTypeEnum = {
   contractual: 1,
@@ -28,6 +32,10 @@ export const NidTypeEnum = {
   passport: 1,
   id_card: 2,
   paper_id_card: 3,
+};
+export const PartyTypeEnum = {
+  sellers: 1,
+  buyers: 2,
 };
 export const PermissionEnum = {
   dashboard: { name: "dashboard", sub: {} },
@@ -55,18 +63,18 @@ export const PermissionEnum = {
     name: "attendance",
     sub: {},
   },
-  vaccine_certificate: {
-    name: "vaccine_certificate",
+  sellers: {
+    name: "sellers",
     sub: {
-      vaccine_certificate_person_info: 11,
-      vaccine_certificate_vaccination_info: 12,
-      vaccine_certificate_card_issuing: 13,
+      personal_information: 61,
+      transactions: 62,
     },
   },
-  certificate_payment: {
-    name: "certificate_payment",
+  buyers: {
+    name: "buyers",
     sub: {
-      certificate_payment_info: 31,
+      personal_information: 71,
+      transactions: 72,
     },
   },
   reports: { name: "reports", sub: {} },
@@ -177,6 +185,8 @@ export const CACHE = {
   EMPLOYEE_TABLE_PAGINATION_COUNT: "EMPLOYEE_TABLE",
   EMPLOYEEREPORT_TABLE_PAGINATION_COUNT: "EMPLOYEEREPORT_TABLE",
   ATTENDANCE_TABLE_PAGINATION_COUNT: "ATTENDANCE_TABLE",
+  SELLERS_TABLE_PAGINATION_COUNT: "SELLERS_TABLE",
+  Buyers_TABLE_PAGINATION_COUNT: "BUYERS_TABLE",
   LEAVE_TABLE_PAGINATION_COUNT: "LEAVE_TABLE",
   AUDIT_TABLE_PAGINATION_COUNT: "AUDIT_TABLE",
   SYSTEM_CALENDAR: "SYSTEM_CALENDAR",

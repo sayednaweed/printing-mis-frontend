@@ -13,6 +13,7 @@
   "search": "Search",
   "add": "Add",
   "picture": "Picture",
+  "profile": "Profile",
   "role": "Role",
   "email": "Email",
   "contact": "Contact",
@@ -182,6 +183,9 @@
   "general": "General",
   "configurations": "Configurations",
   "store_infor": "Storing information",
+  "start_time": "Start time",
+  "end_time": "End time",
+  "select_time": "Select a time",
   "application": "application",
   "inv_configurations": "Configurations",
   "inv_reports": "Reports",
@@ -281,5 +285,12 @@
   "absent": "Absent",
   "other": "Other",
   "taken_by": "Taken by",
-  "take_attendance": "Take attendance"
+  "take_attendance": "Take attendance",
+  "add_leave": "Add leave",
+  "add_shift": "Add work shift",
+  "add_hire_type": "Add hire type",
+  "company_name": "Company name",
+  "add_seller": "Add seller",
+  "logo": "Logo",
+  "add_buyer": "Add buyer"
 }

@@ -159,9 +159,9 @@ export default function HireTypeTab(props: HireTypeTabProps) {
         <TableHeader className="rtl:text-3xl-rtl ltr:text-xl-ltr">
           <TableRow className="hover:bg-transparent">
             <TableHead className="text-start">{t("id")}</TableHead>
-            <TableHead className="text-start">{t("contract")}</TableHead>
+            <TableHead className="text-start">{t("name")}</TableHead>
             <TableHead className="text-start">{t("date")}</TableHead>
-            <TableHead className="text-start">{t("description")}</TableHead>
+            <TableHead className="text-start">{t("detail")}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody className="rtl:text-xl-rtl ltr:text-lg-ltr">
