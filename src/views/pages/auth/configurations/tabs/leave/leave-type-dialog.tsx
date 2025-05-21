@@ -15,134 +15,123 @@ import CustomInput from "@/components/custom-ui/input/CustomInput";
 import axiosClient from "@/lib/axois-client";
 import { toast } from "@/components/ui/use-toast";
 import { setServerError, validate } from "@/validation/validation";
-import { SimpleItem } from "@/database/tables";
+import CustomDatePicker from "@/components/custom-ui/DatePicker/CustomDatePicker";
+import { DateObject } from "react-multi-date-picker";
+import { Textarea } from "@/components/ui/textarea";
+import { LeaveItem } from "@/database/tables";
 
 export interface LeaveDialogProps {
-  onComplete: (leaveType: SimpleItem) => void;
-  leave?: SimpleItem;
+  onComplete: (leaveType: LeaveItem) => void;
+  leave?: LeaveItem;
 }
-export default function LeaveTypeDialog(props: LeaveDialogProps) {
-  const { onComplete, leave } = props;
+
+export default function LeaveTypeDialog({
+  onComplete,
+  leave,
+}: LeaveDialogProps) {
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(false);
-
   const [error, setError] = useState(new Map<string, string>());
-  const [userData, setUserData] = useState({
+
+  const [userData, setUserData] = useState<{
+    farsi: string;
+    english: string;
+    pashto: string;
+    start_date?: string | DateObject;
+    end_date?: string | DateObject;
+    reason: string;
+  }>({
     farsi: "",
     english: "",
     pashto: "",
+    start_date: undefined,
+    end_date: undefined,
+    reason: "",
   });
+
   const { modelOnRequestHide } = useModelOnRequestHide();
   const { t } = useTranslation();
+
   const fetch = async () => {
     try {
       setFetching(true);
-      const response = await axiosClient.get(`leave/${leave?.id}`);
+      const response = await axiosClient.get(`/leave-types/{id}/${leave?.id}`);
       if (response.status === 200) {
-        setUserData(response.data);
+        const data = response.data;
+        setUserData({
+          ...data,
+          start_date: data.start_date
+            ? new DateObject(data.start_date)
+            : undefined,
+          end_date: data.end_date ? new DateObject(data.end_date) : undefined,
+        });
       }
     } catch (error: any) {
-      console.log(error);
+      console.error(error);
+    } finally {
+      setFetching(false);
     }
-    setFetching(false);
   };
+
   useEffect(() => {
     if (leave) fetch();
   }, []);
-  const handleChange = (e: any) => {
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setUserData({ ...userData, [name]: value });
+    setUserData((prev) => ({ ...prev, [name]: value }));
   };
-  const store = async () => {
-    try {
-      if (loading) return;
-      setLoading(true);
-      // 1. Validate form
-      const passed = await validate(
-        [
-          {
-            name: "english",
-            rules: ["required"],
-          },
-          {
-            name: "farsi",
-            rules: ["required"],
-          },
-          {
-            name: "pashto",
-            rules: ["required"],
-          },
-        ],
-        userData,
-        setError
-      );
-      if (!passed) return;
-      // 2. Store
-      let formData = new FormData();
-      formData.append("english", userData.english);
-      formData.append("farsi", userData.farsi);
-      formData.append("pashto", userData.pashto);
-      const response = await axiosClient.post("/leave-types", formData);
-      if (response.status === 200) {
-        toast({
-          toastType: "SUCCESS",
-          description: response.data.message,
-        });
-        onComplete(response.data.leave);
-        modelOnRequestHide();
-      }
-    } catch (error: any) {
-      setServerError(error.response.data.errors, setError);
-      console.log(error);
-    } finally {
+
+  const storeOrUpdate = async () => {
+    if (loading) return;
+    setLoading(true);
+
+    const passed = await validate(
+      [
+        { name: "english", rules: ["required"] },
+        { name: "farsi", rules: ["required"] },
+        { name: "pashto", rules: ["required"] },
+        { name: "start_date", rules: ["required"] },
+        { name: "end_date", rules: ["required"] },
+        { name: "reason", rules: ["required"] },
+      ],
+      userData,
+      setError
+    );
+    if (!passed) {
       setLoading(false);
+      return;
     }
-  };
-  const update = async () => {
+
     try {
-      if (loading) return;
-      setLoading(true);
-      // 1. Validate form
-      const passed = await validate(
-        [
-          {
-            name: "english",
-            rules: ["required"],
-          },
-          {
-            name: "farsi",
-            rules: ["required"],
-          },
-          {
-            name: "pashto",
-            rules: ["required"],
-          },
-        ],
-        userData,
-        setError
-      );
-      if (!passed) return;
-      // 2. update
-      let formData = new FormData();
+      const formData = new FormData();
       if (leave?.id) formData.append("id", leave.id);
       formData.append("english", userData.english);
       formData.append("farsi", userData.farsi);
       formData.append("pashto", userData.pashto);
-      const response = await axiosClient.post("leave/type/update", formData);
+      formData.append(
+        "start_date",
+        userData.start_date instanceof DateObject
+          ? userData.start_date.format("YYYY-MM-DD")
+          : ""
+      );
+      formData.append(
+        "end_date",
+        userData.end_date instanceof DateObject
+          ? userData.end_date.format("YYYY-MM-DD")
+          : ""
+      );
+      formData.append("reason", userData.reason);
+
+      const response = await axiosClient.post("/leave-types", formData);
       if (response.status === 200) {
-        toast({
-          toastType: "SUCCESS",
-          description: response.data.message,
-        });
+        toast({ toastType: "SUCCESS", description: response.data.message });
         onComplete(response.data.leave);
         modelOnRequestHide();
       }
     } catch (error: any) {
-      toast({
-        toastType: "ERROR",
-        description: error.response.data.message,
-      });
-      console.log(error);
+      setServerError(error.response?.data?.errors, setError);
+      toast({ toastType: "ERROR", description: error.response?.data?.message });
     } finally {
       setLoading(false);
     }
@@ -155,7 +144,27 @@ export default function LeaveTypeDialog(props: LeaveDialogProps) {
           {leave ? t("edit") : t("add")}
         </CardTitle>
       </CardHeader>
+
       <CardContent>
+        <CustomDatePicker
+          requiredHint={`* ${t("required")}`}
+          placeholder={t("select_str_date")}
+          value={userData.start_date}
+          dateOnComplete={(date: DateObject) =>
+            setUserData((prev) => ({ ...prev, start_date: date }))
+          }
+          className="border p-3 hover:bg-black/5 transition-all duration-300 ease-in-out"
+        />
+        <CustomDatePicker
+          requiredHint={`* ${t("required")}`}
+          placeholder={t("select_end_date")}
+          value={userData.end_date}
+          dateOnComplete={(date: DateObject) =>
+            setUserData((prev) => ({ ...prev, end_date: date }))
+          }
+          className="border p-3 mt-3 hover:bg-black/5 transition-all duration-300 ease-in-out"
+        />
+
         <CustomInput
           size_="sm"
           dir="ltr"
@@ -176,6 +185,7 @@ export default function LeaveTypeDialog(props: LeaveDialogProps) {
             </h1>
           }
         />
+
         <CustomInput
           size_="sm"
           required={true}
@@ -194,6 +204,7 @@ export default function LeaveTypeDialog(props: LeaveDialogProps) {
             </h1>
           }
         />
+
         <CustomInput
           size_="sm"
           loading={fetching}
@@ -212,7 +223,18 @@ export default function LeaveTypeDialog(props: LeaveDialogProps) {
             </h1>
           }
         />
+
+        <Textarea
+          required={true}
+          placeholder={t("reason")}
+          className="mt-3"
+          value={userData.reason}
+          onChange={(e) =>
+            setUserData((prev) => ({ ...prev, reason: e.target.value }))
+          }
+        />
       </CardContent>
+
       <CardFooter className="flex justify-between">
         <Button
           className="rtl:text-xl-rtl ltr:text-lg-ltr"
@@ -223,8 +245,8 @@ export default function LeaveTypeDialog(props: LeaveDialogProps) {
         </Button>
         <PrimaryButton
           disabled={loading}
-          onClick={leave ? update : store}
-          className={`${loading && "opacity-90"}`}
+          onClick={storeOrUpdate}
+          className={loading ? "opacity-90" : ""}
           type="submit"
         >
           <ButtonSpinner loading={loading}>{t("save")}</ButtonSpinner>

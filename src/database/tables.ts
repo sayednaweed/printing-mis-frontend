@@ -84,6 +84,15 @@ export type SimpleItem = {
   created_at: string;
 };
 
+export type LeaveItem = {
+  id: string;
+  name: string;
+  start_date:Date;
+  end_date:Date;
+  reason:string;
+  created_at: string;
+};
+
 export type HireTypeItem = {
   id: string;
   name: string;
