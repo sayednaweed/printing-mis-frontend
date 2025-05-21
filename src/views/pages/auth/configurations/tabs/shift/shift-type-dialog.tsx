@@ -19,7 +19,7 @@ import { SimpleItem } from "@/database/tables";
 
 export interface ShiftDialogProps {
   onComplete: (shiftType: SimpleItem) => void;
-  
+
   shift?: SimpleItem;
 }
 export default function LeaveTypeDialog(props: ShiftDialogProps) {

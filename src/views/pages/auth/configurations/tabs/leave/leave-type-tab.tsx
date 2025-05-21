@@ -17,7 +17,7 @@ import CustomInput from "@/components/custom-ui/input/CustomInput";
 import { Search } from "lucide-react";
 import Shimmer from "@/components/custom-ui/shimmer/Shimmer";
 import TableRowIcon from "@/components/custom-ui/table/TableRowIcon";
-import { SimpleItem, UserPermission } from "@/database/tables";
+import { LeaveItem, UserPermission } from "@/database/tables";
 import { PermissionEnum } from "@/lib/constants";
 import LeaveTypeDialog from "./leave-type-dialog";
 import { toLocaleDate } from "@/lib/utils";
@@ -37,8 +37,8 @@ export default function LeaveTypeTab(props: LeaveTypeTabProps) {
     leaveType: undefined,
   });
   const [leaveTypes, setLeaveTypes] = useState<{
-    unFilterList: SimpleItem[];
-    filterList: SimpleItem[];
+    unFilterList: LeaveItem[];
+    filterList: LeaveItem[];
   }>({
     unFilterList: [],
     filterList: [],
@@ -50,7 +50,7 @@ export default function LeaveTypeTab(props: LeaveTypeTabProps) {
 
       // 2. Send data
       const response = await axiosClient.get(`/leave-types`);
-      const fetch = response.data as SimpleItem[];
+      const fetch = response.data as LeaveItem[];
       setLeaveTypes({
         unFilterList: fetch,
         filterList: fetch,
@@ -71,7 +71,7 @@ export default function LeaveTypeTab(props: LeaveTypeTabProps) {
   const searchOnChange = (e: any) => {
     const { value } = e.target;
     // 1. Filter
-    const filtered = leaveTypes.unFilterList.filter((item: SimpleItem) =>
+    const filtered = leaveTypes.unFilterList.filter((item: LeaveItem) =>
       item.name.toLowerCase().includes(value.toLowerCase())
     );
     setLeaveTypes({
@@ -79,13 +79,13 @@ export default function LeaveTypeTab(props: LeaveTypeTabProps) {
       filterList: filtered,
     });
   };
-  const add = (newItem: SimpleItem) => {
+  const add = (newItem: LeaveItem) => {
     setLeaveTypes((prev) => ({
       unFilterList: [newItem, ...prev.unFilterList],
       filterList: [newItem, ...prev.filterList],
     }));
   };
-  const update = (newItem: SimpleItem) => {
+  const update = (newItem: LeaveItem) => {
     setLeaveTypes((prevState) => {
       const updatedUnFiltered = prevState.unFilterList.map((item) =>
         item.id === newItem.id ? { ...item, name: newItem.name } : item
@@ -158,8 +158,10 @@ export default function LeaveTypeTab(props: LeaveTypeTabProps) {
         <TableHeader className="rtl:text-3xl-rtl ltr:text-xl-ltr">
           <TableRow className="hover:bg-transparent">
             <TableHead className="text-start">{t("id")}</TableHead>
-            <TableHead className="text-start">{t("value")}</TableHead>
-            <TableHead className="text-start">{t("date")}</TableHead>
+            <TableHead className="text-start">{t("leave")}</TableHead>
+            <TableHead className="text-start">{t("start_date")}</TableHead>
+            <TableHead className="text-start">{t("end_date")}</TableHead>
+            <TableHead className="text-start">{t("reason")}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody className="rtl:text-xl-rtl ltr:text-lg-ltr">
@@ -174,14 +176,20 @@ export default function LeaveTypeTab(props: LeaveTypeTabProps) {
               <TableCell>
                 <Shimmer className="h-[24px] bg-primary/30 w-full rounded-sm" />
               </TableCell>
+              <TableCell>
+                <Shimmer className="h-[24px] bg-primary/30 w-full rounded-sm" />
+              </TableCell>
+              <TableCell>
+                <Shimmer className="h-[24px] bg-primary/30 w-full rounded-sm" />
+              </TableCell>
             </TableRow>
           ) : (
-            leaveTypes.filterList.map((leave: SimpleItem, index: number) => (
+            leaveTypes.filterList.map((leave: LeaveItem, index: number) => (
               <TableRowIcon
                 read={hasView}
                 remove={false}
                 edit={hasEdit}
-                onEdit={async (item: SimpleItem) => {
+                onEdit={async (item: LeaveItem) => {
                   setSelected({
                     visible: true,
                     leaveType: item,
@@ -194,9 +202,13 @@ export default function LeaveTypeTab(props: LeaveTypeTabProps) {
               >
                 <TableCell className="font-medium">{leave.id}</TableCell>
                 <TableCell>{leave.name}</TableCell>
-                <TableCell>
-                  {toLocaleDate(new Date(leave.created_at), state)}
+                <TableCell className="font-medium">
+                  {toLocaleDate(new Date(leave.start_date), state)}
                 </TableCell>
+                <TableCell className="font-medium">
+                  {toLocaleDate(new Date(leave.end_date), state)}
+                </TableCell>
+                <TableCell className="font-medium">{leave.reason}</TableCell>
               </TableRowIcon>
             ))
           )}
