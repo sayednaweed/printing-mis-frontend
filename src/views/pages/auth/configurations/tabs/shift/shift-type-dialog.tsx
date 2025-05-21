@@ -16,6 +16,8 @@ import axiosClient from "@/lib/axois-client";
 import { toast } from "@/components/ui/use-toast";
 import { setServerError, validate } from "@/validation/validation";
 import { SimpleItem } from "@/database/tables";
+import CustomTimePicker from "@/components/custom-ui/DatePicker/CustomTimePicker";
+import { DateObject } from "react-multi-date-picker";
 
 export interface ShiftDialogProps {
   onComplete: (shiftType: SimpleItem) => void;
@@ -32,6 +34,8 @@ export default function LeaveTypeDialog(props: ShiftDialogProps) {
     farsi: "",
     english: "",
     pashto: "",
+    start_time: new DateObject(),
+    end_time: new DateObject(),
   });
   const { modelOnRequestHide } = useModelOnRequestHide();
   const { t } = useTranslation();
@@ -118,6 +122,14 @@ export default function LeaveTypeDialog(props: ShiftDialogProps) {
             name: "pashto",
             rules: ["required"],
           },
+          {
+            name: "start_time",
+            rules: ["required"],
+          },
+          {
+            name: "end_time",
+            rules: ["required"],
+          },
         ],
         userData,
         setError
@@ -129,7 +141,9 @@ export default function LeaveTypeDialog(props: ShiftDialogProps) {
       formData.append("english", userData.english);
       formData.append("farsi", userData.farsi);
       formData.append("pashto", userData.pashto);
-      const response = await axiosClient.post("shift/type/update", formData);
+      const response = await axiosClient.post("shift/type/update", {
+        start_time: userData?.start_time?.toDate()?.toISOString(),
+      });
       if (response.status === 200) {
         toast({
           toastType: "SUCCESS",
@@ -212,6 +226,30 @@ export default function LeaveTypeDialog(props: ShiftDialogProps) {
               {t("ps")}
             </h1>
           }
+        />
+        <CustomTimePicker
+          placeholder={t("select_time")}
+          lable={t("start_time")}
+          requiredHint={`* ${t("required")}`}
+          required={true}
+          value={userData.start_time}
+          dateOnComplete={(date: DateObject) => {
+            setUserData((prev: any) => ({ ...prev, start_time: date }));
+          }}
+          className="w-full mt-12"
+          errorMessage={error.get("start_time")}
+        />
+        <CustomTimePicker
+          placeholder={t("select_time")}
+          lable={t("end_time")}
+          requiredHint={`* ${t("required")}`}
+          required={true}
+          value={userData.end_time}
+          dateOnComplete={(date: DateObject) => {
+            setUserData((prev: any) => ({ ...prev, end_time: date }));
+          }}
+          className="w-full"
+          errorMessage={error.get("end_time")}
         />
       </CardContent>
       <CardFooter className="flex justify-between">

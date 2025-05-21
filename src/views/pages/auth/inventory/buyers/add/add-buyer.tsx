@@ -22,8 +22,6 @@ import { ChecklistEnum, ChecklistTypeEnum, CountryEnum } from "@/lib/constants";
 import { validate } from "@/validation/validation";
 import CustomTextarea from "@/components/custom-ui/input/CustomTextarea";
 import BorderContainer from "@/components/custom-ui/container/BorderContainer";
-import { DateObject } from "react-multi-date-picker";
-import CustomTimePicker from "@/components/custom-ui/DatePicker/CustomTimePicker";
 interface AddSellersProps {
   onComplete: (attendance: PartyModel) => void;
   onCloseModel?: () => void;
@@ -140,18 +138,7 @@ export default function AddBuyer(props: AddSellersProps) {
               errorMessage={error.get("name")}
               onChange={handleChange}
             />
-            <CustomTimePicker
-              placeholder={t("select_time")}
-              lable={t("start_time")}
-              requiredHint={`* ${t("required")}`}
-              required={true}
-              value={userData.start_time}
-              dateOnComplete={(date: DateObject) => {
-                setUserData((prev: any) => ({ ...prev, start_time: date }));
-              }}
-              className="py-3 w-full"
-              errorMessage={error.get("start_time")}
-            />
+
             <CustomInput
               required={true}
               lable={t("company_name")}
