@@ -1,7 +1,9 @@
 import {
+  AttendanceModel,
   Audit,
   Employee,
   EmployeeReport,
+  Leave,
   SelectUserPermission,
   SubPermission,
   User,
@@ -142,6 +144,7 @@ export interface FileType {
   name: string;
   extension: string;
   size: number;
+  pending_id?: string;
 }
 export interface UserPaginationData {
   data: User[];
@@ -160,6 +163,20 @@ export interface EmployeePaginationData {
 
 export interface EmployeeReportPaginationData {
   data: EmployeeReport[];
+  lastPage: number;
+  perPage: number;
+  currentPage: number;
+  totalItems: number;
+}
+export interface LeavePaginationData {
+  data: Leave[];
+  lastPage: number;
+  perPage: number;
+  currentPage: number;
+  totalItems: number;
+}
+export interface AttendancePaginationData {
+  data: AttendanceModel[];
   lastPage: number;
   perPage: number;
   currentPage: number;

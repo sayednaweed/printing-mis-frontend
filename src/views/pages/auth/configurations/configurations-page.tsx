@@ -15,6 +15,8 @@ import DepartmentTab from "./tabs/department/department-tab";
 import HireTypeTab from "./tabs/hire-type/hire-type-tab";
 import ShiftTab from "./tabs/shift/shift-type-tab";
 import LeaveTab from "./tabs/leave/leave-type-tab";
+import LeaveTypeTab from "./tabs/leave-type/leave-type-tab";
+import ExpenseTypeTab from "./tabs/expense-type/expense-type-tab";
 
 export default function ConfigurationsPage() {
   const { t, i18n } = useTranslation();
@@ -68,7 +70,7 @@ export default function ConfigurationsPage() {
           className="gap-x-1 bg-card shadow rtl:text-2xl-rtl ltr:text-xl-ltr data-[state=active]:bg-primary data-[state=active]:text-tertiary"
         >
           <MapPinHouse className="size-[16px] ltr:mr-1 rtl:ml-1" />
-          {t("shifts")}
+          {t("work_shift")}
         </TabsTrigger>
       ) : key ==
         PermissionEnum.configurations.sub.hr_configuration_hire_type ? (
@@ -172,6 +174,26 @@ export default function ConfigurationsPage() {
           <MapPinHouse className="size-[16px] ltr:mr-1 rtl:ml-1" />
           {t("weight_unit")}
         </TabsTrigger>
+      ) : key ==
+        PermissionEnum.configurations.sub.expense_configuration_expense_type ? (
+        <TabsTrigger
+          key={index}
+          value={key.toString()}
+          className="gap-x-1 bg-card shadow rtl:text-2xl-rtl ltr:text-xl-ltr data-[state=active]:bg-primary data-[state=active]:text-tertiary"
+        >
+          <MapPinHouse className="size-[16px] ltr:mr-1 rtl:ml-1" />
+          {t("expense_type")}
+        </TabsTrigger>
+      ) : key ==
+        PermissionEnum.configurations.sub.expense_configuration_expense_icon ? (
+        <TabsTrigger
+          key={index}
+          value={key.toString()}
+          className="gap-x-1 bg-card shadow rtl:text-2xl-rtl ltr:text-xl-ltr data-[state=active]:bg-primary data-[state=active]:text-tertiary"
+        >
+          <MapPinHouse className="size-[16px] ltr:mr-1 rtl:ml-1" />
+          {t("expense_icon")}
+        </TabsTrigger>
       ) : undefined;
     }
   );
@@ -219,6 +241,12 @@ export default function ConfigurationsPage() {
           className="w-full px-4 pt-8"
         >
           <HireTypeTab permissions={per} />
+        </TabsContent>
+        <TabsContent
+          value={PermissionEnum.configurations.sub.expense_configuration_expense_type.toString()}
+          className="w-full px-4 pt-8"
+        >
+          <ExpenseTypeTab permissions={per} />
         </TabsContent>
       </Tabs>
     </>

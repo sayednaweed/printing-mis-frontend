@@ -31,10 +31,10 @@ export default function EmployeeStatusDialog(props: EmployeeStatusDialogProps) {
 
   const [userData, setUserData] = useState<{
     status: { id: string; name: string } | undefined;
-    comment: "";
+    detail: "";
   }>({
     status: undefined,
-    comment: "",
+    detail: "",
   });
   const { modelOnRequestHide } = useModelOnRequestHide();
   const { t } = useTranslation();
@@ -51,8 +51,8 @@ export default function EmployeeStatusDialog(props: EmployeeStatusDialogProps) {
             rules: ["required", "max:128", "min:3"],
           },
           {
-            name: "comment",
-            rules: ["required", "max:128", "min:15"],
+            name: "detail",
+            rules: ["required", "max:128", "min:5"],
           },
         ],
         userData,
@@ -65,14 +65,16 @@ export default function EmployeeStatusDialog(props: EmployeeStatusDialogProps) {
       // 2. Store
       let formData = new FormData();
       if (id) formData.append("employee_id", id.toString());
-      formData.append("comment", userData.comment);
+      formData.append("detail", userData.detail);
       if (userData?.status)
         formData.append("status_type_id", userData.status.id);
 
-      const response = await axiosClient.post(
-        "employee/change-status",
-        formData
-      );
+      const response = await axiosClient.post(`update/employent/status/${id}`, {
+        employee_id: id,
+        detail: userData.detail,
+        status_id: userData.status?.id,
+        status: userData.status?.name,
+      });
       if (response.status === 200) {
         toast({
           toastType: "SUCCESS",
@@ -102,7 +104,7 @@ export default function EmployeeStatusDialog(props: EmployeeStatusDialogProps) {
     <Card className="w-full self-center [backdrop-filter:blur(20px)] bg-card dark:bg-card-secondary">
       <CardHeader className="relative text-start">
         <CardTitle className="rtl:text-4xl-rtl ltr:text-3xl-ltr text-tertiary">
-          {t("edit")}
+          {t("change_status")}
         </CardTitle>
       </CardHeader>
       {storing ? (
@@ -124,19 +126,20 @@ export default function EmployeeStatusDialog(props: EmployeeStatusDialogProps) {
             selectedItem={userData?.status?.name}
             placeHolder={t("select_a")}
             errorMessage={error.get("status")}
-            apiUrl={"block/statuse/types"}
+            apiUrl={"employee/status/list/" + id}
             mode="single"
+            cacheData={false}
           />
 
           <CustomTextarea
             required={true}
             requiredHint={`* ${t("required")}`}
-            lable={t("comment")}
-            name="comment"
-            defaultValue={userData["comment"]}
-            placeholder={t("detail")}
+            lable={t("detail")}
+            name="detail"
+            defaultValue={userData["detail"]}
+            placeholder={t("enter")}
             className="uppercase"
-            errorMessage={error.get("comment")}
+            errorMessage={error.get("detail")}
             onBlur={handleChange}
             rows={5}
           />

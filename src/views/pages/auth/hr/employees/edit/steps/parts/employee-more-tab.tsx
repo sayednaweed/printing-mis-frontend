@@ -67,6 +67,7 @@ export default function EmployeeMoreTab(props: EmployeeMoreTabProps) {
   useEffect(() => {
     loadInformation();
   }, []);
+
   const saveData = async () => {
     if (loading || userData === undefined || id === undefined) {
       setLoading(false);
@@ -102,8 +103,15 @@ export default function EmployeeMoreTab(props: EmployeeMoreTabProps) {
     }
     // 2. Store
     try {
-      const response = await axiosClient.post("employee/update/more/details", {
+      const response = await axiosClient.post("employee/more/details/update", {
         id: id,
+        nid_type_id: userData?.identity_card?.id,
+        education_level_id: userData?.education_level?.id,
+        register_no: userData?.register_no,
+        register: userData?.register,
+        volume: userData?.volume,
+        page: userData?.page,
+        has_attachment: userData?.attachment?.pending_id ? true : false,
       });
       if (response.status == 200) {
         // Update user state
@@ -126,7 +134,6 @@ export default function EmployeeMoreTab(props: EmployeeMoreTabProps) {
     }
   };
 
-  console.log(userData);
   const hasEdit = permissions.sub.get(
     PermissionEnum.employees.sub.personal_information
   )?.edit;
@@ -183,7 +190,7 @@ export default function EmployeeMoreTab(props: EmployeeMoreTabProps) {
       );
     }
     return undefined;
-  }, [userData?.identity_card]);
+  }, [userData?.identity_card?.id, error]);
   return (
     <Card className="rounded-none rounded-b-xl">
       <CardHeader className="space-y-0">
@@ -191,7 +198,7 @@ export default function EmployeeMoreTab(props: EmployeeMoreTabProps) {
           {t("account_information")}
         </CardTitle>
         <CardDescription className="rtl:text-xl-rtl ltr:text-lg-ltr">
-          {t("update_user_acc_info")}
+          {t("update_empl_acc_info")}
         </CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-x-4 gap-y-6 w-full lg:w-[70%] 2xl:w-1/2 pb-16">

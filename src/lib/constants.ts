@@ -47,6 +47,14 @@ export const PermissionEnum = {
       user_permission: 3,
     },
   },
+  leave: {
+    name: "leave",
+    sub: {},
+  },
+  attendance: {
+    name: "attendance",
+    sub: {},
+  },
   vaccine_certificate: {
     name: "vaccine_certificate",
     sub: {
@@ -70,7 +78,9 @@ export const PermissionEnum = {
       hr_configuration_leave: 23,
       hr_configuration_shifts: 24,
       hr_configuration_hire_type: 25,
+      hr_app_configuration: 26,
       expense_configuration_expense_type: 51,
+      expense_configuration_expense_icon: 52,
       inventory_configuration_accounts: 111,
       inventory_configuration_warehouse: 112,
       inventory_configuration_material: 113,
@@ -92,12 +102,15 @@ export const PermissionEnum = {
   },
 };
 export const StatusEnum = {
-  active: 1,
-  on_leave: 2,
-  resigned: 3,
-  terminated: 4,
-  absconded: 5,
-  deceased: 6,
+  hired: 1,
+  resigned: 2,
+  terminated: 3,
+  absconded: 4,
+  deceased: 5,
+  working: 6,
+  // User status
+  active: 7,
+  in_active: 8,
 };
 export const UserStatusEnum = {
   active: 1,
@@ -164,6 +177,7 @@ export const CACHE = {
   EMPLOYEE_TABLE_PAGINATION_COUNT: "EMPLOYEE_TABLE",
   EMPLOYEEREPORT_TABLE_PAGINATION_COUNT: "EMPLOYEEREPORT_TABLE",
   ATTENDANCE_TABLE_PAGINATION_COUNT: "ATTENDANCE_TABLE",
+  LEAVE_TABLE_PAGINATION_COUNT: "LEAVE_TABLE",
   AUDIT_TABLE_PAGINATION_COUNT: "AUDIT_TABLE",
   SYSTEM_CALENDAR: "SYSTEM_CALENDAR",
 };

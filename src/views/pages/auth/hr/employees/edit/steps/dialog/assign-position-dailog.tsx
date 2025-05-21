@@ -34,7 +34,7 @@ export default function AssignPositionDailog(props: AssignPositionDailogprops) {
   const [error, setError] = useState<Map<string, string>>(new Map());
   const handleChange = (e: any) => {
     const { name, value } = e.target;
-    setPosition({ ...position, [name]: value });
+    setPosition((prev: any) => ({ ...prev, [name]: value }));
   };
   const store = async () => {
     try {
@@ -98,56 +98,7 @@ export default function AssignPositionDailog(props: AssignPositionDailogprops) {
         }
       }
 
-      const passed = await validate(
-        [
-          {
-            name: "hire_type",
-            rules: ["required"],
-          },
-          {
-            name: "overtime_rate",
-            rules: ["required"],
-          },
-          {
-            name: "start_date",
-            rules: ["required"],
-          },
-          {
-            name: "end_date",
-            rules: ["required"],
-          },
-          {
-            name: "department",
-            rules: ["required"],
-          },
-          {
-            name: "position",
-            rules: ["required"],
-          },
-          {
-            name: "hire_date",
-            rules: ["required"],
-          },
-          {
-            name: "currency",
-            rules: ["required"],
-          },
-          {
-            name: "salary",
-            rules: ["required"],
-          },
-          {
-            name: "work_shift",
-            rules: ["required"],
-          },
-          {
-            name: "type",
-            rules: ["required"],
-          },
-        ],
-        position,
-        setError
-      );
+      const passed = await validate(valid, position, setError);
       if (!passed) {
         setLoading(false);
         return;
@@ -157,17 +108,22 @@ export default function AssignPositionDailog(props: AssignPositionDailogprops) {
       const response = await axiosClient.post("employee/assigment/change", {
         employee_id: id,
         hire_type_id: position?.hire_type?.id,
+        hire_type: position?.hire_type?.name,
         overtime_rate: position?.overtime_rate,
         start_date:
           position?.start_date && position?.start_date?.toDate()?.toISOString(),
         end_date:
           position?.end_date && position?.end_date?.toDate()?.toISOString(),
         department_id: position?.department?.id,
+        department: position?.department?.name,
         position_id: position?.position?.id,
+        position: position?.position?.name,
         hire_date: position?.hire_date?.toDate()?.toISOString(),
         currency_id: position?.currency?.id,
+        currency: position?.currency?.name,
         salary: position?.salary,
         shift_id: position?.work_shift?.id,
+        shift: position?.work_shift?.name,
         position_change_type_id: position?.type?.id,
       });
       if (response.status === 200) {
@@ -175,7 +131,7 @@ export default function AssignPositionDailog(props: AssignPositionDailogprops) {
           toastType: "SUCCESS",
           description: response.data.message,
         });
-        onComplete(response.data);
+        onComplete(response?.data?.data);
         onClose();
       }
     } catch (error: any) {
@@ -202,7 +158,7 @@ export default function AssignPositionDailog(props: AssignPositionDailogprops) {
             required={true}
             value={position.start_date}
             dateOnComplete={(date: DateObject) => {
-              setPosition({ ...position, start_date: date });
+              setPosition((prev: any) => ({ ...prev, start_date: date }));
             }}
             className="py-3 w-full"
             errorMessage={error.get("start_date")}
@@ -214,7 +170,7 @@ export default function AssignPositionDailog(props: AssignPositionDailogprops) {
             required={true}
             value={position.end_date}
             dateOnComplete={(date: DateObject) => {
-              setPosition({ ...position, end_date: date });
+              setPosition((prev: any) => ({ ...prev, end_date: date }));
             }}
             className="py-3 w-full"
             errorMessage={error.get("end_date")}
@@ -242,7 +198,7 @@ export default function AssignPositionDailog(props: AssignPositionDailogprops) {
               required={true}
               requiredHint={`* ${t("required")}`}
               onSelect={(selection: any) =>
-                setPosition({ ...position, ["type"]: selection })
+                setPosition((prev: any) => ({ ...prev, type: selection }))
               }
               lable={t("type")}
               selectedItem={position["type"]?.name}
@@ -258,7 +214,7 @@ export default function AssignPositionDailog(props: AssignPositionDailogprops) {
               required={true}
               requiredHint={`* ${t("required")}`}
               onSelect={(selection: any) =>
-                setPosition({ ...position, ["hire_type"]: selection })
+                setPosition((prev: any) => ({ ...prev, hire_type: selection }))
               }
               lable={t("hire_type")}
               selectedItem={position["hire_type"]?.name}
@@ -289,7 +245,7 @@ export default function AssignPositionDailog(props: AssignPositionDailogprops) {
               required={true}
               requiredHint={`* ${t("required")}`}
               onSelect={(selection: any) =>
-                setPosition({ ...position, ["department"]: selection })
+                setPosition((prev: any) => ({ ...prev, department: selection }))
               }
               lable={t("department")}
               selectedItem={position["department"]?.name}
@@ -305,7 +261,7 @@ export default function AssignPositionDailog(props: AssignPositionDailogprops) {
               required={true}
               requiredHint={`* ${t("required")}`}
               onSelect={(selection: any) =>
-                setPosition({ ...position, ["position"]: selection })
+                setPosition((prev: any) => ({ ...prev, position: selection }))
               }
               lable={t("position")}
               selectedItem={position["position"]?.name}
@@ -323,7 +279,7 @@ export default function AssignPositionDailog(props: AssignPositionDailogprops) {
               required={true}
               value={position.hire_date}
               dateOnComplete={(date: DateObject) => {
-                setPosition({ ...position, hire_date: date });
+                setPosition((prev: any) => ({ ...prev, hire_date: date }));
               }}
               className="py-3 w-full"
               errorMessage={error.get("hire_date")}
@@ -334,7 +290,7 @@ export default function AssignPositionDailog(props: AssignPositionDailogprops) {
               required={true}
               requiredHint={`* ${t("required")}`}
               onSelect={(selection: any) =>
-                setPosition({ ...position, ["currency"]: selection })
+                setPosition((prev: any) => ({ ...prev, currency: selection }))
               }
               lable={t("currency")}
               selectedItem={position["currency"]?.name}
@@ -365,7 +321,7 @@ export default function AssignPositionDailog(props: AssignPositionDailogprops) {
               required={true}
               requiredHint={`* ${t("required")}`}
               onSelect={(selection: any) =>
-                setPosition({ ...position, ["work_shift"]: selection })
+                setPosition((prev: any) => ({ ...prev, work_shift: selection }))
               }
               lable={t("work_shift")}
               selectedItem={position["work_shift"]?.name}

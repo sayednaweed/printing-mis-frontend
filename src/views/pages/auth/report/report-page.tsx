@@ -759,7 +759,6 @@ const Report = forwardRef<HTMLDivElement, any>((_props, ref) => {
   }, [filters.selection?.id]);
   return (
     <div
-      className="border h-[210mm] w-[297mm] aspect-[16/9] text-black bg-white shadow-md"
       className="border h-[210mm] w-[297mm] text-black bg-white shadow-md"
       ref={ref}
       dir={direction}
