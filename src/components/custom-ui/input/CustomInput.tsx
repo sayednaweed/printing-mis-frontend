@@ -36,7 +36,7 @@ const CustomInput = React.forwardRef<HTMLInputElement, InputProps>(
     const error = errorMessage != undefined;
     const marginTop = required || lable ? "mt-[26px]" : "mt-2";
     return (
-      <div className={`${parentClassName}`}>
+      <div className={cn(" w-full", parentClassName)}>
         {loading ? (
           <Shimmer
             className={`h-[50px] w-full border shadow-none rounded-sm ${marginTop}`}

@@ -183,5 +183,8 @@
   "general": "عمومی",
   "configurations": "د سیسټم تنظیمات",
   "store_infor": "د معلوماتو ذخیره کول",
+  "start_time": "د پیل وخت",
+  "end_time": "د پای وخت",
+  "select_time": "وخت وټاکئ",
   "application": "application"
 }

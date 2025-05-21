@@ -33,6 +33,10 @@ export const NidTypeEnum = {
   id_card: 2,
   paper_id_card: 3,
 };
+export const PartyTypeEnum = {
+  sellers: 1,
+  buyers: 2,
+};
 export const PermissionEnum = {
   dashboard: { name: "dashboard", sub: {} },
   employees: {
@@ -182,6 +186,7 @@ export const CACHE = {
   EMPLOYEEREPORT_TABLE_PAGINATION_COUNT: "EMPLOYEEREPORT_TABLE",
   ATTENDANCE_TABLE_PAGINATION_COUNT: "ATTENDANCE_TABLE",
   SELLERS_TABLE_PAGINATION_COUNT: "SELLERS_TABLE",
+  Buyers_TABLE_PAGINATION_COUNT: "BUYERS_TABLE",
   LEAVE_TABLE_PAGINATION_COUNT: "LEAVE_TABLE",
   AUDIT_TABLE_PAGINATION_COUNT: "AUDIT_TABLE",
   SYSTEM_CALENDAR: "SYSTEM_CALENDAR",

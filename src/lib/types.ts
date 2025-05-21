@@ -94,8 +94,8 @@ export type EmployeeSearch =
   | "father_name"
   | "contact";
 
-export type SellersSort = "name" | "company_name";
-export type SellersSearch = "name" | "company_name" | "email" | "contact";
+export type PartySort = "name" | "company_name";
+export type PartySearch = "name" | "company_name" | "email" | "contact";
 export interface Configuration {
   token?: string;
   type?: string;

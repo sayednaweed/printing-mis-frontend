@@ -22,12 +22,14 @@ import { ChecklistEnum, ChecklistTypeEnum, CountryEnum } from "@/lib/constants";
 import { validate } from "@/validation/validation";
 import CustomTextarea from "@/components/custom-ui/input/CustomTextarea";
 import BorderContainer from "@/components/custom-ui/container/BorderContainer";
+import { DateObject } from "react-multi-date-picker";
+import CustomTimePicker from "@/components/custom-ui/DatePicker/CustomTimePicker";
 interface AddSellersProps {
   onComplete: (attendance: PartyModel) => void;
   onCloseModel?: () => void;
 }
 
-export default function AddSellers(props: AddSellersProps) {
+export default function AddBuyer(props: AddSellersProps) {
   const { onComplete, onCloseModel } = props;
   const { t } = useTranslation();
   const { modelOnRequestHide } = useModelOnRequestHide();
@@ -38,7 +40,6 @@ export default function AddSellers(props: AddSellersProps) {
     if (onCloseModel) onCloseModel();
     modelOnRequestHide();
   };
-
   const store = async () => {
     if (loading) {
       return;
@@ -79,7 +80,7 @@ export default function AddSellers(props: AddSellersProps) {
     setLoading(true);
     // 2. Store
     try {
-      const response = await axiosClient.post("sellers", {
+      const response = await axiosClient.post("buyers", {
         name: userData.name,
         company_name: userData.company_name,
         contact: userData.contact,
@@ -123,7 +124,7 @@ export default function AddSellers(props: AddSellersProps) {
         <>
           <CardHeader className="text-start sticky top-0 rounded-t-lg border-b bg-card pb-2 z-10">
             <CardTitle className="rtl:text-4xl-rtl mb-4 ltr:text-3xl-ltr text-tertiary">
-              {t("add_seller")}
+              {t("add_buyer")}
             </CardTitle>
           </CardHeader>
           <CardContent className="flex flex-col lg:grid lg:grid-cols-2 xl:grid-cols-3 items-baseline gap-x-4 xl:gap-x-12 lg:items-baseline mt-4 gap-y-3 w-full lg:w-full">
@@ -138,6 +139,18 @@ export default function AddSellers(props: AddSellersProps) {
               type="text"
               errorMessage={error.get("name")}
               onChange={handleChange}
+            />
+            <CustomTimePicker
+              placeholder={t("select_time")}
+              lable={t("start_time")}
+              requiredHint={`* ${t("required")}`}
+              required={true}
+              value={userData.start_time}
+              dateOnComplete={(date: DateObject) => {
+                setUserData((prev: any) => ({ ...prev, start_time: date }));
+              }}
+              className="py-3 w-full"
+              errorMessage={error.get("start_time")}
             />
             <CustomInput
               required={true}

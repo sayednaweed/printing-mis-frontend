@@ -292,6 +292,6 @@ export type PartyModel = {
   email: string;
   contact: string;
   name: string;
-  picture: any;
+  logo: any;
   company_name: string;
 };

@@ -35,9 +35,9 @@ import {
 } from "@/lib/types";
 import { useAuthStore } from "@/stores/permission/auth-permssion-store";
 import CachedImage from "@/components/custom-ui/image/CachedImage";
-import AddSellers from "./add/add-seller";
+import AddBuyer from "./add/add-buyer";
 
-export function SellersTable() {
+export function BuyersTable() {
   const { user } = useAuthStore();
   const navigate = useNavigate();
   const searchRef = useRef<HTMLInputElement>(null);
@@ -83,7 +83,7 @@ export function SellersTable() {
         endDate: endDate,
       };
       // 2. Send data
-      const response = await axiosClient.get("sellers", {
+      const response = await axiosClient.get("buyers", {
         params: {
           page: page,
           per_page: count,
@@ -136,7 +136,7 @@ export function SellersTable() {
   ) => {
     if (!count) {
       const countSore = await getComponentCache(
-        CACHE.SELLERS_TABLE_PAGINATION_COUNT
+        CACHE.Buyers_TABLE_PAGINATION_COUNT
       );
       count = countSore?.value ? countSore.value : 10;
     }
@@ -206,14 +206,14 @@ export function SellersTable() {
     </TableRow>
   );
   const per: UserPermission = user?.permissions[PortalEnum.inventory].get(
-    PermissionEnum.sellers.name
+    PermissionEnum.buyers.name
   ) as UserPermission;
   const hasView = per?.view;
   const hasAdd = per?.add;
 
   const watchOnClick = async (party: PartyModel) => {
     const partyId = party.id;
-    navigate(`/sellers/${partyId}`);
+    navigate(`/buyers/${partyId}`);
   };
   return (
     <>
@@ -225,12 +225,12 @@ export function SellersTable() {
             isDismissable={false}
             button={
               <PrimaryButton className="rtl:text-lg-rtl font-semibold ltr:text-md-ltr ">
-                {t("add_seller")}
+                {t("add_buyer")}
               </PrimaryButton>
             }
             showDialog={async () => true}
           >
-            <AddSellers onComplete={addItem} />
+            <AddBuyer onComplete={addItem} />
           </NastranModel>
         )}
 
@@ -284,7 +284,7 @@ export function SellersTable() {
                   queryParams.set("sch_col", filters.search.column);
                   queryParams.set("sch_val", filters.search.value);
                   setDateToURL(queryParams, filters.date);
-                  navigate(`/sellers?${queryParams.toString()}`, {
+                  navigate(`/buyers?${queryParams.toString()}`, {
                     replace: true,
                   });
                 }
@@ -297,7 +297,7 @@ export function SellersTable() {
                   queryParams.set("sch_col", filterName);
                   queryParams.set("sch_val", filters.search.value);
                   setDateToURL(queryParams, filters.date);
-                  navigate(`/sellers?${queryParams.toString()}`, {
+                  navigate(`/buyers?${queryParams.toString()}`, {
                     replace: true,
                   });
                 }
@@ -310,7 +310,7 @@ export function SellersTable() {
                   queryParams.set("sch_col", filters.search.column);
                   queryParams.set("sch_val", filters.search.value);
                   setDateToURL(queryParams, filters.date);
-                  navigate(`/sellers?${queryParams.toString()}`, {
+                  navigate(`/buyers?${queryParams.toString()}`, {
                     replace: true,
                   });
                 }
@@ -323,7 +323,7 @@ export function SellersTable() {
                   queryParams.set("sch_col", filters.search.column);
                   queryParams.set("sch_val", filters.search.value);
                   setDateToURL(queryParams, selectedDates);
-                  navigate(`/sellers?${queryParams.toString()}`, {
+                  navigate(`/buyers?${queryParams.toString()}`, {
                     replace: true,
                   });
                 }
@@ -386,7 +386,7 @@ export function SellersTable() {
           </NastranModel>
         </div>
         <CustomSelect
-          paginationKey={CACHE.SELLERS_TABLE_PAGINATION_COUNT}
+          paginationKey={CACHE.Buyers_TABLE_PAGINATION_COUNT}
           options={[
             { value: "10", label: "10" },
             { value: "20", label: "20" },
@@ -395,7 +395,7 @@ export function SellersTable() {
           className="w-fit sm:self-baseline"
           updateCache={updateComponentCache}
           getCache={async () =>
-            await getComponentCache(CACHE.SELLERS_TABLE_PAGINATION_COUNT)
+            await getComponentCache(CACHE.Buyers_TABLE_PAGINATION_COUNT)
           }
           placeholder={`${t("select")}...`}
           emptyPlaceholder={t("no_options_found")}
@@ -409,7 +409,7 @@ export function SellersTable() {
         <TableHeader className="rtl:text-3xl-rtl ltr:text-xl-ltr">
           <TableRow className="hover:bg-transparent">
             <TableHead className="text-center px-1 w-[60px]">
-              {t("logo")}
+              {t("picture")}
             </TableHead>
             <TableHead className="text-start">{t("name")}</TableHead>
             <TableHead className="text-start">{t("company_name")}</TableHead>
@@ -434,7 +434,7 @@ export function SellersTable() {
               >
                 <TableCell className="px-1 py-0">
                   <CachedImage
-                    src={item?.logo}
+                    src={item?.picture}
                     alt="Avatar"
                     ShimmerIconClassName="size-[18px]"
                     shimmerClassName="size-[36px] mx-auto shadow-lg border border-tertiary rounded-full"
