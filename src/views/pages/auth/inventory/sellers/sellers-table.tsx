@@ -442,10 +442,10 @@ export function SellersTable() {
                     routeIdentifier={"profile"}
                   />
                 </TableCell>
-                <TableCell className="rtl:text-md-rtl truncate px-1 py-0">
+                <TableCell className="rtl:text-md-rtl truncate">
                   {item.name}
                 </TableCell>
-                <TableCell className="rtl:text-md-rtl truncate px-1 py-0">
+                <TableCell className="rtl:text-md-rtl truncate">
                   {item.company_name}
                 </TableCell>
                 <TableCell>{item?.contact}</TableCell>
