@@ -1,44 +1,55 @@
+import { Dispatch, SetStateAction, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useModelOnRequestHide } from "@/components/custom-ui/model/hook/useModelOnRequestHide";
-import { useState } from "react";
+import { Party, UserPermission } from "@/database/tables";
 import {
   Card,
   CardContent,
+  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import NastranSpinner from "@/components/custom-ui/spinner/NastranSpinner";
 import PrimaryButton from "@/components/custom-ui/button/PrimaryButton";
+import NastranSpinner from "@/components/custom-ui/spinner/NastranSpinner";
+import {
+  ChecklistEnum,
+  ChecklistTypeEnum,
+  CountryEnum,
+  PermissionEnum,
+} from "@/lib/constants";
+import { RefreshCcw } from "lucide-react";
+import ButtonSpinner from "@/components/custom-ui/spinner/ButtonSpinner";
+import { useScrollToElement } from "@/hook/use-scroll-to-element";
 import { toast } from "@/components/ui/use-toast";
-import axiosClient from "@/lib/axois-client";
-import { PartyModel } from "@/database/tables";
-import CustomInput from "@/components/custom-ui/input/CustomInput";
-import APICombobox from "@/components/custom-ui/combobox/APICombobox";
-import CheckListChooser from "@/components/custom-ui/chooser/CheckListChooser";
-import { getConfiguration, validateFile } from "@/lib/utils";
-import { FileType } from "@/lib/types";
-import { ChecklistEnum, ChecklistTypeEnum, CountryEnum } from "@/lib/constants";
 import { validate } from "@/validation/validation";
-import CustomTextarea from "@/components/custom-ui/input/CustomTextarea";
+import axiosClient from "@/lib/axois-client";
 import BorderContainer from "@/components/custom-ui/container/BorderContainer";
-interface AddSellersProps {
-  onComplete: (attendance: PartyModel) => void;
-  onCloseModel?: () => void;
+import CustomTextarea from "@/components/custom-ui/input/CustomTextarea";
+import APICombobox from "@/components/custom-ui/combobox/APICombobox";
+import { getConfiguration, validateFile } from "@/lib/utils";
+import CheckListChooser from "@/components/custom-ui/chooser/CheckListChooser";
+import { FileType } from "@/lib/types";
+import CustomInput from "@/components/custom-ui/input/CustomInput";
+export interface EditSellerInformationProps {
+  id: string | undefined;
+  failed: boolean;
+  userData: Party | undefined;
+  setUserData: Dispatch<SetStateAction<Party | undefined>>;
+  refreshPage: () => Promise<void>;
+  permissions: UserPermission;
 }
-
-export default function AddBuyer(props: AddSellersProps) {
-  const { onComplete, onCloseModel } = props;
-  const { t } = useTranslation();
-  const { modelOnRequestHide } = useModelOnRequestHide();
+export default function EditSellerInformation(
+  props: EditSellerInformationProps
+) {
+  const { id, failed, userData, setUserData, refreshPage, permissions } = props;
   const [loading, setLoading] = useState(false);
-  const [userData, setUserData] = useState<any>([]);
   const [error, setError] = useState<Map<string, string>>(new Map());
-  const closeModel = () => {
-    if (onCloseModel) onCloseModel();
-    modelOnRequestHide();
-  };
-  const store = async () => {
+  useScrollToElement(error);
+  const { t } = useTranslation();
+  const hasEdit = permissions.sub.get(
+    PermissionEnum.sellers.sub.personal_information
+  )?.edit;
+  const saveData = async () => {
     if (loading) {
       return;
     }
@@ -78,25 +89,24 @@ export default function AddBuyer(props: AddSellersProps) {
     setLoading(true);
     // 2. Store
     try {
-      const response = await axiosClient.post("buyers", {
-        name: userData.name,
-        company_name: userData.company_name,
-        contact: userData.contact,
-        email: userData.email,
-        nationality_id: userData.nationality?.id,
+      const response = await axiosClient.post("sellers", {
+        id: id,
+        name: userData?.name,
+        company_name: userData?.company_name,
+        contact: userData?.contact,
+        email: userData?.email,
+        nationality_id: userData?.nationality?.id,
         province_id: userData?.current_province?.id,
         district_id: userData?.current_district?.id,
         area: userData?.current_area,
       });
       if (response.status == 200) {
-        onComplete(response.data?.party);
         // Update user state
         toast({
           toastType: "SUCCESS",
           title: t("success"),
           description: response.data.message,
         });
-        closeModel();
       }
     } catch (error: any) {
       toast({
@@ -113,19 +123,23 @@ export default function AddBuyer(props: AddSellersProps) {
     const { name, value } = e.target;
     setUserData((prev: any) => ({ ...prev, [name]: value }));
   };
-
   return (
-    <Card className="w-full my-16 self-center [backdrop-filter:blur(20px)] bg-card">
-      {loading ? (
-        <NastranSpinner className="mt-4" />
-      ) : (
-        <>
-          <CardHeader className="text-start sticky top-0 rounded-t-lg border-b bg-card pb-2 z-10">
-            <CardTitle className="rtl:text-4xl-rtl mb-4 ltr:text-3xl-ltr text-tertiary">
-              {t("add_buyer")}
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="flex flex-col lg:grid lg:grid-cols-2 xl:grid-cols-3 items-baseline gap-x-4 xl:gap-x-12 lg:items-baseline mt-4 gap-y-3 w-full lg:w-full">
+    <Card className="rounded-none rounded-b-xl">
+      <CardHeader className="space-y-0">
+        <CardTitle className="rtl:text-3xl-rtl ltr:text-2xl-ltr">
+          {t("account_information")}
+        </CardTitle>
+        <CardDescription className="rtl:text-xl-rtl ltr:text-lg-ltr">
+          {t("update_empl_acc_info")}
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="flex flex-col gap-x-4 gap-y-6 w-full lg:w-[70%] 2xl:w-1/2 pb-16">
+        {failed ? (
+          <h1 className="rtl:text-2xl-rtl">{t("u_are_not_authzed!")}</h1>
+        ) : userData === undefined ? (
+          <NastranSpinner />
+        ) : (
+          <>
             <CustomInput
               required={true}
               lable={t("name")}
@@ -138,7 +152,6 @@ export default function AddBuyer(props: AddSellersProps) {
               errorMessage={error.get("name")}
               onChange={handleChange}
             />
-
             <CustomInput
               required={true}
               lable={t("company_name")}
@@ -305,24 +318,31 @@ export default function AddBuyer(props: AddSellersProps) {
                 />
               )}
             </BorderContainer>
-          </CardContent>
-          <CardFooter className="flex justify-evenly items-center mt-12">
+          </>
+        )}
+      </CardContent>
+      <CardFooter>
+        {failed ? (
+          <PrimaryButton
+            onClick={async () => await refreshPage()}
+            className="bg-red-500 hover:bg-red-500/70"
+          >
+            {t("failed_retry")}
+            <RefreshCcw className="ltr:ml-2 rtl:mr-2" />
+          </PrimaryButton>
+        ) : (
+          userData &&
+          hasEdit && (
             <PrimaryButton
               disabled={loading}
-              onClick={store}
+              onClick={saveData}
               className={`shadow-lg`}
             >
-              {t("save")}
+              <ButtonSpinner loading={loading}>{t("save")}</ButtonSpinner>
             </PrimaryButton>
-            <PrimaryButton
-              className="rounded-md min-w-[80px] shadow-md rtl:text-xl-rtl bg-red-500 hover:bg-red-500"
-              onClick={closeModel}
-            >
-              {t("cancel")}
-            </PrimaryButton>
-          </CardFooter>
-        </>
-      )}
+          )
+        )}
+      </CardFooter>
     </Card>
   );
 }

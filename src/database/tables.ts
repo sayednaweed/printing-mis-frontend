@@ -87,9 +87,9 @@ export type SimpleItem = {
 export type LeaveItem = {
   id: string;
   name: string;
-  start_date:Date;
-  end_date:Date;
-  reason:string;
+  start_date: Date;
+  end_date: Date;
+  reason: string;
   created_at: string;
 };
 
@@ -301,6 +301,18 @@ export type PartyModel = {
   email: string;
   contact: string;
   name: string;
+  logo: any;
+  company_name: string;
+};
+export type Party = {
+  id: string;
+  email: string;
+  contact: string;
+  name: string;
+  nationality: { id: string; name: string };
+  current_province: { id: string; name: string };
+  current_district: { id: string; name: string };
+  current_area: any;
   logo: any;
   company_name: string;
 };

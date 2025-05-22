@@ -90,7 +90,7 @@ export default function AddSellers(props: AddSellersProps) {
         area: userData?.current_area,
       });
       if (response.status == 200) {
-        onComplete(response.data?.leave);
+        onComplete(response.data?.party);
         // Update user state
         toast({
           toastType: "SUCCESS",

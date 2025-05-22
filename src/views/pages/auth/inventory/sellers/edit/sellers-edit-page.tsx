@@ -5,7 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 import { toast } from "@/components/ui/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Database, KeyRound } from "lucide-react";
-import { EmployeeModel, UserPermission } from "@/database/tables";
+import { Party, UserPermission } from "@/database/tables";
 import { PermissionEnum, PortalEnum } from "@/lib/constants";
 import {
   Breadcrumb,
@@ -15,13 +15,11 @@ import {
 } from "@/components/custom-ui/Breadcrumb/Breadcrumb";
 import Shimmer from "@/components/custom-ui/shimmer/Shimmer";
 import { useAuthStore } from "@/stores/permission/auth-permssion-store";
-import EditEmployeeInformation from "./steps/edit-employee-information";
-import EmployeesEditHeader from "./employees-edit-header";
-import EditEmployeePromotionDemotion from "./steps/edit-employee-promotion-demotion";
-import EditEmployeeStatus from "./steps/edit-employee-status";
-import Downloader from "@/components/custom-ui/chooser/Downloader";
+import SellersEditHeader from "./sellers-edit-header";
+import EditSellerInformation from "./steps/edit-seller-information";
+import EditSellerTransaction from "./steps/edit-seller-transaction";
 
-export default function EmployeesEditPage() {
+export default function SellersEditPage() {
   const { user } = useAuthStore();
   const navigate = useNavigate();
   const handleGoBack = () => navigate(-1);
@@ -30,13 +28,13 @@ export default function EmployeesEditPage() {
   let { id } = useParams();
   const direction = i18n.dir();
   const [failed, setFailed] = useState(false);
-  const [userData, setUserData] = useState<EmployeeModel | undefined>();
+  const [userData, setUserData] = useState<Party | undefined>();
   const loadInformation = async () => {
     try {
-      const response = await axiosClient.get(`employee/${id}`);
+      const response = await axiosClient.get(`sellers/${id}`);
       if (response.status == 200) {
-        const user = response.data.employee as EmployeeModel;
-        setUserData(user);
+        const data = response.data.party as Party;
+        setUserData(data);
         if (failed) setFailed(false);
       }
     } catch (error: any) {
@@ -54,8 +52,8 @@ export default function EmployeesEditPage() {
   }, []);
 
   const selectedTabStyle = `rtl:text-xl-rtl ltr:text-lg-ltr relative w-[95%] bg-card-foreground/5 justify-start mx-auto ltr:py-2 rtl:py-[5px] data-[state=active]:bg-tertiary font-semibold data-[state=active]:text-primary-foreground gap-x-3`;
-  const per: UserPermission = user?.permissions[PortalEnum.hr].get(
-    PermissionEnum.employees.name
+  const per: UserPermission = user?.permissions[PortalEnum.inventory].get(
+    PermissionEnum.sellers.name
   ) as UserPermission;
 
   const tabList = useMemo(() => {
@@ -72,39 +70,30 @@ export default function EmployeesEditPage() {
       );
     return (
       <>
-        <EmployeesEditHeader
+        <SellersEditHeader
           id={id}
           failed={failed}
           userData={userData}
           setUserData={setUserData}
         />
         {Array.from(per.sub).map(([key, _subPermission], index: number) => {
-          return key == PermissionEnum.employees.sub.personal_information ? (
+          return key == PermissionEnum.sellers.sub.personal_information ? (
             <TabsTrigger
               key={index}
               className={`${selectedTabStyle}`}
               value={key.toString()}
             >
               <Database className="size-[18px]" />
-              {t("account_information")}
+              {t("detail")}
             </TabsTrigger>
-          ) : key == PermissionEnum.employees.sub.promotion_demotion ? (
+          ) : key == PermissionEnum.sellers.sub.transactions ? (
             <TabsTrigger
               key={index}
               className={`${selectedTabStyle}`}
               value={key.toString()}
             >
               <KeyRound className="size-[18px]" />
-              {t("promotion_demotion")}
-            </TabsTrigger>
-          ) : key == PermissionEnum.employees.sub.employee_status ? (
-            <TabsTrigger
-              key={index}
-              className={`${selectedTabStyle}`}
-              value={key.toString()}
-            >
-              <KeyRound className="size-[18px]" />
-              {t("employment_status")}
+              {t("transactions")}
             </TabsTrigger>
           ) : undefined;
         })}
@@ -117,40 +106,26 @@ export default function EmployeesEditPage() {
       <Breadcrumb>
         <BreadcrumbHome onClick={handleGoHome} />
         <BreadcrumbSeparator />
-        <BreadcrumbItem onClick={handleGoBack}>{t("employees")}</BreadcrumbItem>
+        <BreadcrumbItem onClick={handleGoBack}>{t("sellers")}</BreadcrumbItem>
         <BreadcrumbSeparator />
         <BreadcrumbItem onClick={handleGoBack}>
-          {userData?.first_name + " " + userData?.last_name}
+          {userData?.company_name}
         </BreadcrumbItem>
       </Breadcrumb>
       {/* Cards */}
       <Tabs
         dir={direction}
-        defaultValue={PermissionEnum.users.sub.user_information.toString()}
+        defaultValue={PermissionEnum.sellers.sub.personal_information.toString()}
         className="flex flex-col sm:flex-row gap-x-3 gap-y-2 sm:gap-y-0"
       >
         <TabsList className="sm:min-h-[550px] h-fit pb-8 min-w-[300px] md:w-[300px] gap-y-4 items-start justify-start flex flex-col bg-card border">
           {tabList}
-          <Downloader
-            downloadText={t("download_contract")}
-            filetoDownload={{
-              id: "",
-              path: "",
-              name: `${userData?.first_name + " " + userData?.last_name}.pdf`,
-              extension: "application/pdf",
-              size: 0,
-            }}
-            className="mx-auto my-auto border rounded-lg p-2 w-full bg-gray-300/15 hover:shadow transition-all duration-300 ease-in-out"
-            errorText={t("error")}
-            cancelText={t("cancel")}
-            apiUrl={"generate/employee/contract/" + id}
-          />
         </TabsList>
         <TabsContent
           className="flex-1 m-0"
-          value={PermissionEnum.employees.sub.personal_information.toString()}
+          value={PermissionEnum.sellers.sub.personal_information.toString()}
         >
-          <EditEmployeeInformation
+          <EditSellerInformation
             permissions={per}
             id={id}
             failed={failed}
@@ -161,15 +136,9 @@ export default function EmployeesEditPage() {
         </TabsContent>
         <TabsContent
           className="flex-1 m-0 overflow-x-auto"
-          value={PermissionEnum.employees.sub.promotion_demotion.toString()}
+          value={PermissionEnum.sellers.sub.transactions.toString()}
         >
-          <EditEmployeePromotionDemotion id={id} />
-        </TabsContent>
-        <TabsContent
-          className="flex-1 m-0 overflow-x-auto"
-          value={PermissionEnum.employees.sub.employee_status.toString()}
-        >
-          <EditEmployeeStatus permissions={per} />
+          <EditSellerTransaction permissions={per} />
         </TabsContent>
       </Tabs>
     </div>

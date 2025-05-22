@@ -434,7 +434,7 @@ export function BuyersTable() {
               >
                 <TableCell className="px-1 py-0">
                   <CachedImage
-                    src={item?.picture}
+                    src={item?.logo}
                     alt="Avatar"
                     ShimmerIconClassName="size-[18px]"
                     shimmerClassName="size-[36px] mx-auto shadow-lg border border-tertiary rounded-full"
@@ -442,10 +442,10 @@ export function BuyersTable() {
                     routeIdentifier={"profile"}
                   />
                 </TableCell>
-                <TableCell className="rtl:text-md-rtl truncate px-1 py-0">
+                <TableCell className="rtl:text-md-rtl truncate">
                   {item.name}
                 </TableCell>
-                <TableCell className="rtl:text-md-rtl truncate px-1 py-0">
+                <TableCell className="rtl:text-md-rtl truncate">
                   {item.company_name}
                 </TableCell>
                 <TableCell>{item?.contact}</TableCell>

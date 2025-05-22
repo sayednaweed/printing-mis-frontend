@@ -30,6 +30,7 @@ import EmployeesPage from "@/views/pages/auth/hr/employees/employees-page";
 import EmployeesEditPage from "@/views/pages/auth/hr/employees/edit/employees-edit-page";
 import UserPage from "@/views/pages/auth/hr/users/user-page";
 import UserEditPage from "@/views/pages/auth/hr/users/edit/user-edit-page";
+import SellersEditPage from "@/views/pages/auth/inventory/sellers/edit/sellers-edit-page";
 
 export const getHrRouter = (user: User, authenticated: boolean) => {
   let permissions = user.permissions[PortalEnum.hr];
@@ -213,11 +214,33 @@ export const getInventoryRouter = (user: User, authenticated: boolean) => {
             }
           />
           <Route
+            path="sellers/:id"
+            element={
+              <ProtectedRoute
+                element={<SellersEditPage />}
+                routeName="sellers"
+                permissions={permissions}
+                authenticated={authenticated}
+              />
+            }
+          />
+          <Route
             path="buyers"
             element={
               <ProtectedRoute
                 element={<BuyersPage />}
                 routeName="buyers"
+                permissions={permissions}
+                authenticated={authenticated}
+              />
+            }
+          />
+          <Route
+            path="buyers/:id"
+            element={
+              <ProtectedRoute
+                element={<SellersPage />}
+                routeName="sellers"
                 permissions={permissions}
                 authenticated={authenticated}
               />

@@ -7,16 +7,16 @@ import axiosClient from "@/lib/axois-client";
 import NastranSpinner from "@/components/custom-ui/spinner/NastranSpinner";
 import CachedImage from "@/components/custom-ui/image/CachedImage";
 import { validateFile } from "@/lib/utils";
-import { EmployeeModel } from "@/database/tables";
+import { Party } from "@/database/tables";
 
-export interface EmployeesEditHeaderProps {
+export interface SellersEditHeaderProps {
   id: string | undefined;
-  userData: EmployeeModel | undefined;
+  userData: Party | undefined;
   failed: boolean;
-  setUserData: Dispatch<SetStateAction<EmployeeModel | undefined>>;
+  setUserData: Dispatch<SetStateAction<Party | undefined>>;
 }
 
-export default function EmployeesEditHeader(props: EmployeesEditHeaderProps) {
+export default function SellersEditHeader(props: SellersEditHeaderProps) {
   const { id, userData, setUserData, failed } = props;
   const { t } = useTranslation();
   const [loading, setLoading] = useState<boolean>(false);
@@ -45,7 +45,7 @@ export default function EmployeesEditHeader(props: EmployeesEditHeaderProps) {
       formData.append("profile", file);
       try {
         const response = await axiosClient.post(
-          `employee/update/profile-picture`,
+          `sellers/update/profile-picture`,
           formData,
           {
             headers: {
@@ -57,7 +57,7 @@ export default function EmployeesEditHeader(props: EmployeesEditHeaderProps) {
           // Change logged in user data
           setUserData({
             ...userData,
-            picture: response.data.profile,
+            logo: response.data.profile,
           });
           toast({
             toastType: "SUCCESS",
@@ -83,7 +83,7 @@ export default function EmployeesEditHeader(props: EmployeesEditHeaderProps) {
     }
   };
   const deleteProfilePicture = async () => {
-    if (userData?.picture == "") {
+    if (userData?.logo == "") {
       toast({
         toastType: "ERROR",
         title: t("error"),
@@ -97,13 +97,13 @@ export default function EmployeesEditHeader(props: EmployeesEditHeaderProps) {
 
     try {
       const response = await axiosClient.delete(
-        `employee/delete/profile-picture/${id}`
+        `sellers/delete/profile-picture/${id}`
       );
       if (response.status == 200 && userData) {
         // Change logged in user data
         setUserData({
           ...userData,
-          picture: undefined,
+          logo: undefined,
         });
         toast({
           toastType: "SUCCESS",
@@ -125,7 +125,7 @@ export default function EmployeesEditHeader(props: EmployeesEditHeaderProps) {
   return (
     <div className="self-center text-center">
       <CachedImage
-        src={userData?.picture}
+        src={userData?.logo}
         alt="Avatar"
         shimmerClassName="size-[86px] !mt-6 mx-auto shadow-lg border border-primary/30 rounded-full"
         className="size-[86px] !mt-6 object-center object-cover mx-auto shadow-lg border border-primary/50 rounded-full"
@@ -170,13 +170,13 @@ export default function EmployeesEditHeader(props: EmployeesEditHeaderProps) {
       )}
 
       <h1 className="text-primary font-semibold rtl:text-2xl-rtl ltr:text-4xl-ltr">
-        {userData?.first_name + " " + userData?.last_name}
+        {userData?.name}
       </h1>
       <h1
         dir="ltr"
         className="text-primary rtl:text-md-rtl ltr:text-xl-ltr font-bold"
       >
-        {userData?.hr_code}
+        {userData?.company_name}
       </h1>
       <h1 className="leading-6 rtl:text-sm-rtl ltr:text-2xl-ltr">
         {userData?.email}
