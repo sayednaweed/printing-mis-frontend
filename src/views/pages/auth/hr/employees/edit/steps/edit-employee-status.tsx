@@ -151,12 +151,6 @@ export default function EditEmployeeStatus(props: EditEmployeeStatusProps) {
                                     style: "border-green-500/90",
                                     value: employeeStatus.status_name,
                                   }
-                                : StatusEnum.on_leave ==
-                                  employeeStatus.status_id
-                                ? {
-                                    style: "border-blue-500/90",
-                                    value: employeeStatus.status_name,
-                                  }
                                 : {
                                     style: "border-red-500",
                                     value: employeeStatus.status_name,

@@ -7,6 +7,7 @@ import { GlobalStateProvider } from "./context/GlobalStateContext.tsx";
 import NastranSpinner from "./components/custom-ui/spinner/NastranSpinner.tsx";
 import AppLoader from "./AppLoader.tsx";
 const LazyApp = React.lazy(() => import("@/App.tsx"));
+import "./lib/i18n.ts"; // <- important!
 
 createRoot(document.getElementById("root")!).render(
   <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">

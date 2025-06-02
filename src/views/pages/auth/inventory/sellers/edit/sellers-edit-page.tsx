@@ -65,7 +65,6 @@ export default function SellersEditPage() {
           <Shimmer className="h-24 w-[80%] mx-auto rounded-sm" />
           <Shimmer className="h-[32px] w-full rounded-sm" />
           <Shimmer className="h-[32px] w-full rounded-sm" />
-          <Shimmer className="h-[32px] w-full rounded-sm" />
         </>
       );
     return (

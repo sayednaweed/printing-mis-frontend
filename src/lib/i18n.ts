@@ -1,11 +1,14 @@
 import i18n from "i18next";
-
-import translationEN from "@/assets/locales/en.json";
-import translationFA from "@/assets/locales/fa.json";
-import translationPS from "@/assets/locales/ps.json";
 import { initReactI18next } from "react-i18next";
+import HttpBackend from "i18next-http-backend";
+import LocalStorageBackend from "i18next-localstorage-backend";
 import { getConfiguration, loadFont } from "./utils";
+import ChainedBackend from "i18next-chained-backend";
 
+export const setLanguageDirection = async (direction: string) => {
+  document.documentElement.dir = direction;
+  await loadFont(direction);
+};
 export interface LanguageType {
   code: string;
   name: string;
@@ -16,39 +19,35 @@ export const supportedLangauges: LanguageType[] = [
   { name: "pashto", code: "ps" },
 ];
 
-// the translations
-const resources = {
-  en: {
-    translation: translationEN,
-  },
-  fa: {
-    translation: translationFA,
-  },
-  ps: {
-    translation: translationPS,
-  },
-};
-export const setLanguageDirection = async (direction: string) => {
-  document.documentElement.dir = direction;
-  await loadFont(direction);
-};
-
 const loadLangs = () => {
-  i18n.use(initReactI18next).init({
-    fallbackLng: "en",
-    // lng: language, // default language
-    debug: true,
-    returnObjects: true,
-    resources: resources,
-    interpolation: {
-      escapeValue: false, // react already safes from xss
-    },
-    // backend: {
-    //   requestOptions: {
-    //     cache: "no-store",
-    //   },
-    // },
-  });
+  i18n
+    .use(ChainedBackend)
+    .use(initReactI18next)
+    .init({
+      fallbackLng: "en",
+      ns: ["front_end"],
+      defaultNS: "front_end",
+      debug: true,
+      backend: {
+        backends: [LocalStorageBackend, HttpBackend],
+        backendOptions: [
+          {
+            expirationTime: 24 * 60 * 60 * 1000,
+          },
+          {
+            loadPath: `${
+              import.meta.env.VITE_API_BASE_URL
+            }/api/v1/locales/{{lng}}/{{ns}}`,
+          },
+        ],
+      },
+      interpolation: {
+        escapeValue: false,
+      },
+      react: {
+        useSuspense: false,
+      },
+    });
 
   const conf = getConfiguration();
   let direction = "rtl";

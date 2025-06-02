@@ -42,10 +42,10 @@ export default function SellersEditHeader(props: SellersEditHeaderProps) {
       // Upload data
       const formData = new FormData();
       if (id !== undefined) formData.append("id", id);
-      formData.append("profile", file);
+      formData.append("logo", file);
       try {
         const response = await axiosClient.post(
-          `sellers/update/profile-picture`,
+          `sellers/update/logo`,
           formData,
           {
             headers: {
@@ -57,7 +57,7 @@ export default function SellersEditHeader(props: SellersEditHeaderProps) {
           // Change logged in user data
           setUserData({
             ...userData,
-            logo: response.data.profile,
+            logo: response.data.logo,
           });
           toast({
             toastType: "SUCCESS",
@@ -82,7 +82,7 @@ export default function SellersEditHeader(props: SellersEditHeaderProps) {
       }
     }
   };
-  const deleteProfilePicture = async () => {
+  const deleteLogoPicture = async () => {
     if (userData?.logo == "") {
       toast({
         toastType: "ERROR",
@@ -96,9 +96,7 @@ export default function SellersEditHeader(props: SellersEditHeaderProps) {
     setLoading(true);
 
     try {
-      const response = await axiosClient.delete(
-        `sellers/delete/profile-picture/${id}`
-      );
+      const response = await axiosClient.delete(`sellers/delete/logo/${id}`);
       if (response.status == 200 && userData) {
         // Change logged in user data
         setUserData({
@@ -161,7 +159,7 @@ export default function SellersEditHeader(props: SellersEditHeaderProps) {
 
           <IconButton
             className="hover:bg-red-400/30 transition-all border-red-400/40 text-red-400"
-            onClick={deleteProfilePicture}
+            onClick={deleteLogoPicture}
           >
             <Trash2 className="size-[13px] pointer-events-none" />
             <h1 className="rtl:text-lg-rtl ltr:text-md-ltr">{t("delete")}</h1>
