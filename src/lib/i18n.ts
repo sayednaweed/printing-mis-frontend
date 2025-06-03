@@ -32,7 +32,8 @@ const loadLangs = () => {
         backends: [LocalStorageBackend, HttpBackend],
         backendOptions: [
           {
-            expirationTime: 24 * 60 * 60 * 1000,
+            expirationTime: 1 * 60 * 60 * 1000,
+            // expirationTime: 24 * 60 * 60 * 1000,
           },
           {
             loadPath: `${
@@ -55,7 +56,7 @@ const loadLangs = () => {
     i18n.changeLanguage(conf?.language);
     direction = conf?.language === "en" ? "ltr" : "rtl";
   } else {
-    direction = i18n.language === "en" ? "ltr" : "rtl";
+    direction = "ltr";
   }
   setLanguageDirection(direction);
 };

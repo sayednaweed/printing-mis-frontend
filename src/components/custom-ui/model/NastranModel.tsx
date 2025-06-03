@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { ComponentPropsWithoutRef, useEffect } from "react";
 import { useState } from "react";
 
 import NastranCard, { ModelSize } from "./NastranCard";
@@ -13,6 +13,10 @@ export interface INastranModelProps {
   visible?: boolean;
   showDialog: () => Promise<boolean>;
   className?: string;
+  cardProps?: Omit<
+    ComponentPropsWithoutRef<typeof NastranCard>,
+    "size" | "children"
+  >;
 }
 
 const NastranModel: React.FunctionComponent<INastranModelProps> = ({
@@ -20,8 +24,15 @@ const NastranModel: React.FunctionComponent<INastranModelProps> = ({
   ...props
 }) => {
   const [modelVisible, setModelVisible] = useState(false);
-  const { children, isDismissable, button, size, showDialog, className } =
-    props;
+  const {
+    children,
+    isDismissable,
+    button,
+    size,
+    showDialog,
+    className,
+    cardProps,
+  } = props;
   const dismissOnClick = () => {
     if (isDismissable) setModelVisible(false);
   };
@@ -52,7 +63,9 @@ const NastranModel: React.FunctionComponent<INastranModelProps> = ({
               className
             )}
           >
-            <NastranCard size={size}>{children}</NastranCard>
+            <NastranCard className={cardProps?.className} size={size}>
+              {children}
+            </NastranCard>
           </div>
         </ModelContextProvider>
       )}

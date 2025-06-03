@@ -108,7 +108,6 @@ export default function AttendancePage() {
         },
       });
       const fetch = response.data.attendance.data as AttendanceModel[];
-      console.log(fetch, "Naweed");
       const lastPage = response.data.attendance?.last_page;
       const totalItems = response.data.attendance?.total;
       const perPage = response.data.attendance?.per_page;
@@ -184,20 +183,34 @@ export default function AttendancePage() {
   const { t } = useTranslation();
 
   const addItem = (attendance: AttendanceModel) => {
-    setAttendances((prevState) => ({
-      filterList: {
-        ...prevState.filterList,
-        data: [attendance, ...prevState.filterList.data],
-      },
-      unFilterList: {
-        ...prevState.unFilterList,
-        data: [attendance, ...prevState.unFilterList.data],
-      },
-    }));
+    setAttendances((prevState) => {
+      const updatedList = prevState.unFilterList.data.filter((item) => {
+        return attendance.created_at !== item.created_at;
+      });
+      return {
+        filterList: {
+          ...prevState.filterList,
+          data: [attendance, ...updatedList],
+        },
+        unFilterList: {
+          ...prevState.unFilterList,
+          data: [attendance, ...updatedList],
+        },
+      };
+    });
   };
 
   const skeleton = (
     <TableRow>
+      <TableCell>
+        <Shimmer className="h-[24px] w-full rounded-sm" />
+      </TableCell>
+      <TableCell>
+        <Shimmer className="h-[24px] w-full rounded-sm" />
+      </TableCell>
+      <TableCell>
+        <Shimmer className="h-[24px] w-full rounded-sm" />
+      </TableCell>
       <TableCell>
         <Shimmer className="h-[24px] w-full rounded-sm" />
       </TableCell>
@@ -238,8 +251,11 @@ export default function AttendancePage() {
         {hasAdd && (
           <NastranModel
             visible={attendance && true}
-            size="lg"
+            size="full"
             isDismissable={false}
+            cardProps={{
+              className: "w-[98%] sm:max-w-[95%]",
+            }}
             button={
               <PrimaryButton className="rtl:text-lg-rtl font-semibold ltr:text-md-ltr">
                 {t("take_attendance")}
@@ -430,7 +446,14 @@ export default function AttendancePage() {
             <TableHead className="text-start">{t("absent")}</TableHead>
             <TableHead className="text-start">{t("leave")}</TableHead>
             <TableHead className="text-start">{t("other")}</TableHead>
-            <TableHead className="text-start">{t("taken_by")}</TableHead>
+            <TableHead className="text-start">{t("check_in_time")}</TableHead>
+            <TableHead className="text-start">
+              {t("check_in_taken_by")}
+            </TableHead>
+            <TableHead className="text-start">{t("check_out_time")}</TableHead>
+            <TableHead className="text-start">
+              {t("check_out_taken_by")}
+            </TableHead>
             <TableHead className="text-start">{t("date")}</TableHead>
           </TableRow>
         </TableHeader>
@@ -454,7 +477,18 @@ export default function AttendancePage() {
                   <TableCell className="truncate">{item.absent}</TableCell>
                   <TableCell className="truncate">{item.leave}</TableCell>
                   <TableCell className="truncate">{item.other}</TableCell>
-                  <TableCell className="truncate">{item.taken_by}</TableCell>
+                  <TableCell className="truncate">
+                    {item.check_in_time}
+                  </TableCell>
+                  <TableCell className="truncate">
+                    {item.check_in_taken_by}
+                  </TableCell>
+                  <TableCell className="truncate">
+                    {item?.check_out_time}
+                  </TableCell>
+                  <TableCell className="truncate">
+                    {item?.check_out_taken_by}
+                  </TableCell>
                   <TableCell className="truncate">
                     {toLocaleDate(new Date(item.created_at), state)}
                   </TableCell>

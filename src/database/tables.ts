@@ -278,15 +278,21 @@ export type Attendance = {
   last_name: string;
   detail: string;
   status: AttendanceStatus[];
+  check_in_time: string;
+  check_out_time: string;
+  check_in_taken_by: string;
+  check_out_taken_by: string;
   created_at: string;
 };
 export type AttendanceModel = {
-  id: string;
   present: string;
   absent: string;
   leave: string;
   other: string;
-  taken_by: string;
+  check_in_time: string;
+  check_out_time: string;
+  check_in_taken_by: string;
+  check_out_taken_by: string;
   created_at: string;
 };
 export type ExpenseType = {
