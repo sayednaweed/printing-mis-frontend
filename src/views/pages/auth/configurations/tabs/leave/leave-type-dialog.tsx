@@ -15,13 +15,10 @@ import CustomInput from "@/components/custom-ui/input/CustomInput";
 import axiosClient from "@/lib/axois-client";
 import { toast } from "@/components/ui/use-toast";
 import { setServerError, validate } from "@/validation/validation";
-import CustomDatePicker from "@/components/custom-ui/DatePicker/CustomDatePicker";
-import { DateObject } from "react-multi-date-picker";
-import { Textarea } from "@/components/ui/textarea";
 import { LeaveItem } from "@/database/tables";
 
 export interface LeaveDialogProps {
-  onComplete: (leaveType: LeaveItem) => void;
+  onComplete: (leaveType: LeaveItem, edited: boolean) => void;
   leave?: LeaveItem;
 }
 
@@ -37,16 +34,10 @@ export default function LeaveTypeDialog({
     farsi: string;
     english: string;
     pashto: string;
-    start_date?: string | DateObject;
-    end_date?: string | DateObject;
-    reason: string;
   }>({
     farsi: "",
     english: "",
     pashto: "",
-    start_date: undefined,
-    end_date: undefined,
-    reason: "",
   });
 
   const { modelOnRequestHide } = useModelOnRequestHide();
@@ -55,16 +46,10 @@ export default function LeaveTypeDialog({
   const fetch = async () => {
     try {
       setFetching(true);
-      const response = await axiosClient.get(`/leave-types/{id}/${leave?.id}`);
+      const response = await axiosClient.get(`/leave-types/${leave?.id}`);
       if (response.status === 200) {
-        const data = response.data;
-        setUserData({
-          ...data,
-          start_date: data.start_date
-            ? new DateObject(data.start_date)
-            : undefined,
-          end_date: data.end_date ? new DateObject(data.end_date) : undefined,
-        });
+        const leave_type = response.data;
+        setUserData(leave_type);
       }
     } catch (error: any) {
       console.error(error);
@@ -91,9 +76,6 @@ export default function LeaveTypeDialog({
         { name: "english", rules: ["required"] },
         { name: "farsi", rules: ["required"] },
         { name: "pashto", rules: ["required"] },
-        { name: "start_date", rules: ["required"] },
-        { name: "end_date", rules: ["required"] },
-        { name: "reason", rules: ["required"] },
       ],
       userData,
       setError
@@ -104,29 +86,23 @@ export default function LeaveTypeDialog({
     }
 
     try {
-      const formData = new FormData();
-      if (leave?.id) formData.append("id", leave.id);
-      formData.append("english", userData.english);
-      formData.append("farsi", userData.farsi);
-      formData.append("pashto", userData.pashto);
-      formData.append(
-        "start_date",
-        userData.start_date instanceof DateObject
-          ? userData.start_date.format("YYYY-MM-DD")
-          : ""
-      );
-      formData.append(
-        "end_date",
-        userData.end_date instanceof DateObject
-          ? userData.end_date.format("YYYY-MM-DD")
-          : ""
-      );
-      formData.append("reason", userData.reason);
+      const form = {
+        id: leave?.id,
+        english: userData.english,
+        farsi: userData.farsi,
+        pashto: userData.pashto,
+      };
 
-      const response = await axiosClient.post("/leave-types", formData);
+      const response = leave
+        ? await axiosClient.put("/leave-types", {
+            ...form,
+          })
+        : await axiosClient.post("/leave-types", {
+            ...form,
+          });
       if (response.status === 200) {
         toast({ toastType: "SUCCESS", description: response.data.message });
-        onComplete(response.data.leave);
+        onComplete(response.data.leave_type, leave ? true : false);
         modelOnRequestHide();
       }
     } catch (error: any) {
@@ -146,25 +122,6 @@ export default function LeaveTypeDialog({
       </CardHeader>
 
       <CardContent>
-        <CustomDatePicker
-          requiredHint={`* ${t("required")}`}
-          placeholder={t("select_str_date")}
-          value={userData.start_date}
-          dateOnComplete={(date: DateObject) =>
-            setUserData((prev) => ({ ...prev, start_date: date }))
-          }
-          className="border p-3 hover:bg-black/5 transition-all duration-300 ease-in-out"
-        />
-        <CustomDatePicker
-          requiredHint={`* ${t("required")}`}
-          placeholder={t("select_end_date")}
-          value={userData.end_date}
-          dateOnComplete={(date: DateObject) =>
-            setUserData((prev) => ({ ...prev, end_date: date }))
-          }
-          className="border p-3 mt-3 hover:bg-black/5 transition-all duration-300 ease-in-out"
-        />
-
         <CustomInput
           size_="sm"
           dir="ltr"
@@ -221,16 +178,6 @@ export default function LeaveTypeDialog({
             <h1 className="font-bold text-primary-foreground text-[11px] mx-auto">
               {t("ps")}
             </h1>
-          }
-        />
-
-        <Textarea
-          required={true}
-          placeholder={t("reason")}
-          className="mt-3"
-          value={userData.reason}
-          onChange={(e) =>
-            setUserData((prev) => ({ ...prev, reason: e.target.value }))
           }
         />
       </CardContent>

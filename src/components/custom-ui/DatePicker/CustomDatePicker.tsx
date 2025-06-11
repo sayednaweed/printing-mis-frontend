@@ -2,14 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import { Calendar } from "react-multi-date-picker";
 import DateObject from "react-date-object";
 import { useTranslation } from "react-i18next";
-import {
-  afgMonthNamesEn,
-  afgMonthNamesFa,
-  CALENDAR,
-  CALENDAR_LOCALE,
-} from "@/lib/constants";
 import { useGlobalState } from "@/context/GlobalStateContext";
-import { cn, isString } from "@/lib/utils";
+import { cn, getAfghaniMonths, isString } from "@/lib/utils";
 import { CalendarDays } from "lucide-react";
 
 export interface CustomeDatePickerProps {
@@ -138,14 +132,8 @@ export default function CustomDatePicker(props: CustomeDatePickerProps) {
     if (!readonly) setVisible(!visible);
   };
 
-  let months: any = [];
-  if (state.systemLanguage.info.calendarId === CALENDAR.SOLAR) {
-    if (state.systemLanguage.info.localeId === CALENDAR_LOCALE.farsi) {
-      months = afgMonthNamesFa;
-    } else if (state.systemLanguage.info.localeId === CALENDAR_LOCALE.english) {
-      months = afgMonthNamesEn;
-    }
-  }
+  let months: any = getAfghaniMonths(state);
+
   return (
     <div dir={direction} className={cn("relative", parentClassName)}>
       {visible && (

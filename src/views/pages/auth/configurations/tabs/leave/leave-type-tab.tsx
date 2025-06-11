@@ -79,26 +79,27 @@ export default function LeaveTypeTab(props: LeaveTypeTabProps) {
       filterList: filtered,
     });
   };
-  const add = (newItem: LeaveItem) => {
-    setLeaveTypes((prev) => ({
-      unFilterList: [newItem, ...prev.unFilterList],
-      filterList: [newItem, ...prev.filterList],
-    }));
-  };
-  const update = (newItem: LeaveItem) => {
-    setLeaveTypes((prevState) => {
-      const updatedUnFiltered = prevState.unFilterList.map((item) =>
-        item.id === newItem.id ? { ...item, name: newItem.name } : item
-      );
 
-      return {
-        ...prevState,
-        unFilterList: updatedUnFiltered,
-        filterList: updatedUnFiltered,
-      };
-    });
-  };
+  const onComplete = (leaveType: LeaveItem, edited: boolean) => {
+    if (edited) {
+      setLeaveTypes((prevState) => {
+        const updatedUnFiltered = prevState.unFilterList.map((item) =>
+          item.id === leaveType.id ? { ...item, name: leaveType.name } : item
+        );
 
+        return {
+          ...prevState,
+          unFilterList: updatedUnFiltered,
+          filterList: updatedUnFiltered,
+        };
+      });
+    } else {
+      setLeaveTypes((prev) => ({
+        unFilterList: [leaveType, ...prev.unFilterList],
+        filterList: [leaveType, ...prev.filterList],
+      }));
+    }
+  };
   const dailog = useMemo(
     () => (
       <NastranModel
@@ -114,7 +115,7 @@ export default function LeaveTypeTab(props: LeaveTypeTabProps) {
           return true;
         }}
       >
-        <LeaveTypeDialog leave={selected.leaveType} onComplete={update} />
+        <LeaveTypeDialog leave={selected.leaveType} onComplete={onComplete} />
       </NastranModel>
     ),
     [selected.visible]
@@ -139,7 +140,7 @@ export default function LeaveTypeTab(props: LeaveTypeTabProps) {
             }
             showDialog={async () => true}
           >
-            <LeaveTypeDialog onComplete={add} />
+            <LeaveTypeDialog onComplete={onComplete} />
           </NastranModel>
         )}
 
@@ -159,20 +160,12 @@ export default function LeaveTypeTab(props: LeaveTypeTabProps) {
           <TableRow className="hover:bg-transparent">
             <TableHead className="text-start">{t("id")}</TableHead>
             <TableHead className="text-start">{t("leave")}</TableHead>
-            <TableHead className="text-start">{t("start_date")}</TableHead>
-            <TableHead className="text-start">{t("end_date")}</TableHead>
-            <TableHead className="text-start">{t("reason")}</TableHead>
+            <TableHead className="text-start">{t("date")}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody className="rtl:text-xl-rtl ltr:text-lg-ltr">
           {loading ? (
             <TableRow>
-              <TableCell>
-                <Shimmer className="h-[24px] bg-primary/30 w-full rounded-sm" />
-              </TableCell>
-              <TableCell>
-                <Shimmer className="h-[24px] bg-primary/30 w-full rounded-sm" />
-              </TableCell>
               <TableCell>
                 <Shimmer className="h-[24px] bg-primary/30 w-full rounded-sm" />
               </TableCell>
@@ -203,12 +196,8 @@ export default function LeaveTypeTab(props: LeaveTypeTabProps) {
                 <TableCell className="font-medium">{leave.id}</TableCell>
                 <TableCell>{leave.name}</TableCell>
                 <TableCell className="font-medium">
-                  {toLocaleDate(new Date(leave.start_date), state)}
+                  {toLocaleDate(new Date(leave.created_at), state)}
                 </TableCell>
-                <TableCell className="font-medium">
-                  {toLocaleDate(new Date(leave.end_date), state)}
-                </TableCell>
-                <TableCell className="font-medium">{leave.reason}</TableCell>
               </TableRowIcon>
             ))
           )}

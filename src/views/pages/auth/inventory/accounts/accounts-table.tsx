@@ -8,13 +8,13 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { toast } from "@/components/ui/use-toast";
-import { useGlobalState } from "@/context/GlobalStateContext";
-import { AttendanceModel, UserPermission } from "@/database/tables";
+import { Accounts, UserPermission } from "@/database/tables";
 import { CACHE, PermissionEnum, PortalEnum } from "@/lib/constants";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useSearchParams } from "react-router";
 import axiosClient from "@/lib/axois-client";
+
 import TableRowIcon from "@/components/custom-ui/table/TableRowIcon";
 import Pagination from "@/components/custom-ui/table/Pagination";
 import { setDateToURL, toLocaleDate } from "@/lib/utils";
@@ -28,26 +28,20 @@ import { DateObject } from "react-multi-date-picker";
 import useCacheDB from "@/lib/indexeddb/useCacheDB";
 import FilterDialog from "@/components/custom-ui/dialog/filter-dialog";
 import {
-  AttendancePaginationData,
+  AccountPaginationData,
   Order,
-  UserSearch,
-  UserSort,
+  AccountSearch,
+  AccountSort,
 } from "@/lib/types";
 import { useAuthStore } from "@/stores/permission/auth-permssion-store";
-import {
-  Breadcrumb,
-  BreadcrumbHome,
-  BreadcrumbItem,
-  BreadcrumbSeparator,
-} from "@/components/custom-ui/Breadcrumb/Breadcrumb";
-import AddUpdatePayment from "./add-update-payment";
-export default function SalaryPage() {
+import AddAccountDialog from "./add/add-account-dialog";
+import { useGlobalState } from "@/context/GlobalStateContext";
+
+export function AccountsTable() {
   const { user } = useAuthStore();
   const navigate = useNavigate();
   const [state] = useGlobalState();
-  const [attendance, setAttendance] = useState<AttendanceModel | undefined>(
-    undefined
-  );
+
   const searchRef = useRef<HTMLInputElement>(null);
   const { updateComponentCache, getComponentCache } = useCacheDB();
   const [searchParams] = useSearchParams();
@@ -59,10 +53,10 @@ export default function SalaryPage() {
   const startDate = searchParams.get("st_dt");
   const endDate = searchParams.get("en_dt");
   const filters = {
-    sort: sort == null ? "created_at" : sort,
+    sort: sort == null ? "name" : sort,
     order: order == null ? "desc" : order,
     search: {
-      column: searchColumn == null ? "username" : searchColumn,
+      column: searchColumn == null ? "name" : searchColumn,
       value: searchValue == null ? "" : searchValue,
     },
     date:
@@ -91,7 +85,7 @@ export default function SalaryPage() {
         endDate: endDate,
       };
       // 2. Send data
-      const response = await axiosClient.get("attendancies", {
+      const response = await axiosClient.get("accounts", {
         params: {
           page: page,
           per_page: count,
@@ -106,12 +100,12 @@ export default function SalaryPage() {
           },
         },
       });
-      const fetch = response.data.attendance.data as AttendanceModel[];
-      const lastPage = response.data.attendance?.last_page;
-      const totalItems = response.data.attendance?.total;
-      const perPage = response.data.attendance?.per_page;
-      const currentPage = response.data.attendance?.current_page;
-      setAttendances({
+      const fetch = response.data.data as Accounts[];
+      const lastPage = response.data.last_page;
+      const totalItems = response.data.total;
+      const perPage = response.data.per_page;
+      const currentPage = response.data.current_page;
+      setAccounts({
         filterList: {
           data: fetch,
           lastPage: lastPage,
@@ -144,7 +138,7 @@ export default function SalaryPage() {
   ) => {
     if (!count) {
       const countSore = await getComponentCache(
-        CACHE.ATTENDANCE_TABLE_PAGINATION_COUNT
+        CACHE.ACCOUNTS_TABLE_PAGINATION_COUNT
       );
       count = countSore?.value ? countSore.value : 10;
     }
@@ -159,9 +153,9 @@ export default function SalaryPage() {
   useEffect(() => {
     initialize(undefined, undefined, 1);
   }, [sort, startDate, endDate, order]);
-  const [attendances, setAttendances] = useState<{
-    filterList: AttendancePaginationData;
-    unFilterList: AttendancePaginationData;
+  const [accounts, setAccounts] = useState<{
+    filterList: AccountPaginationData;
+    unFilterList: AccountPaginationData;
   }>({
     filterList: {
       data: [],
@@ -181,85 +175,67 @@ export default function SalaryPage() {
   const [loading, setLoading] = useState(false);
   const { t } = useTranslation();
 
-  const addItem = (attendance: AttendanceModel) => {
-    setAttendances((prevState) => {
-      const updatedList = prevState.unFilterList.data.filter((item) => {
-        return attendance.created_at !== item.created_at;
-      });
-      return {
-        filterList: {
-          ...prevState.filterList,
-          data: [attendance, ...updatedList],
-        },
-        unFilterList: {
-          ...prevState.unFilterList,
-          data: [attendance, ...updatedList],
-        },
-      };
-    });
+  const addItem = (account: Accounts) => {
+    setAccounts((prevState) => ({
+      filterList: {
+        ...prevState.filterList,
+        data: [account, ...prevState.filterList.data],
+      },
+      unFilterList: {
+        ...prevState.unFilterList,
+        data: [account, ...prevState.unFilterList.data],
+      },
+    }));
   };
 
   const skeleton = (
     <TableRow>
       <TableCell>
-        <Shimmer className="h-[24px] w-full rounded-sm" />
+        <Shimmer className="h-[24px] bg-primary/30 w-full rounded-sm" />
       </TableCell>
       <TableCell>
-        <Shimmer className="h-[24px] w-full rounded-sm" />
+        <Shimmer className="h-[24px] bg-primary/30 w-full rounded-sm" />
       </TableCell>
       <TableCell>
-        <Shimmer className="h-[24px] w-full rounded-sm" />
+        <Shimmer className="h-[24px] bg-primary/30 w-full rounded-sm" />
       </TableCell>
       <TableCell>
-        <Shimmer className="h-[24px] w-full rounded-sm" />
+        <Shimmer className="h-[24px] bg-primary/30 w-full rounded-sm" />
       </TableCell>
       <TableCell>
-        <Shimmer className="h-[24px] w-full rounded-sm" />
+        <Shimmer className="h-[24px] bg-primary/30 w-full rounded-sm" />
       </TableCell>
       <TableCell>
-        <Shimmer className="h-[24px] w-full rounded-sm" />
-      </TableCell>
-      <TableCell>
-        <Shimmer className="h-[24px] w-full rounded-sm" />
+        <Shimmer className="h-[24px] bg-primary/30 w-full rounded-sm" />
       </TableCell>
     </TableRow>
   );
-  const per: UserPermission = user?.permissions[PortalEnum.hr].get(
-    PermissionEnum.attendance.name
+  const per: UserPermission = user?.permissions[PortalEnum.inventory].get(
+    PermissionEnum.accounts.name
   ) as UserPermission;
   const hasView = per?.view;
   const hasAdd = per?.add;
 
-  const watchOnClick = async (attendance: AttendanceModel) => {
-    setAttendance(attendance);
+  const watchOnClick = async (account: Accounts) => {
+    const itemId = account.id;
+    navigate(`/accounts/${itemId}`);
   };
   return (
     <>
-      <Breadcrumb className="mx-2 mt-2">
-        <BreadcrumbHome />
-        <BreadcrumbSeparator />
-        <BreadcrumbItem>{t("salaries")}</BreadcrumbItem>
-      </Breadcrumb>
-      <div className="flex flex-col sm:items-baseline sm:flex-row rounded-md bg-card gap-2  px-2 py-2 mt-4">
+      <div className="flex flex-col sm:items-baseline sm:flex-row rounded-md bg-card gap-2 flex-1 px-2 py-2 mt-4">
         {hasAdd && (
           <NastranModel
-            visible={attendance && true}
-            size="lg"
+            size="md"
+            className="overflow-x-hidden"
             isDismissable={false}
             button={
-              <PrimaryButton className="rtl:text-lg-rtl font-semibold ltr:text-md-ltr">
-                {t("pay_salary")}
+              <PrimaryButton className="rtl:text-lg-rtl font-semibold ltr:text-md-ltr ">
+                {t("add_account")}
               </PrimaryButton>
             }
             showDialog={async () => true}
           >
-            <AddUpdatePayment
-              onCloseModel={() => {
-                setAttendance(undefined);
-              }}
-              attendance={attendance}
-              onComplete={addItem}
-            />
+            <AddAccountDialog onComplete={addItem} />
           </NastranModel>
         )}
 
@@ -305,7 +281,7 @@ export default function SalaryPage() {
           >
             <FilterDialog
               filters={filters}
-              sortOnComplete={async (filterName: UserSort) => {
+              sortOnComplete={async (filterName: AccountSort) => {
                 if (filterName != filters.sort) {
                   const queryParams = new URLSearchParams();
                   queryParams.set("sort", filterName);
@@ -313,12 +289,12 @@ export default function SalaryPage() {
                   queryParams.set("sch_col", filters.search.column);
                   queryParams.set("sch_val", filters.search.value);
                   setDateToURL(queryParams, filters.date);
-                  navigate(`/attendance?${queryParams.toString()}`, {
+                  navigate(`/accounts?${queryParams.toString()}`, {
                     replace: true,
                   });
                 }
               }}
-              searchFilterChanged={async (filterName: UserSearch) => {
+              searchFilterChanged={async (filterName: AccountSearch) => {
                 if (filterName != filters.search.column) {
                   const queryParams = new URLSearchParams();
                   queryParams.set("sort", filters.sort);
@@ -326,7 +302,7 @@ export default function SalaryPage() {
                   queryParams.set("sch_col", filterName);
                   queryParams.set("sch_val", filters.search.value);
                   setDateToURL(queryParams, filters.date);
-                  navigate(`/attendance?${queryParams.toString()}`, {
+                  navigate(`/accounts?${queryParams.toString()}`, {
                     replace: true,
                   });
                 }
@@ -339,7 +315,7 @@ export default function SalaryPage() {
                   queryParams.set("sch_col", filters.search.column);
                   queryParams.set("sch_val", filters.search.value);
                   setDateToURL(queryParams, filters.date);
-                  navigate(`/attendance?${queryParams.toString()}`, {
+                  navigate(`/accounts?${queryParams.toString()}`, {
                     replace: true,
                   });
                 }
@@ -352,7 +328,7 @@ export default function SalaryPage() {
                   queryParams.set("sch_col", filters.search.column);
                   queryParams.set("sch_val", filters.search.value);
                   setDateToURL(queryParams, selectedDates);
-                  navigate(`/attendance?${queryParams.toString()}`, {
+                  navigate(`/accounts?${queryParams.toString()}`, {
                     replace: true,
                   });
                 }
@@ -360,18 +336,18 @@ export default function SalaryPage() {
               filtersShowData={{
                 sort: [
                   {
-                    name: "created_at",
+                    name: "name",
+                    translate: t("name"),
+                    onClick: () => {},
+                  },
+                  {
+                    name: "balance",
+                    translate: t("balance"),
+                    onClick: () => {},
+                  },
+                  {
+                    name: "date",
                     translate: t("date"),
-                    onClick: () => {},
-                  },
-                  {
-                    name: "username",
-                    translate: t("username"),
-                    onClick: () => {},
-                  },
-                  {
-                    name: "action",
-                    translate: t("action"),
                     onClick: () => {},
                   },
                 ],
@@ -389,13 +365,13 @@ export default function SalaryPage() {
                 ],
                 search: [
                   {
-                    name: "hr_code",
-                    translate: t("hr_code"),
+                    name: "name",
+                    translate: t("name"),
                     onClick: () => {},
                   },
                   {
-                    name: "username",
-                    translate: t("username"),
+                    name: "code",
+                    translate: t("code"),
                     onClick: () => {},
                   },
                 ],
@@ -410,7 +386,7 @@ export default function SalaryPage() {
           </NastranModel>
         </div>
         <CustomSelect
-          paginationKey={CACHE.ATTENDANCE_TABLE_PAGINATION_COUNT}
+          paginationKey={CACHE.ACCOUNTS_TABLE_PAGINATION_COUNT}
           options={[
             { value: "10", label: "10" },
             { value: "20", label: "20" },
@@ -419,7 +395,7 @@ export default function SalaryPage() {
           className="w-fit sm:self-baseline"
           updateCache={updateComponentCache}
           getCache={async () =>
-            await getComponentCache(CACHE.ATTENDANCE_TABLE_PAGINATION_COUNT)
+            await getComponentCache(CACHE.ACCOUNTS_TABLE_PAGINATION_COUNT)
           }
           placeholder={`${t("select")}...`}
           emptyPlaceholder={t("no_options_found")}
@@ -432,52 +408,51 @@ export default function SalaryPage() {
       <Table className="bg-card rounded-md my-[2px] py-8">
         <TableHeader className="rtl:text-3xl-rtl ltr:text-xl-ltr">
           <TableRow className="hover:bg-transparent">
-            <TableHead className="text-start">{t("picture")}</TableHead>
-            <TableHead className="text-start">{t("hr_code")}</TableHead>
             <TableHead className="text-start">{t("name")}</TableHead>
-            <TableHead className="text-start">{t("payment")}</TableHead>
+            <TableHead className="text-start">{t("code")}</TableHead>
+            <TableHead className="text-start">{t("balance")}</TableHead>
             <TableHead className="text-start">{t("currency")}</TableHead>
-            <TableHead className="text-start">{t("year")}</TableHead>
-            <TableHead className="text-start">{t("month")}</TableHead>
+            <TableHead className="text-start">{t("saved_by")}</TableHead>
+            <TableHead className="text-start">{t("date")}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody className="rtl:text-xl-rtl ltr:text-2xl-ltr">
           {loading ? (
             <>{skeleton}</>
           ) : (
-            attendances.filterList.data.map(
-              (item: AttendanceModel, index: number) => (
-                <TableRowIcon
-                  read={hasView}
-                  remove={false}
-                  edit={false}
-                  onEdit={async () => {}}
-                  key={index}
-                  item={item}
-                  onRemove={async () => {}}
-                  onRead={watchOnClick}
-                >
-                  <TableCell className="truncate">{item.present}</TableCell>
-                  <TableCell className="truncate">{item.absent}</TableCell>
-                  <TableCell className="truncate">{item.leave}</TableCell>
-                  <TableCell className="truncate">{item.other}</TableCell>
-                  <TableCell className="truncate">
-                    {toLocaleDate(new Date(item.created_at), state)}
-                  </TableCell>
-                </TableRowIcon>
-              )
-            )
+            accounts.filterList.data.map((item: Accounts) => (
+              <TableRowIcon
+                read={hasView}
+                remove={false}
+                edit={false}
+                onEdit={async () => {}}
+                key={item.id}
+                item={item}
+                onRemove={async () => {}}
+                onRead={watchOnClick}
+              >
+                <TableCell>{item.name}</TableCell>
+                <TableCell>{item.code}</TableCell>
+                <TableCell>{item.balance}</TableCell>
+                <TableCell>{item.currency}</TableCell>
+                <TableCell>{item.saved_by}</TableCell>
+
+                <TableCell>
+                  {toLocaleDate(new Date(item.created_at), state)}
+                </TableCell>
+              </TableRowIcon>
+            ))
           )}
         </TableBody>
       </Table>
-      <div className="flex justify-between rounded-md bg-card  p-3 items-center">
+      <div className="flex justify-between rounded-md bg-card flex-1 p-3 items-center">
         <h1 className="rtl:text-lg-rtl ltr:text-md-ltr font-medium">{`${t(
           "page"
-        )} ${attendances.unFilterList.currentPage} ${t("of")} ${
-          attendances.unFilterList.lastPage
+        )} ${accounts.unFilterList.currentPage} ${t("of")} ${
+          accounts.unFilterList.lastPage
         }`}</h1>
         <Pagination
-          lastPage={attendances.unFilterList.lastPage}
+          lastPage={accounts.unFilterList.lastPage}
           onPageChange={async (page) =>
             await initialize(undefined, undefined, page)
           }

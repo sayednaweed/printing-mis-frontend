@@ -31,6 +31,8 @@ import EmployeesEditPage from "@/views/pages/auth/hr/employees/edit/employees-ed
 import UserPage from "@/views/pages/auth/hr/users/user-page";
 import UserEditPage from "@/views/pages/auth/hr/users/edit/user-edit-page";
 import SellersEditPage from "@/views/pages/auth/inventory/sellers/edit/sellers-edit-page";
+import AccountsPage from "@/views/pages/auth/inventory/accounts/accounts-page";
+import AccountEditPage from "@/views/pages/auth/inventory/accounts/edit/account-edit-page";
 
 export const getHrRouter = (user: User, authenticated: boolean) => {
   let permissions = user.permissions[PortalEnum.hr];
@@ -291,6 +293,28 @@ export const getInventoryRouter = (user: User, authenticated: boolean) => {
             }
           />
           <Route
+            path="accounts"
+            element={
+              <ProtectedRoute
+                element={<AccountsPage />}
+                routeName="accounts"
+                permissions={permissions}
+                authenticated={authenticated}
+              />
+            }
+          />
+          <Route
+            path="accounts/:id"
+            element={
+              <ProtectedRoute
+                element={<AccountEditPage />}
+                routeName="accounts"
+                permissions={permissions}
+                authenticated={authenticated}
+              />
+            }
+          />
+          <Route
             path="inv_reports"
             element={
               <ProtectedRoute
@@ -382,7 +406,6 @@ export const getExpenseRouter = (user: User, authenticated: boolean) => {
     </BrowserRouter>
   );
 };
-
 export const getGuestRouter = () => {
   return (
     <BrowserRouter>

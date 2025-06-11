@@ -8,7 +8,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import NastranSpinner from "@/components/custom-ui/spinner/NastranSpinner";
 import PrimaryButton from "@/components/custom-ui/button/PrimaryButton";
 import { toast } from "@/components/ui/use-toast";
 import axiosClient from "@/lib/axois-client";
@@ -29,6 +28,7 @@ import CachedImage from "@/components/custom-ui/image/CachedImage";
 import Shimmer from "@/components/custom-ui/shimmer/Shimmer";
 import CustomCheckbox from "@/components/custom-ui/checkbox/CustomCheckbox";
 import CustomTextarea from "@/components/custom-ui/input/CustomTextarea";
+import APICombobox from "@/components/custom-ui/combobox/APICombobox";
 
 interface AddUpdateAttendanceProps {
   onComplete: (attendance: AttendanceModel) => void;
@@ -40,33 +40,41 @@ export default function AddUpdateAttendance(props: AddUpdateAttendanceProps) {
   const { onComplete, attendance, onCloseModel } = props;
   const { t } = useTranslation();
   const { modelOnRequestHide } = useModelOnRequestHide();
+  const [shift, setShift] = useState<any>([]);
   const [loading, setLoading] = useState(false);
   const closeModel = () => {
     if (onCloseModel) onCloseModel();
     modelOnRequestHide();
   };
   const [attendances, setAttendances] = useState<Attendance[]>([]);
-  const fetch = async () => {
+  const fetch = async (shiftId: string) => {
     try {
       setLoading(true);
       const response = await axiosClient.get("attendancies-show", {
-        params: attendance?.created_at,
+        params: {
+          shift_id: shiftId,
+          created_at: attendance?.created_at,
+        },
       });
       if (response.status === 200) {
         setAttendances(response.data.data);
+        if (attendance) {
+          setShift(response.data?.shift);
+        }
       }
     } catch (error: any) {
       toast({
         toastType: "ERROR",
-        title: t("success"),
+        title: t("error"),
         description: error.response.data?.message,
       });
-      modelOnRequestHide();
     }
     setLoading(false);
   };
   useEffect(() => {
-    fetch();
+    if (attendance) {
+      fetch(attendance.shift_id);
+    }
   }, []);
   const store = async () => {
     if (loading || attendances.length == 0) {
@@ -92,6 +100,7 @@ export default function AddUpdateAttendance(props: AddUpdateAttendanceProps) {
       });
       const response = await axiosClient.post("attendancies", {
         attendances: list,
+        shift_id: shift?.id,
       });
       if (response.status == 200) {
         onComplete(response.data?.attendance);
@@ -175,128 +184,143 @@ export default function AddUpdateAttendance(props: AddUpdateAttendanceProps) {
       <TableCell>
         <Shimmer className="h-[24px] w-full rounded-sm" />
       </TableCell>
+      <TableCell>
+        <Shimmer className="h-[24px] w-full rounded-sm" />
+      </TableCell>
+      <TableCell>
+        <Shimmer className="h-[24px] w-full rounded-sm" />
+      </TableCell>
     </TableRow>
   );
 
   return (
     <Card className="w-full my-16 self-center [backdrop-filter:blur(20px)] bg-card">
-      {loading ? (
-        <NastranSpinner className="mt-4" />
-      ) : (
-        <>
-          <CardHeader className="text-start sticky top-0 rounded-t-lg border-b bg-card pb-2 z-10">
-            <CardTitle className="rtl:text-4xl-rtl mb-4 ltr:text-3xl-ltr text-tertiary">
-              {t("take_attendance")}
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="flex flex-col items-center justify-center mt-4 gap-y-3">
-            <Table className="bg-card rounded-md my-[2px] py-8">
-              <TableHeader className="rtl:text-3xl-rtl ltr:text-xl-ltr">
-                <TableRow className="hover:bg-transparent">
-                  <TableHead className="text-center">{t("picture")}</TableHead>
-                  <TableHead className="text-start">{t("hr_code")}</TableHead>
-                  <TableHead className="text-start">{t("name")}</TableHead>
-                  <TableHead className="text-start">{t("detail")}</TableHead>
-                  {attendances.length == 1 &&
-                    attendances[0].status?.map((item, index: number) => (
-                      <TableHead key={index} className="text-start">
-                        {item?.name}
-                      </TableHead>
-                    ))}
-                  <TableHead className="text-start">
-                    {t("check_in_time")}
+      <CardHeader className="text-start sticky top-0 rounded-t-lg border-b bg-card pb-2 z-10">
+        <CardTitle className="rtl:text-4xl-rtl mb-4 ltr:text-3xl-ltr text-tertiary">
+          {t("take_attendance")}
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="flex flex-col mt-4 gap-y-6">
+        <APICombobox
+          placeholderText={t("search_item")}
+          errorText={t("no_item")}
+          required={true}
+          requiredHint={`* ${t("required")}`}
+          onSelect={(selection: any) => {
+            setShift(selection);
+            fetch(selection?.id);
+          }}
+          selectedItem={shift?.name}
+          lable={t("work_shift")}
+          placeHolder={t("select_a")}
+          apiUrl={"shifts-names"}
+          mode="single"
+          parentClassName="w-fit"
+          cacheData={false}
+        />
+        <Table className="bg-card rounded-md my-[2px] py-8">
+          <TableHeader className="rtl:text-3xl-rtl ltr:text-xl-ltr">
+            <TableRow className="hover:bg-transparent">
+              <TableHead className="text-center">{t("picture")}</TableHead>
+              <TableHead className="text-start">{t("hr_code")}</TableHead>
+              <TableHead className="text-start">{t("name")}</TableHead>
+              <TableHead className="text-start">{t("detail")}</TableHead>
+              {attendances.length == 1 &&
+                attendances[0].status?.map((item) => (
+                  <TableHead key={item.name} className="text-start">
+                    {item?.name}
                   </TableHead>
-                  <TableHead className="text-start">
-                    {t("check_in_taken_by")}
-                  </TableHead>
-                  <TableHead className="text-start">
-                    {t("check_out_time")}
-                  </TableHead>
-                  <TableHead className="text-start">
-                    {t("check_out_taken_by")}
-                  </TableHead>
+                ))}
+              <TableHead className="text-start">{t("check_in_time")}</TableHead>
+              <TableHead className="text-start">
+                {t("check_in_taken_by")}
+              </TableHead>
+              <TableHead className="text-start">
+                {t("check_out_time")}
+              </TableHead>
+              <TableHead className="text-start">
+                {t("check_out_taken_by")}
+              </TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody className="rtl:text-xl-rtl ltr:text-2xl-ltr">
+            {loading ? (
+              <>{skeleton}</>
+            ) : (
+              attendances.map((attendance) => (
+                <TableRow key={attendance.hr_code}>
+                  <TableCell className="px-1 py-0">
+                    <CachedImage
+                      src={attendance?.picture}
+                      alt="Avatar"
+                      ShimmerIconClassName="size-[18px]"
+                      shimmerClassName="size-[36px] mx-auto shadow-lg border border-tertiary rounded-full"
+                      className="size-[36px] object-center object-cover mx-auto shadow-lg border border-tertiary rounded-full"
+                      routeIdentifier={"profile"}
+                    />
+                  </TableCell>
+                  <TableCell className="truncate text-start">
+                    {attendance.hr_code}
+                  </TableCell>
+                  <TableCell className="truncate text-start">
+                    {`${attendance.first_name} ${attendance.last_name}`}
+                  </TableCell>
+                  <TableCell className="truncate text-start">
+                    <CustomTextarea
+                      name="detail"
+                      value={attendance.detail}
+                      placeholder={t("detail")}
+                      onChange={(e: any) => handleChange(attendance, e)}
+                      rows={-1}
+                      className="p-1 resize-none"
+                    />
+                  </TableCell>
+                  {attendance.status?.map((item) => (
+                    <TableCell className="truncate text-start">
+                      <CustomCheckbox
+                        key={item.id}
+                        checked={item.selected}
+                        onCheckedChange={(value: boolean) =>
+                          handleCheck(attendance, item, value)
+                        }
+                        parentClassName="rounded-md"
+                        required={true}
+                      />
+                    </TableCell>
+                  ))}
+                  <TableCell className="truncate">
+                    {attendance.check_in_time}
+                  </TableCell>
+                  <TableCell className="truncate">
+                    {attendance.check_in_taken_by}
+                  </TableCell>
+                  <TableCell className="truncate">
+                    {attendance?.check_out_time}
+                  </TableCell>
+                  <TableCell className="truncate">
+                    {attendance?.check_out_taken_by}
+                  </TableCell>
                 </TableRow>
-              </TableHeader>
-              <TableBody className="rtl:text-xl-rtl ltr:text-2xl-ltr">
-                {loading ? (
-                  <>{skeleton}</>
-                ) : (
-                  attendances.map((attendance) => (
-                    <TableRow key={attendance.hr_code}>
-                      <TableCell className="px-1 py-0">
-                        <CachedImage
-                          src={attendance?.picture}
-                          alt="Avatar"
-                          ShimmerIconClassName="size-[18px]"
-                          shimmerClassName="size-[36px] mx-auto shadow-lg border border-tertiary rounded-full"
-                          className="size-[36px] object-center object-cover mx-auto shadow-lg border border-tertiary rounded-full"
-                          routeIdentifier={"profile"}
-                        />
-                      </TableCell>
-                      <TableCell className="truncate text-start">
-                        {attendance.hr_code}
-                      </TableCell>
-                      <TableCell className="truncate text-start">
-                        {`${attendance.first_name} ${attendance.last_name}`}
-                      </TableCell>
-                      <TableCell className="truncate text-start">
-                        <CustomTextarea
-                          name="detail"
-                          value={attendance.detail}
-                          placeholder={t("detail")}
-                          onChange={(e: any) => handleChange(attendance, e)}
-                          rows={-1}
-                          className="p-1 resize-none"
-                        />
-                      </TableCell>
-                      {attendance.status?.map((item) => (
-                        <TableCell className="truncate text-start">
-                          <CustomCheckbox
-                            key={item.id}
-                            checked={item.selected}
-                            onCheckedChange={(value: boolean) =>
-                              handleCheck(attendance, item, value)
-                            }
-                            parentClassName="rounded-md"
-                            required={true}
-                          />
-                        </TableCell>
-                      ))}
-                      <TableCell className="truncate">
-                        {attendance.check_in_time}
-                      </TableCell>
-                      <TableCell className="truncate">
-                        {attendance.check_in_taken_by}
-                      </TableCell>
-                      <TableCell className="truncate">
-                        {attendance?.check_out_time}
-                      </TableCell>
-                      <TableCell className="truncate">
-                        {attendance?.check_out_taken_by}
-                      </TableCell>
-                    </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
-          </CardContent>
-          <CardFooter className="flex justify-evenly items-center mt-12">
-            <PrimaryButton
-              disabled={loading}
-              onClick={store}
-              className={`shadow-lg`}
-            >
-              {t("confirm")}
-            </PrimaryButton>
-            <PrimaryButton
-              className="rounded-md min-w-[80px] shadow-md rtl:text-xl-rtl bg-red-500 hover:bg-red-500"
-              onClick={closeModel}
-            >
-              {t("cancel")}
-            </PrimaryButton>
-          </CardFooter>
-        </>
-      )}
+              ))
+            )}
+          </TableBody>
+        </Table>
+      </CardContent>
+      <CardFooter className="flex justify-evenly items-center mt-12">
+        <PrimaryButton
+          disabled={loading}
+          onClick={store}
+          className={`shadow-lg`}
+        >
+          {t("confirm")}
+        </PrimaryButton>
+        <PrimaryButton
+          className="rounded-md min-w-[80px] shadow-md rtl:text-xl-rtl bg-red-500 hover:bg-red-500"
+          onClick={closeModel}
+        >
+          {t("cancel")}
+        </PrimaryButton>
+      </CardFooter>
     </Card>
   );
 }

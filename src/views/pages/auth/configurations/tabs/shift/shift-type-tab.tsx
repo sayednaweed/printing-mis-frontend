@@ -17,7 +17,7 @@ import CustomInput from "@/components/custom-ui/input/CustomInput";
 import { Search } from "lucide-react";
 import Shimmer from "@/components/custom-ui/shimmer/Shimmer";
 import TableRowIcon from "@/components/custom-ui/table/TableRowIcon";
-import { SimpleItem, UserPermission } from "@/database/tables";
+import { Shift, UserPermission } from "@/database/tables";
 import { PermissionEnum } from "@/lib/constants";
 import LeaveTypeDialog from "./shift-type-dialog";
 import { toLocaleDate } from "@/lib/utils";
@@ -37,8 +37,8 @@ export default function ShiftTypeTab(props: shiftTypeTabProps) {
     shiftType: undefined,
   });
   const [shiftTypes, setShiftTypes] = useState<{
-    unFilterList: SimpleItem[];
-    filterList: SimpleItem[];
+    unFilterList: Shift[];
+    filterList: Shift[];
   }>({
     unFilterList: [],
     filterList: [],
@@ -50,7 +50,7 @@ export default function ShiftTypeTab(props: shiftTypeTabProps) {
 
       // 2. Send data
       const response = await axiosClient.get(`shifts`);
-      const fetch = response.data as SimpleItem[];
+      const fetch = response.data as Shift[];
       setShiftTypes({
         unFilterList: fetch,
         filterList: fetch,
@@ -71,7 +71,7 @@ export default function ShiftTypeTab(props: shiftTypeTabProps) {
   const searchOnChange = (e: any) => {
     const { value } = e.target;
     // 1. Filter
-    const filtered = shiftTypes.unFilterList.filter((item: SimpleItem) =>
+    const filtered = shiftTypes.unFilterList.filter((item: Shift) =>
       item.name.toLowerCase().includes(value.toLowerCase())
     );
     setShiftTypes({
@@ -79,26 +79,36 @@ export default function ShiftTypeTab(props: shiftTypeTabProps) {
       filterList: filtered,
     });
   };
-  const add = (newItem: SimpleItem) => {
-    setShiftTypes((prev) => ({
-      unFilterList: [newItem, ...prev.unFilterList],
-      filterList: [newItem, ...prev.filterList],
-    }));
-  };
-  const update = (newItem: SimpleItem) => {
-    setShiftTypes((prevState) => {
-      const updatedUnFiltered = prevState.unFilterList.map((item) =>
-        item.id === newItem.id ? { ...item, name: newItem.name } : item
-      );
+  const onComplete = (shift: Shift, edited: boolean) => {
+    if (edited) {
+      setShiftTypes((prevState) => {
+        const updatedUnFiltered = prevState.unFilterList.map((item) =>
+          item.id === shift.id
+            ? {
+                ...item,
+                name: shift.name,
+                check_in_start: shift.check_in_start,
+                check_in_end: shift.check_in_end,
+                check_out_start: shift.check_out_start,
+                check_out_end: shift.check_out_end,
+                detail: shift.detail,
+              }
+            : item
+        );
 
-      return {
-        ...prevState,
-        unFilterList: updatedUnFiltered,
-        filterList: updatedUnFiltered,
-      };
-    });
+        return {
+          ...prevState,
+          unFilterList: updatedUnFiltered,
+          filterList: updatedUnFiltered,
+        };
+      });
+    } else {
+      setShiftTypes((prev) => ({
+        unFilterList: [shift, ...prev.unFilterList],
+        filterList: [shift, ...prev.filterList],
+      }));
+    }
   };
-
   const dailog = useMemo(
     () => (
       <NastranModel
@@ -114,7 +124,7 @@ export default function ShiftTypeTab(props: shiftTypeTabProps) {
           return true;
         }}
       >
-        <LeaveTypeDialog shift={selected.shiftType} onComplete={update} />
+        <LeaveTypeDialog shift={selected.shiftType} onComplete={onComplete} />
       </NastranModel>
     ),
     [selected.visible]
@@ -134,12 +144,12 @@ export default function ShiftTypeTab(props: shiftTypeTabProps) {
             isDismissable={false}
             button={
               <PrimaryButton className="text-primary-foreground">
-                {t("add_leave")}
+                {t("add_shift")}
               </PrimaryButton>
             }
             showDialog={async () => true}
           >
-            <LeaveTypeDialog onComplete={add} />
+            <LeaveTypeDialog onComplete={onComplete} />
           </NastranModel>
         )}
 
@@ -159,6 +169,11 @@ export default function ShiftTypeTab(props: shiftTypeTabProps) {
           <TableRow className="hover:bg-transparent">
             <TableHead className="text-start">{t("id")}</TableHead>
             <TableHead className="text-start">{t("name")}</TableHead>
+            <TableHead className="text-start">{t("check_in_start")}</TableHead>
+            <TableHead className="text-start">{t("check_in_end")}</TableHead>
+            <TableHead className="text-start">{t("check_out_start")}</TableHead>
+            <TableHead className="text-start">{t("check_out_end")}</TableHead>
+            <TableHead className="text-start">{t("detail")}</TableHead>
             <TableHead className="text-start">{t("date")}</TableHead>
           </TableRow>
         </TableHeader>
@@ -174,14 +189,29 @@ export default function ShiftTypeTab(props: shiftTypeTabProps) {
               <TableCell>
                 <Shimmer className="h-[24px] bg-primary/30 w-full rounded-sm" />
               </TableCell>
+              <TableCell>
+                <Shimmer className="h-[24px] bg-primary/30 w-full rounded-sm" />
+              </TableCell>
+              <TableCell>
+                <Shimmer className="h-[24px] bg-primary/30 w-full rounded-sm" />
+              </TableCell>
+              <TableCell>
+                <Shimmer className="h-[24px] bg-primary/30 w-full rounded-sm" />
+              </TableCell>
+              <TableCell>
+                <Shimmer className="h-[24px] bg-primary/30 w-full rounded-sm" />
+              </TableCell>
+              <TableCell>
+                <Shimmer className="h-[24px] bg-primary/30 w-full rounded-sm" />
+              </TableCell>
             </TableRow>
           ) : (
-            shiftTypes.filterList.map((shift: SimpleItem, index: number) => (
+            shiftTypes.filterList.map((shift: Shift, index: number) => (
               <TableRowIcon
                 read={hasView}
                 remove={false}
                 edit={hasEdit}
-                onEdit={async (item: SimpleItem) => {
+                onEdit={async (item: Shift) => {
                   setSelected({
                     visible: true,
                     shiftType: item,
@@ -194,6 +224,13 @@ export default function ShiftTypeTab(props: shiftTypeTabProps) {
               >
                 <TableCell className="font-medium">{shift.id}</TableCell>
                 <TableCell>{shift.name}</TableCell>
+                <TableCell>{shift.check_in_start}</TableCell>
+                <TableCell>{shift.check_in_end}</TableCell>
+                <TableCell>{shift.check_out_start}</TableCell>
+                <TableCell>{shift.check_out_end}</TableCell>
+                <TableCell className="truncate max-w-32">
+                  {shift.detail}
+                </TableCell>
                 <TableCell>
                   {toLocaleDate(new Date(shift.created_at), state)}
                 </TableCell>

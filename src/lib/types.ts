@@ -1,4 +1,5 @@
 import {
+  Accounts,
   AttendanceModel,
   Audit,
   Employee,
@@ -200,3 +201,12 @@ export interface AttendancePaginationData {
 }
 export type ActivitySearch = "user" | "type";
 export type AttendanceGroupReport = "setDate";
+export interface AccountPaginationData {
+  data: Accounts[];
+  lastPage: number;
+  perPage: number;
+  currentPage: number;
+  totalItems: number;
+}
+export type AccountSort = "name" | "balance" | "date";
+export type AccountSearch = "name" | "code";

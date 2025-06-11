@@ -80,24 +80,28 @@ export default function HireTypeTab(props: HireTypeTabProps) {
       filterList: filtered,
     });
   };
-  const add = (newItem: HireTypeItem) => {
-    setHireTypes((prev) => ({
-      unFilterList: [newItem, ...prev.unFilterList],
-      filterList: [newItem, ...prev.filterList],
-    }));
-  };
-  const update = (newItem: HireTypeItem) => {
-    setHireTypes((prevState) => {
-      const updatedUnFiltered = prevState.unFilterList.map((item) =>
-        item.id === newItem.id ? { ...item, name: newItem.name } : item
-      );
 
-      return {
-        ...prevState,
-        unFilterList: updatedUnFiltered,
-        filterList: updatedUnFiltered,
-      };
-    });
+  const onComplete = (hireTypeItem: HireTypeItem, edited: boolean) => {
+    if (edited) {
+      setHireTypes((prevState) => {
+        const updatedUnFiltered = prevState.unFilterList.map((item) =>
+          item.id === hireTypeItem.id
+            ? { ...item, name: hireTypeItem.name, detail: hireTypeItem.detail }
+            : item
+        );
+
+        return {
+          ...prevState,
+          unFilterList: updatedUnFiltered,
+          filterList: updatedUnFiltered,
+        };
+      });
+    } else {
+      setHireTypes((prev) => ({
+        unFilterList: [hireTypeItem, ...prev.unFilterList],
+        filterList: [hireTypeItem, ...prev.filterList],
+      }));
+    }
   };
 
   const dailog = useMemo(
@@ -115,7 +119,7 @@ export default function HireTypeTab(props: HireTypeTabProps) {
           return true;
         }}
       >
-        <HireTypeDialog hireType={selected.hireType} onComplete={update} />
+        <HireTypeDialog hireType={selected.hireType} onComplete={onComplete} />
       </NastranModel>
     ),
     [selected.visible]
@@ -140,7 +144,7 @@ export default function HireTypeTab(props: HireTypeTabProps) {
             }
             showDialog={async () => true}
           >
-            <HireTypeDialog onComplete={add} />
+            <HireTypeDialog onComplete={onComplete} />
           </NastranModel>
         )}
 
@@ -203,7 +207,7 @@ export default function HireTypeTab(props: HireTypeTabProps) {
                   <TableCell>
                     {toLocaleDate(new Date(hireType.created_at), state)}
                   </TableCell>
-                  <TableCell>{hireType.description}</TableCell>
+                  <TableCell>{hireType.detail}</TableCell>
                 </TableRowIcon>
               )
             )

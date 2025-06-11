@@ -97,15 +97,7 @@ export type HireTypeItem = {
   id: string;
   name: string;
   created_at: string;
-  description: string;
-};
-export type SimpleShiftItem = {
-  id: string;
-  name: string;
-  start_time: string;
-  end_time: string;
-  description: string;
-  created_at: string;
+  detail: string;
 };
 export type Gender = {
   id: string;
@@ -288,6 +280,7 @@ export type AttendanceModel = {
   present: string;
   absent: string;
   leave: string;
+  shift_id: string;
   other: string;
   check_in_time: string;
   check_out_time: string;
@@ -321,4 +314,37 @@ export type Party = {
   current_area: any;
   logo: any;
   company_name: string;
+};
+export type Payroll = {
+  id: string;
+  payroll_id: string;
+  month: string;
+  year: string;
+  currency: { id: string; name: string };
+  salary: string;
+  paid_amount: number;
+  net_pay: number;
+  deductions: number;
+  overtime_amount: number;
+  account_id: { id: string; name: string };
+  detail: string;
+};
+export type Shift = {
+  id: string;
+  check_in_start: string;
+  check_in_end: string;
+  check_out_start: string;
+  check_out_end: string;
+  name: string;
+  detail: string;
+  created_at: string;
+};
+export type Accounts = {
+  id: string;
+  name: string;
+  code: string;
+  balance: number;
+  saved_by: string;
+  currency: string;
+  created_at: string;
 };

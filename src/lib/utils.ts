@@ -15,7 +15,12 @@ import gregorian_en from "react-date-object/locales/gregorian_en";
 import persian_fa from "react-date-object/locales/persian_fa";
 import persian_ar from "react-date-object/locales/persian_ar";
 import persian_en from "react-date-object/locales/persian_en";
-import { CALENDAR, CALENDAR_LOCALE } from "./constants";
+import {
+  afgMonthNamesEn,
+  afgMonthNamesFa,
+  CALENDAR,
+  CALENDAR_LOCALE,
+} from "./constants";
 import gregorian from "react-date-object/calendars/gregorian";
 import arabic from "react-date-object/calendars/arabic";
 import persian from "react-date-object/calendars/persian";
@@ -321,3 +326,18 @@ export const validateFile = (
 
 export const generateUUID = () =>
   Math.random().toString(36).slice(2) + Date.now().toString(36);
+export const getAfghaniMonths = (state: any) => {
+  if (state.systemLanguage.info.calendarId === CALENDAR.SOLAR) {
+    if (state.systemLanguage.info.localeId === CALENDAR_LOCALE.farsi) {
+      return afgMonthNamesFa;
+    } else if (state.systemLanguage.info.localeId === CALENDAR_LOCALE.english) {
+      return afgMonthNamesEn;
+    }
+  }
+};
+export const valueIsNumber = (value: string) => {
+  if (value === "" || /^\d*\.?\d*$/.test(value)) {
+    return true;
+  }
+  return false;
+};

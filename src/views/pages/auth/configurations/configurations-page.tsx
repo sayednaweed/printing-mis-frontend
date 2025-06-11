@@ -92,16 +92,6 @@ export default function ConfigurationsPage() {
           {t("expense_type")}
         </TabsTrigger>
       ) : key ==
-        PermissionEnum.configurations.sub.inventory_configuration_accounts ? (
-        <TabsTrigger
-          key={index}
-          value={key.toString()}
-          className="gap-x-1 bg-card shadow rtl:text-2xl-rtl ltr:text-xl-ltr data-[state=active]:bg-primary data-[state=active]:text-tertiary"
-        >
-          <MapPinHouse className="size-[16px] ltr:mr-1 rtl:ml-1" />
-          {t("accounts")}
-        </TabsTrigger>
-      ) : key ==
         PermissionEnum.configurations.sub.inventory_configuration_warehouse ? (
         <TabsTrigger
           key={index}

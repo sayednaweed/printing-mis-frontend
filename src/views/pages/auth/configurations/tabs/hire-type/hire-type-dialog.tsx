@@ -16,9 +16,10 @@ import axiosClient from "@/lib/axois-client";
 import { toast } from "@/components/ui/use-toast";
 import { setServerError, validate } from "@/validation/validation";
 import { HireTypeItem } from "@/database/tables";
+import CustomTextarea from "@/components/custom-ui/input/CustomTextarea";
 
 export interface HireTypeDialogProps {
-  onComplete: (hireType: HireTypeItem) => void;
+  onComplete: (hireType: HireTypeItem, edited: boolean) => void;
   hireType?: HireTypeItem;
 }
 export default function HireTypeDialog(props: HireTypeDialogProps) {
@@ -31,13 +32,14 @@ export default function HireTypeDialog(props: HireTypeDialogProps) {
     farsi: "",
     english: "",
     pashto: "",
+    detail: "",
   });
   const { modelOnRequestHide } = useModelOnRequestHide();
   const { t } = useTranslation();
   const fetch = async () => {
     try {
       setFetching(true);
-      const response = await axiosClient.get(`hire/type`);
+      const response = await axiosClient.get(`hire-types/${hireType?.id}`);
       if (response.status === 200) {
         setUserData(response.data);
       }
@@ -53,96 +55,48 @@ export default function HireTypeDialog(props: HireTypeDialogProps) {
     const { name, value } = e.target;
     setUserData({ ...userData, [name]: value });
   };
-  const store = async () => {
-    try {
-      if (loading) return;
-      setLoading(true);
-      // 1. Validate form
-      const passed = await validate(
-        [
-          {
-            name: "english",
-            rules: ["required"],
-          },
-          {
-            name: "farsi",
-            rules: ["required"],
-          },
-          {
-            name: "pashto",
-            rules: ["required"],
-          },
-        ],
-        userData,
-        setError
-      );
-      if (!passed) return;
-      // 2. Store
-      let formData = new FormData();
-      formData.append("english", userData.english);
-      formData.append("farsi", userData.farsi);
-      formData.append("pashto", userData.pashto);
-      const response = await axiosClient.post("/hire/type/store", formData);
-      if (response.status === 200) {
-        toast({
-          toastType: "SUCCESS",
-          description: response.data.message,
-        });
-        onComplete(response.data.hireType);
-        modelOnRequestHide();
-      }
-    } catch (error: any) {
-      setServerError(error.response.data.errors, setError);
-      console.log(error);
-    } finally {
+  const storeOrUpdate = async () => {
+    if (loading) return;
+    setLoading(true);
+
+    const passed = await validate(
+      [
+        { name: "english", rules: ["required"] },
+        { name: "farsi", rules: ["required"] },
+        { name: "pashto", rules: ["required"] },
+      ],
+      userData,
+      setError
+    );
+    if (!passed) {
       setLoading(false);
+      return;
     }
-  };
-  const update = async () => {
+
     try {
-      if (loading) return;
-      setLoading(true);
-      // 1. Validate form
-      const passed = await validate(
-        [
-          {
-            name: "english",
-            rules: ["required"],
-          },
-          {
-            name: "farsi",
-            rules: ["required"],
-          },
-          {
-            name: "pashto",
-            rules: ["required"],
-          },
-        ],
-        userData,
-        setError
-      );
-      if (!passed) return;
-      // 2. update
-      let formData = new FormData();
-      if (hireType?.id) formData.append("id", hireType.id);
-      formData.append("english", userData.english);
-      formData.append("farsi", userData.farsi);
-      formData.append("pashto", userData.pashto);
-      const response = await axiosClient.post("hire/type/update", formData);
+      const form = {
+        id: hireType?.id,
+        english: userData.english,
+        farsi: userData.farsi,
+        pashto: userData.pashto,
+        detail: userData.detail,
+      };
+
+      const response = hireType
+        ? await axiosClient.put("/hire-types", {
+            ...form,
+          })
+        : await axiosClient.post("/hire-types", {
+            ...form,
+          });
       if (response.status === 200) {
-        toast({
-          toastType: "SUCCESS",
-          description: response.data.message,
-        });
-        onComplete(response.data.hireType);
+        toast({ toastType: "SUCCESS", description: response.data.message });
+        onComplete(response.data.hire_type, hireType ? true : false);
         modelOnRequestHide();
       }
     } catch (error: any) {
-      toast({
-        toastType: "ERROR",
-        description: error.response.data.message,
-      });
-      console.log(error);
+      setServerError(error.response?.data?.errors, setError);
+      toast({ toastType: "ERROR", description: error.response?.data?.message });
     } finally {
       setLoading(false);
     }
@@ -212,6 +166,12 @@ export default function HireTypeDialog(props: HireTypeDialogProps) {
             </h1>
           }
         />
+        <CustomTextarea
+          placeholder={t("detail")}
+          defaultValue={userData.detail}
+          name="detail"
+          onChange={handleChange}
+        />
       </CardContent>
       <CardFooter className="flex justify-between">
         <Button
@@ -223,7 +183,7 @@ export default function HireTypeDialog(props: HireTypeDialogProps) {
         </Button>
         <PrimaryButton
           disabled={loading}
-          onClick={hireType ? update : store}
+          onClick={storeOrUpdate}
           className={`${loading && "opacity-90"}`}
           type="submit"
         >
