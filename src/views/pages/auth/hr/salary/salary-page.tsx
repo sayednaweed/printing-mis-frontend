@@ -437,8 +437,7 @@ export default function SalaryPage() {
             <TableHead className="text-start">{t("name")}</TableHead>
             <TableHead className="text-start">{t("payment")}</TableHead>
             <TableHead className="text-start">{t("currency")}</TableHead>
-            <TableHead className="text-start">{t("year")}</TableHead>
-            <TableHead className="text-start">{t("month")}</TableHead>
+            <TableHead className="text-start">{t("date")}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody className="rtl:text-xl-rtl ltr:text-2xl-ltr">

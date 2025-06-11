@@ -30,8 +30,8 @@ import FilterDialog from "@/components/custom-ui/dialog/filter-dialog";
 import {
   AttendancePaginationData,
   Order,
-  UserSearch,
-  UserSort,
+  AttendanceSort,
+  AttendanceSearch,
 } from "@/lib/types";
 import { useAuthStore } from "@/stores/permission/auth-permssion-store";
 import {
@@ -63,7 +63,7 @@ export default function AttendancePage() {
     sort: sort == null ? "created_at" : sort,
     order: order == null ? "desc" : order,
     search: {
-      column: searchColumn == null ? "username" : searchColumn,
+      column: searchColumn == null ? "id" : searchColumn,
       value: searchValue == null ? "" : searchValue,
     },
     date:
@@ -315,7 +315,7 @@ export default function AttendancePage() {
           >
             <FilterDialog
               filters={filters}
-              sortOnComplete={async (filterName: UserSort) => {
+              sortOnComplete={async (filterName: AttendanceSort) => {
                 if (filterName != filters.sort) {
                   const queryParams = new URLSearchParams();
                   queryParams.set("sort", filterName);
@@ -328,7 +328,7 @@ export default function AttendancePage() {
                   });
                 }
               }}
-              searchFilterChanged={async (filterName: UserSearch) => {
+              searchFilterChanged={async (filterName: AttendanceSearch) => {
                 if (filterName != filters.search.column) {
                   const queryParams = new URLSearchParams();
                   queryParams.set("sort", filters.sort);
@@ -374,16 +374,6 @@ export default function AttendancePage() {
                     translate: t("date"),
                     onClick: () => {},
                   },
-                  {
-                    name: "username",
-                    translate: t("username"),
-                    onClick: () => {},
-                  },
-                  {
-                    name: "action",
-                    translate: t("action"),
-                    onClick: () => {},
-                  },
                 ],
                 order: [
                   {
@@ -399,13 +389,8 @@ export default function AttendancePage() {
                 ],
                 search: [
                   {
-                    name: "hr_code",
-                    translate: t("hr_code"),
-                    onClick: () => {},
-                  },
-                  {
-                    name: "username",
-                    translate: t("username"),
+                    name: "id",
+                    translate: t("id"),
                     onClick: () => {},
                   },
                 ],

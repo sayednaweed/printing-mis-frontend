@@ -34,6 +34,8 @@ import CustomDatePicker from "@/components/custom-ui/DatePicker/CustomDatePicker
 import { DateObject } from "react-multi-date-picker";
 import { valueIsNumber } from "@/lib/utils";
 import CustomInput from "@/components/custom-ui/input/CustomInput";
+import CustomMultiDatePicker from "@/components/custom-ui/DatePicker/CustomMultiDatePicker";
+import { validate } from "@/validation/validation";
 
 interface AddUpdatePaymentProps {
   onComplete: (attendance: AttendanceModel) => void;
@@ -77,11 +79,21 @@ export default function AddUpdatePayment(props: AddUpdatePaymentProps) {
     if (attendance) fetch();
   }, []);
   const store = async () => {
-    if (loading || attendances.length == 0) {
+    if (loading) {
       return;
     }
 
     setLoading(true);
+    const passed = await validate(
+      [{ name: "date", rules: ["required"] }],
+      userData,
+      setError
+    );
+    if (!passed) {
+      setLoading(false);
+      return;
+    }
+
     // 2. Store
     try {
       const list = attendances.map((item) => {
@@ -189,9 +201,21 @@ export default function AddUpdatePayment(props: AddUpdatePaymentProps) {
               selectedItem={userData?.payment_type?.name}
               placeHolder={t("select_a")}
               errorMessage={error.get("payment_type")}
-              apiUrl={"payment-types"}
+              apiUrl={"payment-types/names"}
               mode="single"
               cacheData={false}
+            />
+            <CustomMultiDatePicker
+              placeholder={t("select_a_date")}
+              lable={t("date")}
+              requiredHint={`* ${t("required")}`}
+              required={true}
+              value={userData.date}
+              dateOnComplete={(selectedDates: DateObject[]) => {
+                setUserData((prev: any) => ({ ...prev, date: selectedDates }));
+              }}
+              className="py-3 w-full"
+              errorMessage={error.get("date")}
             />
             <APICombobox
               placeholderText={t("search_item")}

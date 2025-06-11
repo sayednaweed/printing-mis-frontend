@@ -225,12 +225,14 @@ export default function AddUpdateAttendance(props: AddUpdateAttendanceProps) {
               <TableHead className="text-start">{t("hr_code")}</TableHead>
               <TableHead className="text-start">{t("name")}</TableHead>
               <TableHead className="text-start">{t("detail")}</TableHead>
-              {attendances.length == 1 &&
+              <TableHead className="text-start">{t("check_in")}</TableHead>
+              <TableHead className="text-start">{t("check_out")}</TableHead>
+              {/* {attendances.length == 1 &&
                 attendances[0].status?.map((item) => (
                   <TableHead key={item.name} className="text-start">
                     {item?.name}
                   </TableHead>
-                ))}
+                ))} */}
               <TableHead className="text-start">{t("check_in_time")}</TableHead>
               <TableHead className="text-start">
                 {t("check_in_taken_by")}
@@ -275,29 +277,30 @@ export default function AddUpdateAttendance(props: AddUpdateAttendanceProps) {
                       className="p-1 resize-none"
                     />
                   </TableCell>
-                  {attendance.status?.map((item) => (
-                    <TableCell className="truncate text-start">
+                  <TableCell className="truncate text-start grid grid-cols-2 items-baseline space-y-2">
+                    {attendance.status?.map((item) => (
                       <CustomCheckbox
+                        text={item.name}
                         key={item.id}
                         checked={item.selected}
                         onCheckedChange={(value: boolean) =>
                           handleCheck(attendance, item, value)
                         }
-                        parentClassName="rounded-md"
+                        parentClassName="rounded-md space-x-1"
                         required={true}
                       />
-                    </TableCell>
-                  ))}
-                  <TableCell className="truncate">
+                    ))}
+                  </TableCell>
+                  <TableCell className="truncate text-start">
                     {attendance.check_in_time}
                   </TableCell>
-                  <TableCell className="truncate">
+                  <TableCell className="truncate text-start">
                     {attendance.check_in_taken_by}
                   </TableCell>
-                  <TableCell className="truncate">
+                  <TableCell className="truncate text-start">
                     {attendance?.check_out_time}
                   </TableCell>
-                  <TableCell className="truncate">
+                  <TableCell className="truncate text-start">
                     {attendance?.check_out_taken_by}
                   </TableCell>
                 </TableRow>

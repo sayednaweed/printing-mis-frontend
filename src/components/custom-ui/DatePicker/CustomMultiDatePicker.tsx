@@ -17,12 +17,30 @@ export interface CustomMultiDatePickerProps {
   dateOnComplete: (selectedDates: DateObject[]) => void;
   value: DateObject[];
   className?: string;
+  placeholder?: string;
+  lable?: string;
+  requiredHint?: string;
+  required?: boolean;
+  hintColor?: string;
+  errorMessage?: string;
+  readonly?: boolean;
 }
 
 export default function CustomMultiDatePicker(
   props: CustomMultiDatePickerProps
 ) {
-  const { dateOnComplete, value, className } = props;
+  const {
+    dateOnComplete,
+    value,
+    className,
+    placeholder,
+    lable,
+    requiredHint,
+    required,
+    hintColor,
+    errorMessage,
+    readonly,
+  } = props;
   const [state] = useGlobalState();
   const { t, i18n } = useTranslation();
   const direction = i18n.dir();
@@ -65,12 +83,12 @@ export default function CustomMultiDatePicker(
     }
   }
   return (
-    <div dir={direction} className="relative">
+    <div dir={direction} className={`relative`}>
       {visible && (
         <Calendar
           value={selectedDates}
           ref={calendarRef}
-          className="absolute font-segoe top-10"
+          className="absolute top-10"
           onChange={handleDateChange}
           months={months}
           range
@@ -79,11 +97,33 @@ export default function CustomMultiDatePicker(
           locale={state.systemLanguage.local}
         />
       )}
-
+      {required && (
+        <span
+          className={cn(
+            "text-red-600 rtl:text-[13px] ltr:text-[11px] ltr:right-[10px] rtl:left-[10px] top-[8px] absolute font-semibold",
+            hintColor
+          )}
+        >
+          {requiredHint}
+        </span>
+      )}
       <div
-        className={cn(`border px-3 py-1 rounded-md`, className)}
+        className={cn(
+          `border px-3 py-1 rounded-md ${readonly && "cursor-not-allowed"} ${
+            required || lable ? "mt-[26px]" : "mt-2"
+          } ${errorMessage && "border-red-400"}`,
+          className
+        )}
         onClick={onVisibilityChange}
       >
+        {lable && (
+          <label
+            htmlFor={lable}
+            className="rtl:text-lg-rtl ltr:text-xl-ltr rtl:right-[4px] ltr:left-[4px] top-[0px] absolute font-semibold"
+          >
+            {lable}
+          </label>
+        )}
         {selectedDates && selectedDates.length > 0 ? (
           <div className="flex items-center gap-x-2 text-ellipsis rtl:text-lg-rtl ltr:text-lg-ltr text-primary/80 text-nowrap">
             <CalendarDays className="size-[16px] inline-block text-tertiary rtl:ml-2 rtl:mr-2" />
@@ -99,15 +139,21 @@ export default function CustomMultiDatePicker(
                       : "to"}
                   </h1>
                 )}
-                <h1>
-                  {date
-                    .convert(
-                      state.systemLanguage.calendar,
-                      state.systemLanguage.local
-                    )
-                    .format()}
-                </h1>
-                {/* <h1>{formatHijriDate(date)}</h1> */}
+                {selectedDates ? (
+                  <h1>
+                    {date
+                      .convert(
+                        state.systemLanguage.calendar,
+                        state.systemLanguage.local
+                      )
+                      .format()}
+                  </h1>
+                ) : (
+                  <h1 className="flex items-center gap-x-2 py-[2px] text-ellipsis rtl:text-lg-rtl ltr:text-lg-ltr font-semibold text-primary text-nowrap">
+                    <CalendarDays className="size-[16px] inline-block text-tertiary" />
+                    {placeholder}
+                  </h1>
+                )}
               </div>
             ))}
           </div>
@@ -118,6 +164,11 @@ export default function CustomMultiDatePicker(
           </h1>
         )}
       </div>
+      {errorMessage && (
+        <h1 className="rtl:text-sm-rtl ltr:text-sm-ltr capitalize text-start text-red-400">
+          {errorMessage}
+        </h1>
+      )}
     </div>
   );
 }

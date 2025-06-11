@@ -199,6 +199,8 @@ export interface AttendancePaginationData {
   currentPage: number;
   totalItems: number;
 }
+export type AttendanceSort = "date";
+export type AttendanceSearch = "id";
 export type ActivitySearch = "user" | "type";
 export type AttendanceGroupReport = "setDate";
 export interface AccountPaginationData {
