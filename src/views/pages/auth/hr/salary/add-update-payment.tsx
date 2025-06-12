@@ -12,25 +12,9 @@ import NastranSpinner from "@/components/custom-ui/spinner/NastranSpinner";
 import PrimaryButton from "@/components/custom-ui/button/PrimaryButton";
 import { toast } from "@/components/ui/use-toast";
 import axiosClient from "@/lib/axois-client";
-import {
-  Attendance,
-  AttendanceModel,
-  AttendanceStatus,
-} from "@/database/tables";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import CachedImage from "@/components/custom-ui/image/CachedImage";
-import Shimmer from "@/components/custom-ui/shimmer/Shimmer";
-import CustomCheckbox from "@/components/custom-ui/checkbox/CustomCheckbox";
+import { AttendanceModel } from "@/database/tables";
 import CustomTextarea from "@/components/custom-ui/input/CustomTextarea";
 import APICombobox from "@/components/custom-ui/combobox/APICombobox";
-import CustomDatePicker from "@/components/custom-ui/DatePicker/CustomDatePicker";
 import { DateObject } from "react-multi-date-picker";
 import { valueIsNumber } from "@/lib/utils";
 import CustomInput from "@/components/custom-ui/input/CustomInput";
@@ -55,15 +39,17 @@ export default function AddUpdatePayment(props: AddUpdatePaymentProps) {
   const [error, setError] = useState<Map<string, string>>(new Map());
 
   const [userData, setUserData] = useState<any>([]);
-  const [attendances, setAttendances] = useState<Attendance[]>([]);
-  const fetch = async () => {
+  const [details, setDetails] = useState<
+    { overttime_per: string; currency: string } | undefined
+  >(undefined);
+  const getEmployeeDetail = async (hr_code: string) => {
     try {
       setLoading(true);
-      const response = await axiosClient.get("attendancies-show", {
-        params: attendance?.created_at,
-      });
+      const response = await axiosClient.get(
+        "salaries/employee-payment/" + hr_code
+      );
       if (response.status === 200) {
-        setAttendances(response.data.data);
+        setDetails(response.data);
       }
     } catch (error: any) {
       toast({
@@ -75,9 +61,7 @@ export default function AddUpdatePayment(props: AddUpdatePaymentProps) {
     }
     setLoading(false);
   };
-  useEffect(() => {
-    if (attendance) fetch();
-  }, []);
+
   const store = async () => {
     if (loading) {
       return;
@@ -96,23 +80,7 @@ export default function AddUpdatePayment(props: AddUpdatePaymentProps) {
 
     // 2. Store
     try {
-      const list = attendances.map((item) => {
-        let status_id = "0";
-        item.status.forEach((status) => {
-          if (status.selected == true) {
-            status_id = status.id;
-          }
-        });
-        return {
-          hr_code: item.hr_code,
-          description: item.detail,
-          employee_id: item.id,
-          status_type_id: status_id,
-        };
-      });
-      const response = await axiosClient.post("attendancies", {
-        attendances: list,
-      });
+      const response = await axiosClient.post("attendancies", {});
       if (response.status == 200) {
         onComplete(response.data?.attendance);
         // Update user state
@@ -167,17 +135,29 @@ export default function AddUpdatePayment(props: AddUpdatePaymentProps) {
             </CardTitle>
           </CardHeader>
           <CardContent className="flex flex-col md:grid md:grid-cols-2 xl:grid-cols-4 gap-x-4 xl:gap-x-12 lg:items-baseline mt-4 gap-y-3 w-full lg:w-full">
+            {details && (
+              <div className="grid grid-cols-[auto_auto] w-fit bg-primary/5 mb-4 justify-start text-start gap-x-12 p-2 rounded-lg border col-span-full">
+                <h1 className=" text-primary font-bold">
+                  {t("overtime_rate")}:
+                </h1>
+                <h1>400</h1>
+                <h1 className=" text-primary font-bold">{t("currency")}:</h1>
+                <h1>400</h1>
+              </div>
+            )}
+
             <APICombobox
               placeholderText={t("search_item")}
               errorText={t("no_item")}
               required={true}
               requiredHint={`* ${t("required")}`}
-              onSelect={(selection: any) =>
+              onSelect={(selection: any) => {
                 setUserData((prev: any) => ({
                   ...prev,
                   hr_code: selection,
-                }))
-              }
+                }));
+                getEmployeeDetail(selection?.name);
+              }}
               lable={t("hr_code")}
               selectedItem={userData?.hr_code?.name}
               placeHolder={t("select_a")}
@@ -207,79 +187,28 @@ export default function AddUpdatePayment(props: AddUpdatePaymentProps) {
             />
             <CustomMultiDatePicker
               placeholder={t("select_a_date")}
-              lable={t("date")}
+              lable={t("payment_date")}
               requiredHint={`* ${t("required")}`}
               required={true}
-              value={userData.date}
+              value={userData.payment_date}
               dateOnComplete={(selectedDates: DateObject[]) => {
-                setUserData((prev: any) => ({ ...prev, date: selectedDates }));
+                setUserData((prev: any) => ({
+                  ...prev,
+                  payment_date: selectedDates,
+                }));
               }}
               className="py-3 w-full"
               errorMessage={error.get("date")}
             />
-            <APICombobox
-              placeholderText={t("search_item")}
-              errorText={t("no_item")}
-              required={true}
-              requiredHint={`* ${t("required")}`}
-              onSelect={(selection: any) =>
-                setUserData((prev: any) => ({
-                  ...prev,
-                  month: selection,
-                }))
-              }
-              lable={t("month")}
-              selectedItem={userData?.month?.name}
-              placeHolder={t("select_a")}
-              errorMessage={error.get("month")}
-              apiUrl={"months"}
-              mode="single"
-            />
-            <APICombobox
-              placeholderText={t("search_item")}
-              errorText={t("no_item")}
-              required={true}
-              requiredHint={`* ${t("required")}`}
-              onSelect={(selection: any) =>
-                setUserData((prev: any) => ({
-                  ...prev,
-                  year: selection,
-                }))
-              }
-              lable={t("year")}
-              selectedItem={userData?.hr_code?.name}
-              placeHolder={t("select_a")}
-              errorMessage={error.get("year")}
-              apiUrl={"years"}
-              mode="single"
-            />
-            <APICombobox
-              placeholderText={t("search_item")}
-              errorText={t("no_item")}
-              required={true}
-              requiredHint={`* ${t("required")}`}
-              onSelect={(selection: any) =>
-                setUserData((prev: any) => ({
-                  ...prev,
-                  currency: selection,
-                }))
-              }
-              lable={t("currency")}
-              selectedItem={userData?.currency?.name}
-              placeHolder={t("select_a")}
-              errorMessage={error.get("currency")}
-              apiUrl={"currencies"}
-              mode="single"
-            />
             <CustomInput
               size_="sm"
-              lable={t("overtime")}
+              lable={t("overtime_h")}
               placeholder={t("enter")}
-              defaultValue={userData["overtime"]}
+              defaultValue={userData["overtime_h"]}
               type="text"
-              name="overtime"
+              name="overtime_h"
               requiredHint={`* ${t("required")}`}
-              errorMessage={error.get("overtime")}
+              errorMessage={error.get("overtime_h")}
               onChange={handleNumberChange}
             />
 
@@ -298,18 +227,19 @@ export default function AddUpdatePayment(props: AddUpdatePaymentProps) {
               selectedItem={userData?.account?.name}
               placeHolder={t("select_a")}
               errorMessage={error.get("account")}
-              apiUrl={"accounts"}
+              apiUrl={"accounts-names"}
               mode="single"
+              cacheData={false}
             />
             <CustomInput
               size_="sm"
-              lable={t("payment")}
+              lable={t("payment_amount")}
               placeholder={t("enter")}
-              defaultValue={userData["payment"]}
+              defaultValue={userData["payment_amount"]}
               type="text"
-              name="payment"
+              name="payment_amount"
               requiredHint={`* ${t("required")}`}
-              errorMessage={error.get("payment")}
+              errorMessage={error.get("payment_amount")}
               onChange={handleNumberChange}
             />
             <CustomTextarea

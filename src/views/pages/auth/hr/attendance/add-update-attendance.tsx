@@ -29,6 +29,8 @@ import Shimmer from "@/components/custom-ui/shimmer/Shimmer";
 import CustomCheckbox from "@/components/custom-ui/checkbox/CustomCheckbox";
 import CustomTextarea from "@/components/custom-ui/input/CustomTextarea";
 import APICombobox from "@/components/custom-ui/combobox/APICombobox";
+import BooleanStatusButton from "@/components/custom-ui/button/BooleanStatusButton";
+import { AttendanceStatusEnum } from "@/lib/constants";
 
 interface AddUpdateAttendanceProps {
   onComplete: (attendance: AttendanceModel) => void;
@@ -227,12 +229,6 @@ export default function AddUpdateAttendance(props: AddUpdateAttendanceProps) {
               <TableHead className="text-start">{t("detail")}</TableHead>
               <TableHead className="text-start">{t("check_in")}</TableHead>
               <TableHead className="text-start">{t("check_out")}</TableHead>
-              {/* {attendances.length == 1 &&
-                attendances[0].status?.map((item) => (
-                  <TableHead key={item.name} className="text-start">
-                    {item?.name}
-                  </TableHead>
-                ))} */}
               <TableHead className="text-start">{t("check_in_time")}</TableHead>
               <TableHead className="text-start">
                 {t("check_in_taken_by")}
@@ -277,19 +273,78 @@ export default function AddUpdateAttendance(props: AddUpdateAttendanceProps) {
                       className="p-1 resize-none"
                     />
                   </TableCell>
-                  <TableCell className="truncate text-start grid grid-cols-2 items-baseline space-y-2">
-                    {attendance.status?.map((item) => (
-                      <CustomCheckbox
-                        text={item.name}
-                        key={item.id}
-                        checked={item.selected}
-                        onCheckedChange={(value: boolean) =>
-                          handleCheck(attendance, item, value)
-                        }
-                        parentClassName="rounded-md space-x-1"
-                        required={true}
+
+                  <TableCell className="truncate text-start font-semibold">
+                    {attendance.check_in_status ? (
+                      <BooleanStatusButton
+                        getColor={function (): {
+                          style: string;
+                          value: string;
+                        } {
+                          return AttendanceStatusEnum.present ==
+                            attendance.check_in_status_id
+                            ? {
+                                style: "border-green-500/90",
+                                value: attendance?.check_in_status,
+                              }
+                            : {
+                                style: "border-red-500",
+                                value: attendance?.check_in_status,
+                              };
+                        }}
                       />
-                    ))}
+                    ) : (
+                      <div className="grid grid-cols-2 items-baseline gap-2">
+                        {attendance.status?.map((item) => (
+                          <CustomCheckbox
+                            text={item.name}
+                            key={item.id}
+                            checked={item.selected}
+                            onCheckedChange={(value: boolean) =>
+                              handleCheck(attendance, item, value)
+                            }
+                            parentClassName="rounded-md space-x-1"
+                            required={true}
+                          />
+                        ))}
+                      </div>
+                    )}
+                  </TableCell>
+                  <TableCell className="truncate text-start font-semibold">
+                    {!attendance.check_in_status ? undefined : attendance.check_out_status ? (
+                      <BooleanStatusButton
+                        getColor={function (): {
+                          style: string;
+                          value: string;
+                        } {
+                          return AttendanceStatusEnum.present ==
+                            attendance.check_out_status_id
+                            ? {
+                                style: "border-green-500/90",
+                                value: attendance?.check_out_status,
+                              }
+                            : {
+                                style: "border-red-500",
+                                value: attendance?.check_out_status,
+                              };
+                        }}
+                      />
+                    ) : (
+                      <div className="grid grid-cols-2 items-baseline gap-2">
+                        {attendance.status?.map((item) => (
+                          <CustomCheckbox
+                            text={item.name}
+                            key={item.id}
+                            checked={item.selected}
+                            onCheckedChange={(value: boolean) =>
+                              handleCheck(attendance, item, value)
+                            }
+                            parentClassName="rounded-md space-x-1"
+                            required={true}
+                          />
+                        ))}
+                      </div>
+                    )}
                   </TableCell>
                   <TableCell className="truncate text-start">
                     {attendance.check_in_time}

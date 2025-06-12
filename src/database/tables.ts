@@ -265,6 +265,10 @@ export type AttendanceStatus = {
 export type Attendance = {
   id: string;
   picture: string;
+  check_in_status_id?: number;
+  check_out_status_id?: number;
+  check_in_status: string;
+  check_out_status: string;
   hr_code: string;
   first_name: string;
   last_name: string;

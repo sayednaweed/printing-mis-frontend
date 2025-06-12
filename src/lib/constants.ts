@@ -128,6 +128,13 @@ export const StatusEnum = {
   active: 7,
   in_active: 8,
 };
+export const AttendanceStatusEnum = {
+  present: 1,
+  absent: 2,
+  leave: 3,
+  sick: 4,
+};
+
 export const UserStatusEnum = {
   active: 1,
   block: 2,
