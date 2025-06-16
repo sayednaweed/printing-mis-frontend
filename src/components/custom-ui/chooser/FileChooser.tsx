@@ -1,26 +1,27 @@
 import { Label } from "@/components/ui/label";
 import { toast } from "@/components/ui/use-toast";
 import axiosClient from "@/lib/axois-client";
-import { cn } from "@/lib/utils";
+import { FileType } from "@/lib/types";
+import { cn, validateFile } from "@/lib/utils";
+import { isFile } from "@/validation/utils";
 import { ArrowDownToLine, Paperclip, Trash2 } from "lucide-react";
 import React, { ChangeEvent, useState } from "react";
 import { useTranslation } from "react-i18next";
-export interface FileType {
-  path: string;
-  name: string;
-}
+import Shimmer from "../shimmer/Shimmer";
+
 export interface FileChooserProps
   extends React.InputHTMLAttributes<HTMLInputElement> {
   requiredHint?: string;
   lable: string;
   parentClassName?: string;
   errorMessage?: string;
-  defaultFile: File | FileType;
+  defaultFile: File | FileType | undefined;
   maxSize: number;
   validTypes: string[];
   disabled?: boolean;
-  downloadParam?: { path: string; fileName: string };
+  loading?: boolean;
   onchange: (file: File | undefined) => void;
+  routeIdentifier: "public";
 }
 const FileChooser = React.forwardRef<HTMLInputElement, FileChooserProps>(
   (props, ref: any) => {
@@ -34,9 +35,10 @@ const FileChooser = React.forwardRef<HTMLInputElement, FileChooserProps>(
       maxSize,
       validTypes,
       disabled,
-      downloadParam,
       parentClassName,
       onchange,
+      loading = false,
+      routeIdentifier,
       ...rest
     } = props;
     const [downloadProgress, setDownloadProgress] = useState(0);
@@ -49,101 +51,81 @@ const FileChooser = React.forwardRef<HTMLInputElement, FileChooserProps>(
       const fileInput = e.target;
       const maxFileSize = maxSize * 1024 * 1024; // 2MB
 
-      if (!fileInput.files) {
-        toast({
-          toastType: "ERROR",
-          title: t("error"),
-          description: t("no_file_was_chosen"),
-        });
-        resetFile(e);
-        return;
-      }
-
       if (!fileInput.files || fileInput.files.length === 0) {
-        toast({
-          toastType: "ERROR",
-          title: t("error"),
-          description: t("files_list_is_empty"),
-        });
-        resetFile(e);
         return;
       }
 
-      const file = fileInput.files[0];
-      if (file.size >= maxFileSize) {
-        toast({
-          toastType: "ERROR",
-          title: t("error"),
-          description: t(`img_size_shou_less`) + ` ${maxSize}MB`,
-        });
-        resetFile(e);
-        return;
-      }
-      /** Type validation */
-      if (!validTypes.includes(file.type)) {
-        toast({
-          toastType: "ERROR",
-          title: t("error"),
-          description: t("accept_types") + validTypes.join(", "),
-        });
-        resetFile(e);
-        return;
-      }
+      const checkFile = fileInput.files[0] as File;
+      const file = validateFile(
+        checkFile,
+        Math.round(maxFileSize),
+        validTypes,
+        t
+      );
+
       setUserData(file);
       onchange(file);
       /** Reset file input */
-      resetFile(e);
-    };
-    const deleteFile = async () => {
-      setUserData(undefined);
-      onchange(undefined);
-    };
-    const resetFile = (e: ChangeEvent<HTMLInputElement>) => {
       if (e.currentTarget) {
         e.currentTarget.type = "text";
         e.currentTarget.type = "file"; // Reset to file type
       }
     };
+    const deleteFile = async () => {
+      setUserData(undefined);
+      onchange(undefined);
+    };
     const download = async () => {
       // 2. Store
-      try {
-        setIsDownloading(true);
-        const response = await axiosClient.get(`media/${downloadParam?.path}`, {
-          responseType: "blob", // Important to handle the binary data (PDF)
-          onDownloadProgress: (progressEvent) => {
-            // Calculate download progress percentage
-            const total = progressEvent.total || 0;
-            const current = progressEvent.loaded;
-            const progress = Math.round((current / total) * 100);
-            setDownloadProgress(progress); // Update progress state
-          },
-        });
-        if (response.status == 200) {
-          // Create a URL for the file blob
-          const file = new Blob([response.data], { type: "application/pdf" });
-          const fileURL = window.URL.createObjectURL(file);
+      if (!isFile(defaultFile)) {
+        try {
+          setIsDownloading(true);
+          const response = await axiosClient.get(`media/${routeIdentifier}`, {
+            params: {
+              path: defaultFile?.path,
+            },
+            responseType: "blob", // Important to handle the binary data (PDF)
+            onDownloadProgress: (progressEvent) => {
+              // Calculate download progress percentage
+              const total = progressEvent.total || 0;
+              const current = progressEvent.loaded;
+              const progress = Math.round((current / total) * 100);
+              setDownloadProgress(progress); // Update progress state
+            },
+          });
+          if (response.status == 200) {
+            // Create a URL for the file blob
+            const file = new Blob([response.data], { type: defaultFile?.type });
+            const fileURL = window.URL.createObjectURL(file);
 
-          const link = document.createElement("a");
-          link.href = fileURL;
-          link.download = downloadParam
-            ? downloadParam.fileName
-            : "downloadParam_problem.txt"; // Default download filename
-          link.click();
+            const link = document.createElement("a");
+            link.href = fileURL;
+            link.download = defaultFile?.name
+              ? defaultFile?.name
+              : "downloadParam_problem.txt"; // Default download filename
+            link.click();
 
-          // Clean up the URL object after download
-          window.URL.revokeObjectURL(fileURL);
+            // Clean up the URL object after download
+            window.URL.revokeObjectURL(fileURL);
+          }
+        } catch (error: any) {
+          toast({
+            toastType: "ERROR",
+            title: t("error"),
+            description: error.response.data.message,
+          });
+          console.log(error);
         }
-      } catch (error: any) {
-        toast({
-          toastType: "ERROR",
-          title: t("error"),
-          description: error.response.data.message,
-        });
-        console.log(error);
+        setIsDownloading(false); // Reset downloading state
       }
-      setIsDownloading(false); // Reset downloading state
     };
-    return (
+    const marginTop = required ? "mt-[26px]" : "mt-2";
+
+    return loading ? (
+      <Shimmer
+        className={`h-[45px] w-full border shadow-none rounded-sm ${marginTop}`}
+      />
+    ) : (
       <div
         className={cn(
           `flex sm:grid sm:grid-cols-[auto_1fr] relative ${
@@ -188,11 +170,11 @@ const FileChooser = React.forwardRef<HTMLInputElement, FileChooserProps>(
               errorMessage && "border-red-400"
             }`}
           >
-            {userData ? (
+            {defaultFile || userData ? (
               <>
-                {!(userData instanceof File) ? (
+                {!isFile(defaultFile) ? (
                   <>
-                    {userData.name}
+                    {defaultFile?.name}
                     <ArrowDownToLine
                       onClick={download}
                       className="inline-block cursor-pointer min-h-[18px] min-w-[18px] size-[18px] text-primary/90 ltr:ml-2 rtl:mr-2"
@@ -209,7 +191,7 @@ const FileChooser = React.forwardRef<HTMLInputElement, FileChooserProps>(
                 )}
               </>
             ) : (
-              t("no_file_was_chosen")
+              t("no_file_chosen")
             )}
           </label>
         )}

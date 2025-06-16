@@ -352,3 +352,16 @@ export type Accounts = {
   currency: string;
   created_at: string;
 };
+export type Icon = {
+  id: string;
+  name: string;
+  path: string;
+  created_at: string;
+};
+export type Expense = {
+  id: string;
+  total_amount: number;
+  bill_no: string;
+  quantity: string;
+  date: string;
+};

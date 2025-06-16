@@ -17,28 +17,29 @@ import CustomInput from "@/components/custom-ui/input/CustomInput";
 import { Search } from "lucide-react";
 import Shimmer from "@/components/custom-ui/shimmer/Shimmer";
 import TableRowIcon from "@/components/custom-ui/table/TableRowIcon";
-import { SimpleItem, UserPermission } from "@/database/tables";
+import { Icon, UserPermission } from "@/database/tables";
 import { PermissionEnum } from "@/lib/constants";
 import { toLocaleDate } from "@/lib/utils";
-import ExpenseTypeDialog from "./expense-type-dialog";
-interface ExpenseTypeTabProps {
+import IconDialog from "./icon-dialog";
+import NetworkSvg from "@/components/custom-ui/image/NetworkSvg";
+interface IconTabProps {
   permissions: UserPermission;
 }
-export default function ExpenseTypeTab(props: ExpenseTypeTabProps) {
+export default function IconTab(props: IconTabProps) {
   const { permissions } = props;
   const { t } = useTranslation();
   const [state] = useGlobalState();
   const [loading, setLoading] = useState(false);
   const [selected, setSelected] = useState<{
     visible: boolean;
-    expenseType: any;
+    icon: any;
   }>({
     visible: false,
-    expenseType: undefined,
+    icon: undefined,
   });
-  const [expenseTypes, setExpenseTypes] = useState<{
-    unFilterList: SimpleItem[];
-    filterList: SimpleItem[];
+  const [icons, setIcons] = useState<{
+    unFilterList: Icon[];
+    filterList: Icon[];
   }>({
     unFilterList: [],
     filterList: [],
@@ -49,9 +50,9 @@ export default function ExpenseTypeTab(props: ExpenseTypeTabProps) {
       setLoading(true);
 
       // 2. Send data
-      const response = await axiosClient.get(`expense-types`);
-      const fetch = response.data as SimpleItem[];
-      setExpenseTypes({
+      const response = await axiosClient.get(`icons`);
+      const fetch = response.data as Icon[];
+      setIcons({
         unFilterList: fetch,
         filterList: fetch,
       });
@@ -71,22 +72,23 @@ export default function ExpenseTypeTab(props: ExpenseTypeTabProps) {
   const searchOnChange = (e: any) => {
     const { value } = e.target;
     // 1. Filter
-    const filtered = expenseTypes.unFilterList.filter((item: SimpleItem) =>
+    const filtered = icons.unFilterList.filter((item: Icon) =>
       item.name.toLowerCase().includes(value.toLowerCase())
     );
-    setExpenseTypes({
-      ...expenseTypes,
+    setIcons({
+      ...icons,
       filterList: filtered,
     });
   };
-  const onComplete = (expenseType: SimpleItem, edited: boolean) => {
+  const onComplete = (icon: Icon, edited: boolean) => {
     if (edited) {
-      setExpenseTypes((prevState) => {
+      setIcons((prevState) => {
         const updatedUnFiltered = prevState.unFilterList.map((item) =>
-          item.id === expenseType.id
+          item.id === icon.id
             ? {
                 ...item,
-                name: expenseType.name,
+                name: icon.name,
+                path: icon.path,
               }
             : item
         );
@@ -98,9 +100,9 @@ export default function ExpenseTypeTab(props: ExpenseTypeTabProps) {
         };
       });
     } else {
-      setExpenseTypes((prev) => ({
-        unFilterList: [expenseType, ...prev.unFilterList],
-        filterList: [expenseType, ...prev.filterList],
+      setIcons((prev) => ({
+        unFilterList: [icon, ...prev.unFilterList],
+        filterList: [icon, ...prev.filterList],
       }));
     }
   };
@@ -114,21 +116,18 @@ export default function ExpenseTypeTab(props: ExpenseTypeTabProps) {
         showDialog={async () => {
           setSelected({
             visible: false,
-            expenseType: undefined,
+            icon: undefined,
           });
           return true;
         }}
       >
-        <ExpenseTypeDialog
-          expenseType={selected.expenseType}
-          onComplete={onComplete}
-        />
+        <IconDialog icon={selected.icon} onComplete={onComplete} />
       </NastranModel>
     ),
     [selected.visible]
   );
   const per = permissions.sub.get(
-    PermissionEnum.configurations.sub.expense_configuration_expense_type
+    PermissionEnum.configurations.sub.expense_configuration_expense_icon
   );
   const hasEdit = per?.edit;
   const hasAdd = per?.add;
@@ -142,12 +141,12 @@ export default function ExpenseTypeTab(props: ExpenseTypeTabProps) {
             isDismissable={false}
             button={
               <PrimaryButton className="text-primary-foreground">
-                {t("add_expense_type")}
+                {t("add_icon")}
               </PrimaryButton>
             }
             showDialog={async () => true}
           >
-            <ExpenseTypeDialog onComplete={onComplete} />
+            <IconDialog onComplete={onComplete} />
           </NastranModel>
         )}
 
@@ -167,6 +166,7 @@ export default function ExpenseTypeTab(props: ExpenseTypeTabProps) {
           <TableRow className="hover:bg-transparent">
             <TableHead className="text-start">{t("id")}</TableHead>
             <TableHead className="text-start">{t("name")}</TableHead>
+            <TableHead className="text-start">{t("picture")}</TableHead>
             <TableHead className="text-start">{t("date")}</TableHead>
           </TableRow>
         </TableHeader>
@@ -182,28 +182,38 @@ export default function ExpenseTypeTab(props: ExpenseTypeTabProps) {
               <TableCell>
                 <Shimmer className="h-[24px] w-full rounded-sm" />
               </TableCell>
+              <TableCell>
+                <Shimmer className="h-[24px] w-full rounded-sm" />
+              </TableCell>
             </TableRow>
           ) : (
-            expenseTypes.filterList.map((expenseType: SimpleItem) => (
+            icons.filterList.map((icon: Icon) => (
               <TableRowIcon
                 read={hasView}
                 remove={false}
                 edit={hasEdit}
-                onEdit={async (item: SimpleItem) => {
+                onEdit={async (item: Icon) => {
                   setSelected({
                     visible: true,
-                    expenseType: item,
+                    icon: item,
                   });
                 }}
-                key={expenseType.id}
-                item={expenseType}
+                key={icon.id}
+                item={icon}
                 onRemove={async () => {}}
                 onRead={async () => {}}
               >
-                <TableCell className="font-medium">{expenseType.id}</TableCell>
-                <TableCell>{expenseType.name}</TableCell>
+                <TableCell className="font-medium">{icon.id}</TableCell>
+                <TableCell>{icon.name}</TableCell>
                 <TableCell>
-                  {toLocaleDate(new Date(expenseType.created_at), state)}
+                  <NetworkSvg
+                    className="[&>svg]:size-[18px]"
+                    src={icon?.path}
+                    routeIdentifier={"public"}
+                  />
+                </TableCell>
+                <TableCell>
+                  {toLocaleDate(new Date(icon.created_at), state)}
                 </TableCell>
               </TableRowIcon>
             ))

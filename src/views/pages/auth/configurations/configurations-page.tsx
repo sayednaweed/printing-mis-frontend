@@ -16,6 +16,7 @@ import HireTypeTab from "./tabs/hire-type/hire-type-tab";
 import ShiftTab from "./tabs/shift/shift-type-tab";
 import LeaveTab from "./tabs/leave/leave-type-tab";
 import ExpenseTypeTab from "./tabs/expense-type/expense-type-tab";
+import IconTab from "./tabs/icon/icon-tab";
 
 export default function ConfigurationsPage() {
   const { t, i18n } = useTranslation();
@@ -181,7 +182,7 @@ export default function ConfigurationsPage() {
           className="gap-x-1 bg-card shadow rtl:text-2xl-rtl ltr:text-xl-ltr data-[state=active]:bg-primary data-[state=active]:text-tertiary"
         >
           <MapPinHouse className="size-[16px] ltr:mr-1 rtl:ml-1" />
-          {t("expense_icon")}
+          {t("icon")}
         </TabsTrigger>
       ) : undefined;
     }
@@ -191,7 +192,7 @@ export default function ConfigurationsPage() {
       <Breadcrumb className="mx-2 mt-2">
         <BreadcrumbHome />
         <BreadcrumbSeparator />
-        <BreadcrumbItem>{t("settings")}</BreadcrumbItem>
+        <BreadcrumbItem>{t("configurations")}</BreadcrumbItem>
       </Breadcrumb>
       <Tabs
         dir={direction}
@@ -236,6 +237,12 @@ export default function ConfigurationsPage() {
           className="w-full px-4 pt-8"
         >
           <ExpenseTypeTab permissions={per} />
+        </TabsContent>
+        <TabsContent
+          value={PermissionEnum.configurations.sub.expense_configuration_expense_icon.toString()}
+          className="w-full px-4 pt-8"
+        >
+          <IconTab permissions={per} />
         </TabsContent>
       </Tabs>
     </>

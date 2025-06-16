@@ -75,11 +75,11 @@ export default function UserEditHeader(props: UserEditHeaderProps) {
       } finally {
         setLoading(false);
       }
-      /** Reset file input */
-      if (e.currentTarget) {
-        e.currentTarget.type = "text";
-        e.currentTarget.type = "file"; // Reset to file type
-      }
+    }
+    /** Reset file input */
+    if (e.currentTarget) {
+      e.currentTarget.type = "text";
+      e.currentTarget.type = "file"; // Reset to file type
     }
   };
   const deleteProfilePicture = async () => {

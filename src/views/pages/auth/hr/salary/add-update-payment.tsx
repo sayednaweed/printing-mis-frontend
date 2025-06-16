@@ -20,6 +20,7 @@ import { valueIsNumber } from "@/lib/utils";
 import CustomInput from "@/components/custom-ui/input/CustomInput";
 import CustomMultiDatePicker from "@/components/custom-ui/DatePicker/CustomMultiDatePicker";
 import { validate } from "@/validation/validation";
+import CachedImage from "@/components/custom-ui/image/CachedImage";
 
 interface AddUpdatePaymentProps {
   onComplete: (attendance: AttendanceModel) => void;
@@ -40,16 +41,19 @@ export default function AddUpdatePayment(props: AddUpdatePaymentProps) {
 
   const [userData, setUserData] = useState<any>([]);
   const [details, setDetails] = useState<
-    { overttime_per: string; currency: string } | undefined
+    | { overtime: string; salary: string; profile: string; remaining: number }
+    | undefined
   >(undefined);
-  const getEmployeeDetail = async (hr_code: string) => {
+  const getEmployeeDetail = async (employeeId: string) => {
     try {
       setLoading(true);
       const response = await axiosClient.get(
-        "salaries/employee-payment/" + hr_code
+        "salaries/employee-payment/" + employeeId
       );
       if (response.status === 200) {
-        setDetails(response.data);
+        const data = response.data?.data;
+        data.remaining = 0;
+        setDetails(data);
       }
     } catch (error: any) {
       toast({
@@ -136,13 +140,22 @@ export default function AddUpdatePayment(props: AddUpdatePaymentProps) {
           </CardHeader>
           <CardContent className="flex flex-col md:grid md:grid-cols-2 xl:grid-cols-4 gap-x-4 xl:gap-x-12 lg:items-baseline mt-4 gap-y-3 w-full lg:w-full">
             {details && (
-              <div className="grid grid-cols-[auto_auto] w-fit bg-primary/5 mb-4 justify-start text-start gap-x-12 p-2 rounded-lg border col-span-full">
-                <h1 className=" text-primary font-bold">
+              <div className="grid grid-cols-[auto_1fr] bg-primary/5 mb-4 justify-start text-start gap-x-12 px-4 shadow-sm pb-4 pt-2 rounded-lg border col-span-full">
+                <CachedImage
+                  src={details?.profile}
+                  alt="Avatar"
+                  shimmerClassName="size-[86px] mx-auto col-span-full !mb-6 mx-auto shadow-lg border border-primary/30 rounded-full"
+                  className="size-[86px] col-span-full !mb-6 object-center object-cover mx-auto shadow-lg border border-primary/50 rounded-full"
+                  routeIdentifier={"profile"}
+                />
+                <h1 className="text-primary font-bold border-b">
                   {t("overtime_rate")}:
                 </h1>
-                <h1>400</h1>
-                <h1 className=" text-primary font-bold">{t("currency")}:</h1>
-                <h1>400</h1>
+                <h1>{details.overtime}</h1>
+                <h1 className="text-primary font-bold">{t("salary")}:</h1>
+                <h1>{details.salary}</h1>
+                <h1 className="text-primary font-bold">{t("remaining")}:</h1>
+                <h1>{details.remaining}</h1>
               </div>
             )}
 
@@ -156,7 +169,7 @@ export default function AddUpdatePayment(props: AddUpdatePaymentProps) {
                   ...prev,
                   hr_code: selection,
                 }));
-                getEmployeeDetail(selection?.name);
+                getEmployeeDetail(selection?.id);
               }}
               lable={t("hr_code")}
               selectedItem={userData?.hr_code?.name}
@@ -166,93 +179,98 @@ export default function AddUpdatePayment(props: AddUpdatePaymentProps) {
               mode="single"
               cacheData={false}
             />
-            <APICombobox
-              placeholderText={t("search_item")}
-              errorText={t("no_item")}
-              required={true}
-              requiredHint={`* ${t("required")}`}
-              onSelect={(selection: any) =>
-                setUserData((prev: any) => ({
-                  ...prev,
-                  payment_type: selection,
-                }))
-              }
-              lable={t("payment_type")}
-              selectedItem={userData?.payment_type?.name}
-              placeHolder={t("select_a")}
-              errorMessage={error.get("payment_type")}
-              apiUrl={"payment-types/names"}
-              mode="single"
-              cacheData={false}
-            />
-            <CustomMultiDatePicker
-              placeholder={t("select_a_date")}
-              lable={t("payment_date")}
-              requiredHint={`* ${t("required")}`}
-              required={true}
-              value={userData.payment_date}
-              dateOnComplete={(selectedDates: DateObject[]) => {
-                setUserData((prev: any) => ({
-                  ...prev,
-                  payment_date: selectedDates,
-                }));
-              }}
-              className="py-3 w-full"
-              errorMessage={error.get("date")}
-            />
-            <CustomInput
-              size_="sm"
-              lable={t("overtime_h")}
-              placeholder={t("enter")}
-              defaultValue={userData["overtime_h"]}
-              type="text"
-              name="overtime_h"
-              requiredHint={`* ${t("required")}`}
-              errorMessage={error.get("overtime_h")}
-              onChange={handleNumberChange}
-            />
+            {details && (
+              <>
+                <APICombobox
+                  placeholderText={t("search_item")}
+                  errorText={t("no_item")}
+                  required={true}
+                  requiredHint={`* ${t("required")}`}
+                  onSelect={(selection: any) =>
+                    setUserData((prev: any) => ({
+                      ...prev,
+                      payment_type: selection,
+                    }))
+                  }
+                  lable={t("payment_type")}
+                  selectedItem={userData?.payment_type?.name}
+                  placeHolder={t("select_a")}
+                  errorMessage={error.get("payment_type")}
+                  apiUrl={"payment-types/names"}
+                  mode="single"
+                  cacheData={false}
+                />
+                <CustomMultiDatePicker
+                  placeholder={t("select_a_date")}
+                  lable={t("payment_date")}
+                  requiredHint={`* ${t("required")}`}
+                  required={true}
+                  value={userData.payment_date}
+                  dateOnComplete={(selectedDates: DateObject[]) => {
+                    setUserData((prev: any) => ({
+                      ...prev,
+                      payment_date: selectedDates,
+                    }));
+                  }}
+                  className="py-3 w-full"
+                  errorMessage={error.get("date")}
+                  singleSelect={true}
+                />
+                <CustomInput
+                  size_="sm"
+                  lable={t("overtime_h")}
+                  placeholder={t("enter")}
+                  defaultValue={userData["overtime_h"]}
+                  type="text"
+                  name="overtime_h"
+                  requiredHint={`* ${t("required")}`}
+                  errorMessage={error.get("overtime_h")}
+                  onChange={handleNumberChange}
+                />
 
-            <APICombobox
-              placeholderText={t("search_item")}
-              errorText={t("no_item")}
-              required={true}
-              requiredHint={`* ${t("required")}`}
-              onSelect={(selection: any) =>
-                setUserData((prev: any) => ({
-                  ...prev,
-                  account: selection,
-                }))
-              }
-              lable={t("account")}
-              selectedItem={userData?.account?.name}
-              placeHolder={t("select_a")}
-              errorMessage={error.get("account")}
-              apiUrl={"accounts-names"}
-              mode="single"
-              cacheData={false}
-            />
-            <CustomInput
-              size_="sm"
-              lable={t("payment_amount")}
-              placeholder={t("enter")}
-              defaultValue={userData["payment_amount"]}
-              type="text"
-              name="payment_amount"
-              requiredHint={`* ${t("required")}`}
-              errorMessage={error.get("payment_amount")}
-              onChange={handleNumberChange}
-            />
-            <CustomTextarea
-              parantClassName="col-span-full"
-              rows={5}
-              lable={t("detail")}
-              placeholder={t("enter")}
-              defaultValue={userData["detail"]}
-              name="detail"
-              requiredHint={`* ${t("required")}`}
-              errorMessage={error.get("detail")}
-              onChange={handleChange}
-            />
+                <APICombobox
+                  placeholderText={t("search_item")}
+                  errorText={t("no_item")}
+                  required={true}
+                  requiredHint={`* ${t("required")}`}
+                  onSelect={(selection: any) =>
+                    setUserData((prev: any) => ({
+                      ...prev,
+                      account: selection,
+                    }))
+                  }
+                  lable={t("account")}
+                  selectedItem={userData?.account?.name}
+                  placeHolder={t("select_a")}
+                  errorMessage={error.get("account")}
+                  apiUrl={"accounts-names"}
+                  mode="single"
+                  cacheData={false}
+                />
+                <CustomInput
+                  size_="sm"
+                  lable={t("payment_amount")}
+                  placeholder={t("enter")}
+                  defaultValue={userData["payment_amount"]}
+                  type="text"
+                  name="payment_amount"
+                  requiredHint={`* ${t("required")}`}
+                  errorMessage={error.get("payment_amount")}
+                  onChange={handleNumberChange}
+                />
+                <CustomTextarea
+                  parantClassName="col-span-full"
+                  rows={5}
+                  lable={t("detail")}
+                  placeholder={t("enter")}
+                  defaultValue={userData["detail"]}
+                  name="detail"
+                  requiredHint={`* ${t("required")}`}
+                  errorMessage={error.get("detail")}
+                  onChange={handleChange}
+                />
+              </>
+            )}
           </CardContent>
           <CardFooter className="flex justify-evenly items-center mt-12">
             <PrimaryButton

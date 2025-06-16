@@ -11,7 +11,6 @@ import SettingsPage from "@/views/pages/auth/setting/settings-page";
 import ReportPage from "@/views/pages/auth/report/report-page";
 import LoginPage from "@/views/pages/guest/login-page";
 import ExpenseDashboardPage from "@/views/pages/auth/dashboard/expense-dashboard-page";
-import ExpensesPage from "@/views/pages/auth/expense/expenses/expenses-page";
 import HrDashboardPage from "@/views/pages/auth/dashboard/hr-dashboard-page";
 import AttendancePage from "@/views/pages/auth/hr/attendance/attendance-page";
 import LeavePage from "@/views/pages/auth/hr/leave/leave-page";
@@ -33,6 +32,7 @@ import UserEditPage from "@/views/pages/auth/hr/users/edit/user-edit-page";
 import SellersEditPage from "@/views/pages/auth/inventory/sellers/edit/sellers-edit-page";
 import AccountsPage from "@/views/pages/auth/inventory/accounts/accounts-page";
 import AccountEditPage from "@/views/pages/auth/inventory/accounts/edit/account-edit-page";
+import ExpensesPage from "@/views/pages/auth/expense/expenses-page";
 
 export const getHrRouter = (user: User, authenticated: boolean) => {
   let permissions = user.permissions[PortalEnum.hr];

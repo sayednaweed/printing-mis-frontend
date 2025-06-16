@@ -4,6 +4,7 @@ import {
   Audit,
   Employee,
   EmployeeReport,
+  Expense,
   Leave,
   PartyModel,
   SelectUserPermission,
@@ -154,6 +155,7 @@ export interface FileType {
   path: string;
   name: string;
   extension: string;
+  type: string;
   size: number;
   pending_id?: string;
 }
@@ -205,6 +207,13 @@ export type ActivitySearch = "user" | "type";
 export type AttendanceGroupReport = "setDate";
 export interface AccountPaginationData {
   data: Accounts[];
+  lastPage: number;
+  perPage: number;
+  currentPage: number;
+  totalItems: number;
+}
+export interface ExpensePaginationData {
+  data: Expense[];
   lastPage: number;
   perPage: number;
   currentPage: number;

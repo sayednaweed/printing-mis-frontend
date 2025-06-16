@@ -15,25 +15,16 @@ import CustomInput from "@/components/custom-ui/input/CustomInput";
 import axiosClient from "@/lib/axois-client";
 import { toast } from "@/components/ui/use-toast";
 import { setServerError, validate } from "@/validation/validation";
-import { SimpleItem } from "@/database/tables";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import Shimmer from "@/components/custom-ui/shimmer/Shimmer";
-import CustomCheckbox from "@/components/custom-ui/checkbox/CustomCheckbox";
-import NetworkSvg from "@/components/custom-ui/image/NetworkSvg";
+import { Icon } from "@/database/tables";
+import FileChooser from "@/components/custom-ui/chooser/FileChooser";
+import { isFile } from "@/validation/utils";
 
-export interface ExpenseTypeDialogProps {
-  onComplete: (expenseType: SimpleItem, edited: boolean) => void;
-  expenseType?: SimpleItem;
+export interface IconDialogProps {
+  onComplete: (icon: Icon, edited: boolean) => void;
+  icon?: Icon;
 }
-export default function ExpenseTypeDialog(props: ExpenseTypeDialogProps) {
-  const { onComplete, expenseType } = props;
+export default function IconDialog(props: IconDialogProps) {
+  const { onComplete, icon } = props;
 
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(false);
@@ -44,53 +35,31 @@ export default function ExpenseTypeDialog(props: ExpenseTypeDialogProps) {
     farsi: string;
     english: string;
     pashto: string;
-    icons: {
-      id: string;
-      name: string;
-      path: string;
-      selected: any;
-    }[];
+    icon: File | undefined;
   }>({
     id: "",
     farsi: "",
     english: "",
     pashto: "",
-    icons: [],
+    icon: undefined,
   });
   const { modelOnRequestHide } = useModelOnRequestHide();
   const { t } = useTranslation();
   const fetch = async () => {
     try {
       setFetching(true);
-      const response = await axiosClient.get(
-        `expense-types/${expenseType?.id}`
-      );
+      const response = await axiosClient.get(`icons/${icon?.id}`);
       if (response.status === 200) {
-        setUserData(response.data.expense_type);
+        setUserData(response.data);
       }
     } catch (error: any) {
       console.log(error);
     }
     setFetching(false);
   };
-  const fetchIcons = async () => {
-    try {
-      setFetching(true);
-      const response = await axiosClient.get(`icons-names`);
-      if (response.status === 200) {
-        const data = response.data;
-        setUserData({ ...userData, icons: data });
-      }
-    } catch (error: any) {
-      console.log(error);
-    }
-    setFetching(false);
-  };
+
   useEffect(() => {
-    if (expenseType) fetch();
-    else {
-      fetchIcons();
-    }
+    if (icon) fetch();
   }, []);
   const handleChange = (e: any) => {
     const { name, value } = e.target;
@@ -99,33 +68,12 @@ export default function ExpenseTypeDialog(props: ExpenseTypeDialogProps) {
   const storeOrUpdate = async () => {
     if (loading) return;
     setLoading(true);
-    const selectedIcons: any = [];
     const passed = await validate(
       [
         { name: "english", rules: ["required"] },
         { name: "farsi", rules: ["required"] },
         { name: "pashto", rules: ["required"] },
-        {
-          name: "icons",
-          rules: [
-            (userData: any) => {
-              for (const item of userData.icons) {
-                if (item.selected) {
-                  selectedIcons.push(item);
-                }
-              }
-              if (selectedIcons.length == 0) {
-                toast({
-                  toastType: "ERROR",
-                  description: t("atleast_one_ico"),
-                });
-                return true;
-              } else {
-                return false;
-              }
-            },
-          ],
-        },
+        { name: "icon", rules: ["required"] },
       ],
       userData,
       setError
@@ -136,24 +84,22 @@ export default function ExpenseTypeDialog(props: ExpenseTypeDialogProps) {
     }
 
     try {
-      const form = {
-        id: expenseType?.id,
-        english: userData.english,
-        farsi: userData.farsi,
-        pashto: userData.pashto,
-        icons: selectedIcons,
+      const formData = new FormData();
+      formData.append("english", userData.english);
+      formData.append("farsi", userData.farsi);
+      formData.append("pashto", userData.pashto);
+      if (isFile(userData?.icon)) formData.append("icon", userData.icon);
+      const config = {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
       };
-
-      const response = expenseType
-        ? await axiosClient.put("/expense-types", {
-            ...form,
-          })
-        : await axiosClient.post("/expense-types", {
-            ...form,
-          });
+      const response = icon
+        ? await axiosClient.put("/icons", formData, config)
+        : await axiosClient.post("/icons", formData, config);
       if (response.status === 200) {
         toast({ toastType: "SUCCESS", description: response.data.message });
-        onComplete(response.data.expense_type, expenseType ? true : false);
+        onComplete(response.data.icon, icon ? true : false);
         modelOnRequestHide();
       }
     } catch (error: any) {
@@ -164,19 +110,11 @@ export default function ExpenseTypeDialog(props: ExpenseTypeDialogProps) {
     }
   };
 
-  const iconOnSelect = (value: boolean, id: string) => {
-    setUserData((prev) => ({
-      ...prev,
-      icons: prev.icons.map((item) =>
-        item.id == id ? { ...item, selected: value } : item
-      ),
-    }));
-  };
   return (
     <Card className="w-fit my-8 min-w-[400px] self-center [backdrop-filter:blur(20px)] bg-white/70 dark:!bg-black/40">
       <CardHeader className="relative text-start">
         <CardTitle className="rtl:text-4xl-rtl ltr:text-3xl-ltr text-tertiary">
-          {expenseType ? t("edit") : t("add")}
+          {icon ? t("edit") : t("add")}
         </CardTitle>
       </CardHeader>
       <CardContent>
@@ -236,56 +174,22 @@ export default function ExpenseTypeDialog(props: ExpenseTypeDialogProps) {
             </h1>
           }
         />
-        <Table className="bg-card rounded-md mt-3 py-8 w-full">
-          <TableHeader className="rtl:text-3xl-rtl ltr:text-xl-ltr">
-            <TableRow className="hover:bg-transparent">
-              <TableHead className="text-start">{t("name")}</TableHead>
-              <TableHead className="text-start">{t("picture")}</TableHead>
-              <TableHead className="text-start">{t("action")}</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody className="rtl:text-xl-rtl ltr:text-lg-ltr">
-            {fetching ? (
-              <TableRow>
-                <TableCell>
-                  <Shimmer className="h-[24px] w-full rounded-sm" />
-                </TableCell>
-                <TableCell>
-                  <Shimmer className="h-[24px] w-full rounded-sm" />
-                </TableCell>
-                <TableCell>
-                  <Shimmer className="h-[24px] w-full rounded-sm" />
-                </TableCell>
-              </TableRow>
-            ) : (
-              userData.icons.map((icon, index: number) => (
-                <TableRow key={index}>
-                  <TableCell className="text-start">{icon.name}</TableCell>
-                  <TableCell>
-                    <NetworkSvg
-                      className="[&>svg]:size-[18px]"
-                      src={icon?.path}
-                      routeIdentifier={"public"}
-                    />
-                  </TableCell>
-
-                  <TableCell>
-                    <CustomCheckbox
-                      checked={
-                        icon.selected == 1 || icon.selected == true
-                          ? true
-                          : false
-                      }
-                      onCheckedChange={(value: boolean) =>
-                        iconOnSelect(value, icon.id)
-                      }
-                    />
-                  </TableCell>
-                </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
+        <FileChooser
+          parentClassName="my-7"
+          required={true}
+          requiredHint={`* ${t("required")}`}
+          errorMessage={error.get("icon")}
+          lable={t("icon")}
+          defaultFile={userData.icon}
+          maxSize={0.01}
+          accept=".svg"
+          loading={fetching}
+          validTypes={["image/svg+xml"]}
+          onchange={async (file: File | undefined) => {
+            setUserData({ ...userData, icon: file });
+          }}
+          routeIdentifier={"public"}
+        />
       </CardContent>
       <CardFooter className="flex justify-between">
         <Button

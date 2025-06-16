@@ -63,6 +63,10 @@ export const PermissionEnum = {
     name: "attendance",
     sub: {},
   },
+  expenses: {
+    name: "expenses",
+    sub: {},
+  },
   sellers: {
     name: "sellers",
     sub: {
@@ -203,6 +207,7 @@ export const CACHE = {
   SELLERS_TABLE_PAGINATION_COUNT: "SELLERS_TABLE",
   Buyers_TABLE_PAGINATION_COUNT: "BUYERS_TABLE",
   ACCOUNTS_TABLE_PAGINATION_COUNT: "ACCOUNTS_TABLE",
+  EXPENSE_TABLE_PAGINATION_COUNT: "EXPENSE_TABLE",
   LEAVE_TABLE_PAGINATION_COUNT: "LEAVE_TABLE",
   AUDIT_TABLE_PAGINATION_COUNT: "AUDIT_TABLE",
   SYSTEM_CALENDAR: "SYSTEM_CALENDAR",

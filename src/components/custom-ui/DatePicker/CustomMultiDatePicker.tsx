@@ -12,6 +12,7 @@ import { useGlobalState } from "@/context/GlobalStateContext";
 import { cn } from "@/lib/utils";
 import { CalendarDays } from "lucide-react";
 import DatePanel from "react-multi-date-picker/plugins/date_panel";
+import { toast } from "@/components/ui/use-toast";
 
 export interface CustomMultiDatePickerProps {
   dateOnComplete: (selectedDates: DateObject[]) => void;
@@ -24,6 +25,7 @@ export interface CustomMultiDatePickerProps {
   hintColor?: string;
   errorMessage?: string;
   readonly?: boolean;
+  singleSelect?: boolean;
 }
 
 export default function CustomMultiDatePicker(
@@ -40,6 +42,7 @@ export default function CustomMultiDatePicker(
     hintColor,
     errorMessage,
     readonly,
+    singleSelect = false,
   } = props;
   const [state] = useGlobalState();
   const { t, i18n } = useTranslation();
@@ -69,8 +72,33 @@ export default function CustomMultiDatePicker(
     // const gre = new DateObject(object)
     // .convert(gregorian, gregorian_en)
     // .format();
-    dateOnComplete(selectedDates);
-    setSelectedDates(selectedDates);
+    if (selectedDates.length === 0) {
+      dateOnComplete([]);
+      setSelectedDates([]);
+      return;
+    }
+
+    if (singleSelect) {
+      // Get the month of the first selected date in the selected calendar system
+      const firstMonth = selectedDates[0].month.number; // month.number is 1-based (1=Jan)
+
+      // Filter dates so only those in the same month remain
+      const filteredDates = selectedDates.filter(
+        (date) => date.month.number === firstMonth
+      );
+      if (selectedDates.length > filteredDates.length) {
+        toast({
+          toastType: "ERROR",
+          title: t("error"),
+          description: "You are not allowed",
+        });
+      }
+      dateOnComplete(filteredDates);
+      setSelectedDates(filteredDates);
+    } else {
+      dateOnComplete(selectedDates);
+      setSelectedDates(selectedDates);
+    }
   };
   const onVisibilityChange = () => setVisible(!visible);
 
