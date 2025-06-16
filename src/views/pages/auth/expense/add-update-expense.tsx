@@ -22,7 +22,7 @@ import { validate } from "@/validation/validation";
 import CustomDatePicker from "@/components/custom-ui/DatePicker/CustomDatePicker";
 
 interface AddUpdateExpenseProps {
-  onComplete: (expense: Expense) => void;
+  onComplete: (expense: Expense, edited: boolean) => void;
   expense?: Expense;
   onCloseModel?: () => void;
 }
@@ -59,7 +59,7 @@ export default function AddUpdateExpense(props: AddUpdateExpenseProps) {
     try {
       const response = await axiosClient.post("expenses", {});
       if (response.status == 200) {
-        onComplete(response.data?.expense);
+        onComplete(response.data?.expense, expense ? true : false);
         // Update user state
         toast({
           toastType: "SUCCESS",
@@ -131,6 +131,28 @@ export default function AddUpdateExpense(props: AddUpdateExpenseProps) {
               mode="single"
               cacheData={false}
             />
+            {userData?.expense_type?.id && (
+              <APICombobox
+                placeholderText={t("search_item")}
+                errorText={t("no_item")}
+                required={true}
+                requiredHint={`* ${t("required")}`}
+                onSelect={(selection: any) => {
+                  setUserData((prev: any) => ({
+                    ...prev,
+                    item: selection,
+                  }));
+                }}
+                lable={t("item")}
+                selectedItem={userData?.item?.name}
+                placeHolder={t("select_a")}
+                errorMessage={error.get("item")}
+                apiUrl={"expense-types/icons/" + userData?.expense_type?.id}
+                mode="single"
+                cacheData={false}
+                key={userData?.expense_type?.id}
+              />
+            )}
             <APICombobox
               placeholderText={t("search_item")}
               errorText={t("no_item")}
@@ -150,47 +172,28 @@ export default function AddUpdateExpense(props: AddUpdateExpenseProps) {
               mode="single"
               cacheData={false}
             />
-            <CustomInput
-              size_="sm"
-              lable={t("total_amount")}
-              placeholder={t("enter")}
-              value={userData["total_amount"] || ""}
-              type="text"
-              name="total_amount"
-              requiredHint={`* ${t("required")}`}
-              errorMessage={error.get("total_amount")}
-              onChange={handleNumberChange}
-            />
-            <CustomInput
-              size_="sm"
-              lable={t("quantity")}
-              placeholder={t("enter")}
-              value={userData["quantity"] || ""}
-              type="text"
-              name="quantity"
-              requiredHint={`* ${t("required")}`}
-              errorMessage={error.get("quantity")}
-              onChange={handleNumberChange}
-            />
-            <APICombobox
-              placeholderText={t("search_item")}
-              errorText={t("no_item")}
-              required={true}
-              requiredHint={`* ${t("required")}`}
-              onSelect={(selection: any) =>
-                setUserData((prev: any) => ({
-                  ...prev,
-                  account: selection,
-                }))
-              }
-              lable={t("account")}
-              selectedItem={userData?.account?.name}
-              placeHolder={t("select_a")}
-              errorMessage={error.get("account")}
-              apiUrl={"accounts-names"}
-              mode="single"
-              cacheData={false}
-            />
+            {userData?.currency?.id && (
+              <APICombobox
+                placeholderText={t("search_item")}
+                errorText={t("no_item")}
+                required={true}
+                requiredHint={`* ${t("required")}`}
+                onSelect={(selection: any) =>
+                  setUserData((prev: any) => ({
+                    ...prev,
+                    account: selection,
+                  }))
+                }
+                lable={t("account")}
+                selectedItem={userData?.account?.name}
+                placeHolder={t("select_a")}
+                errorMessage={error.get("account")}
+                apiUrl={"accounts/by/currency/" + userData?.currency?.id}
+                mode="single"
+                cacheData={false}
+                key={userData?.currency?.id}
+              />
+            )}
             <APICombobox
               placeholderText={t("search_item")}
               errorText={t("no_item")}
@@ -225,6 +228,17 @@ export default function AddUpdateExpense(props: AddUpdateExpenseProps) {
               apiUrl={"hr/codes"}
               mode="single"
               cacheData={false}
+            />
+            <CustomInput
+              size_="sm"
+              lable={t("total_amount")}
+              placeholder={t("enter")}
+              value={userData["total_amount"] || ""}
+              type="text"
+              name="total_amount"
+              requiredHint={`* ${t("required")}`}
+              errorMessage={error.get("total_amount")}
+              onChange={handleNumberChange}
             />
             <CustomInput
               size_="sm"

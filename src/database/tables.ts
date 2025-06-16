@@ -362,6 +362,5 @@ export type Expense = {
   id: string;
   total_amount: number;
   bill_no: string;
-  quantity: string;
   date: string;
 };

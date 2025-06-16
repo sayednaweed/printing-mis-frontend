@@ -44,12 +44,18 @@ export default function AddUpdatePayment(props: AddUpdatePaymentProps) {
     | { overtime: string; salary: string; profile: string; remaining: number }
     | undefined
   >(undefined);
-  const getEmployeeDetail = async (employeeId: string) => {
+  const getEmployeeDetail = async (
+    employeeId: string,
+    paymentDate: DateObject
+  ) => {
     try {
       setLoading(true);
-      const response = await axiosClient.get(
-        "salaries/employee-payment/" + employeeId
-      );
+      const response = await axiosClient.get("salaries/employee-payment", {
+        params: {
+          date: paymentDate?.toDate()?.toISOString(),
+          employee_id: employeeId,
+        },
+      });
       if (response.status === 200) {
         const data = response.data?.data;
         data.remaining = 0;
@@ -169,7 +175,9 @@ export default function AddUpdatePayment(props: AddUpdatePaymentProps) {
                   ...prev,
                   hr_code: selection,
                 }));
-                getEmployeeDetail(selection?.id);
+                if (userData.payment_date) {
+                  getEmployeeDetail(selection?.id, userData.payment_date);
+                }
               }}
               lable={t("hr_code")}
               selectedItem={userData?.hr_code?.name}
@@ -178,6 +186,25 @@ export default function AddUpdatePayment(props: AddUpdatePaymentProps) {
               apiUrl={"hr/codes"}
               mode="single"
               cacheData={false}
+            />
+            <CustomMultiDatePicker
+              placeholder={t("select_a_date")}
+              lable={t("payment_date")}
+              requiredHint={`* ${t("required")}`}
+              required={true}
+              value={userData.payment_date}
+              dateOnComplete={(selectedDates: DateObject[]) => {
+                setUserData((prev: any) => ({
+                  ...prev,
+                  payment_date: selectedDates,
+                }));
+                if (userData?.hr_code?.id) {
+                  getEmployeeDetail(userData?.hr_code?.id, selectedDates[0]);
+                }
+              }}
+              className="py-3 w-full"
+              errorMessage={error.get("date")}
+              singleSelect={true}
             />
             {details && (
               <>
@@ -200,22 +227,7 @@ export default function AddUpdatePayment(props: AddUpdatePaymentProps) {
                   mode="single"
                   cacheData={false}
                 />
-                <CustomMultiDatePicker
-                  placeholder={t("select_a_date")}
-                  lable={t("payment_date")}
-                  requiredHint={`* ${t("required")}`}
-                  required={true}
-                  value={userData.payment_date}
-                  dateOnComplete={(selectedDates: DateObject[]) => {
-                    setUserData((prev: any) => ({
-                      ...prev,
-                      payment_date: selectedDates,
-                    }));
-                  }}
-                  className="py-3 w-full"
-                  errorMessage={error.get("date")}
-                  singleSelect={true}
-                />
+
                 <CustomInput
                   size_="sm"
                   lable={t("overtime_h")}

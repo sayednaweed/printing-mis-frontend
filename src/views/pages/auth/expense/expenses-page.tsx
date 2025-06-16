@@ -40,7 +40,7 @@ import {
   BreadcrumbItem,
   BreadcrumbSeparator,
 } from "@/components/custom-ui/Breadcrumb/Breadcrumb";
-import AddExpense from "./add/add-expense";
+import AddUpdateExpense from "./add-update-expense";
 export default function ExpensesPage() {
   const { user } = useAuthStore();
   const navigate = useNavigate();
@@ -200,7 +200,6 @@ export default function ExpensesPage() {
                 ...item,
                 bill_no: expense.bill_no,
                 date: expense.date,
-                quantity: expense.quantity,
                 total_amount: expense.total_amount,
               }
             : item
@@ -279,7 +278,7 @@ export default function ExpensesPage() {
             }
             showDialog={async () => true}
           >
-            <AddExpense expense={expense} onComplete={addItem} />
+            <AddUpdateExpense expense={expense} onComplete={addItem} />
           </NastranModel>
         )}
 
@@ -448,7 +447,6 @@ export default function ExpensesPage() {
         <TableHeader className="rtl:text-3xl-rtl ltr:text-xl-ltr">
           <TableRow className="hover:bg-transparent">
             <TableHead className="text-start">{t("bill_no")}</TableHead>
-            <TableHead className="text-start">{t("quantity")}</TableHead>
             <TableHead className="text-start">{t("total_amount")}</TableHead>
             <TableHead className="text-start">{t("date")}</TableHead>
           </TableRow>
@@ -469,7 +467,6 @@ export default function ExpensesPage() {
                 onRead={watchOnClick}
               >
                 <TableCell className="truncate">{item.bill_no}</TableCell>
-                <TableCell className="truncate">{item.quantity}</TableCell>
                 <TableCell className="truncate">{item.total_amount}</TableCell>
                 <TableCell className="truncate">
                   {toLocaleDate(new Date(item.date), state)}
